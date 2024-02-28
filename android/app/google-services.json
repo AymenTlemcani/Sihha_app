@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "78588377384",
+    "project_id": "sahhaapp-6e10d",
+    "storage_bucket": "sahhaapp-6e10d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78588377384:android:9864aabc29745f1a52381d",
+        "android_client_info": {
+          "package_name": "com.example.sahha_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXfKLktc4LEaQ98US6Vs1D9P6oFZH_1uY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
