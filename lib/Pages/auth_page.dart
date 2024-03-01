@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sahha_app/Pages/HomePage.dart';
+import 'package:sahha_app/Common/Persistent_nav.dart';
 import 'package:sahha_app/Pages/LoginPage.dart';
 
 class AuthPage extends StatelessWidget {
@@ -14,7 +14,10 @@ class AuthPage extends StatelessWidget {
         builder: (context, snapshot) {
           //user is logged in
           if (snapshot.hasData) {
-            return HomePage();
+            return
+                //
+                PersistentTabSreen();
+            // HomePage();
           }
           //user is NOT logged in
           else {

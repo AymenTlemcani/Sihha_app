@@ -7,14 +7,14 @@ import 'package:sahha_app/Common/my_button.dart';
 import 'package:sahha_app/Common/slideControl.dart';
 import 'package:sahha_app/Common/textForm.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginPageTEST extends StatefulWidget {
+  const LoginPageTEST({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginPageTEST> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPageTEST> {
   bool _IsObsecure = true;
 
   List<bool> isSelected = [true, false];
@@ -24,6 +24,18 @@ class _LoginPageState extends State<LoginPage> {
   final _formkey = GlobalKey<FormState>();
   //sign user in
   bool isSignIN = false;
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
+
+  // @override
+  // void dispose() {
+  //   EmailController.dispose();
+  //   PasswordController.dispose();
+  //   super.dispose();
+  // }
+
   void signUserIn() async {
     /// SHOW A LOADING CIRCLE
 
@@ -33,6 +45,15 @@ class _LoginPageState extends State<LoginPage> {
     //     return Center(child: CircularProgressIndicator());
     //   },
     // );
+    // ignore: unused_local_variable
+    // Map credentials = {
+    //   'email': EmailController.text.trim(),
+    //   'password': PasswordController.text.trim(),
+    //   'device_name': 'Mobile'
+    // };
+    // if (_formkey.currentState!.validate()) {
+    //   print("oOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+    // }
     setState(() {
       isSignIN = true;
     });
@@ -168,10 +189,39 @@ class _LoginPageState extends State<LoginPage> {
               ]),
             ),
             SizedBox(height: 20),
+            /////////// National ID TEXT FORM
+            /*ToggleButtons(
+              children: [Text("Adult"), Text("Mineur")],
+              isSelected: isSelected,
+              onPressed: (int index) {
+                setState(() {
+                  isSelected[index] = !isSelected[index];
+                });
+              },
+            ),*/
+
+            // LiteRollingSwitch(
+            //   value: false,
+            //   textOn: "On",
+            //   textOff: "Off",
+            //   colorOn: Colors.green,
+            //   colorOff: Colors.red,
+            //   iconOn: Icons.done,
+            //   iconOff: Icons.clear,
+            //   textSize: 18,
+            //   animationDuration: Duration(milliseconds: 20),
+            //   width: 100,
+            //   onTap: () {},
+            //   onChanged: (p0) {},
+            //   onDoubleTap: () {},
+            //   onSwipe: () {},
+            // ),
+            // CupertinoButton(child: Text("hhhh"), onPressed: () {}),
 
             CupSlideControl(),
             SizedBox(height: 20),
 
+            ///        AUTH FORM
             Form(
                 key: _formkey,
                 child: Column(

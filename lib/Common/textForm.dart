@@ -23,6 +23,8 @@ class _MyTextFormState extends State<MyTextForm> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'This field cannot be empty' : null,
         keyboardType: widget.keyboardType,
         controller: widget.controller,
         obscureText: widget.obscureText,
