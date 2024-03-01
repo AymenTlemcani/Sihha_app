@@ -29,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Transform.translate(
             offset: Offset(0, 0),
             child: Container(
-                height: MediaQuery.of(context).size.height * .28,
+                height: 203,
                 width: double.infinity,
                 color: Color.fromARGB(255, 80, 150, 118),
                 child: Column(
@@ -40,7 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 25, 8, 8),
+                          padding: const EdgeInsets.fromLTRB(8, 25, 8, 0),
                           child: IconButton(
                             icon: Icon(Icons.logout),
                             onPressed: signUserOut,
