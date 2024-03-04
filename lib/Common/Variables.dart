@@ -1,0 +1,1 @@
+bool modeAdmin = false;

@@ -25,7 +25,9 @@ class MyButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(0, 14, 0, 14),
           height: 55,
-          width: double.infinity,
+          width: MediaQuery.sizeOf(context).width < 1080
+              ? MediaQuery.sizeOf(context).width - 36
+              : 1080 - 36,
           decoration: BoxDecoration(
               color: ButtonColor,
               // HexColor("509776"),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sahha_app/Common/Variables.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,10 +13,21 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   void signUserOut() {
+    setState(() {
+      modeAdmin = false;
+    });
     FirebaseAuth.instance.signOut();
   }
 
-  bool modeAdmin = false;
+  // bool modeAdmin = false;
+
+  bool isVisible = modeAdmin;
+  bool isV() {
+    setState(() {
+      isVisible = modeAdmin;
+    });
+    return isVisible;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +41,12 @@ class _ProfilePageState extends State<ProfilePage> {
           Transform.translate(
             offset: Offset(0, 0),
             child: Container(
-                height: 203,
+                height: 220,
                 width: double.infinity,
-                color: Color.fromARGB(255, 80, 150, 118),
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 80, 150, 118),
+                    border: BorderDirectional(
+                        bottom: BorderSide(color: Colors.black26))),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -100,7 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ]),
 
                           width: 280,
-                          height: 40,
+                          height: 45,
                           // color: Colors.white,
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -136,7 +151,61 @@ class _ProfilePageState extends State<ProfilePage> {
                     )
                   ],
                 )),
-          )
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+
+              // spacing: 32,
+              // runSpacing: 16,
+              children: [
+                Ink(
+                  color: Colors.amber,
+                  width: 150,
+                  height: 150,
+                ),
+                Ink(
+                  color: Colors.red,
+                  width: 150,
+                  height: 150,
+                ),
+                Visibility(
+                  visible: isV() == true ? true : false,
+                  child: Ink(
+                    color: Colors.black,
+                    width: 150,
+                    height: 150,
+                  ),
+                ),
+                Ink(
+                  color: Colors.blue,
+                  width: 150,
+                  height: 150,
+                ),
+                Ink(
+                  color: Colors.green,
+                  width: 150,
+                  height: 150,
+                ),
+                Ink(
+                  color: Colors.purple,
+                  width: 150,
+                  height: 150,
+                ),
+                Ink(
+                  color: Colors.yellow,
+                  width: 150,
+                  height: 150,
+                ),
+                Ink(
+                  color: Colors.orange,
+                  width: 150,
+                  height: 150,
+                ),
+              ],
+            ),
+          ),
         ] //
                     )));
   }

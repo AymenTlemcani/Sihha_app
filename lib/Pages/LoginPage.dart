@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:sahha_app/Common/my_button.dart';
-import 'package:sahha_app/Common/slideControl.dart';
 import 'package:sahha_app/Common/textForm.dart';
 
 class LoginPage extends StatefulWidget {
@@ -98,9 +97,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.transparent,
+      // backgroundColor: CupertinoColors.darkBackgroundGray,
+      // backgroundColor: CupertinoColors.extraLightBackgroundGray,
+      backgroundColor: Color.fromARGB(255, 245, 245, 245),
       body: SingleChildScrollView(
         reverse: true,
         // physics: NeverScrollableScrollPhysics(),
+        //Ta3 APP COMPLET
         child: Column(
           children: [
             Container(
@@ -147,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
                       child: Text(
-                        "Welcome Back Again",
+                        "Bienvenu !",
                         style: GoogleFonts.poppins(
                             fontSize: 20, fontWeight: FontWeight.w600),
                       ),
@@ -159,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-                      child: Text("Please fill your information",
+                      child: Text("Veuillez remplir vos informations",
                           style: GoogleFonts.poppins(
                               fontSize: 17, color: Colors.black26)),
                     ),
@@ -168,109 +171,125 @@ class _LoginPageState extends State<LoginPage> {
               ]),
             ),
             SizedBox(height: 20),
-
-            CupSlideControl(),
+            // CupSlideControl(),
             SizedBox(height: 20),
 
-            Form(
-                key: _formkey,
-                child: Column(
-                  children: [
-                    MyTextForm(
-                      controller: EmailController,
-                      hintText: "Email",
-                      obscureText: false,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+            /// IntrinsicWidth  is used to make the column take up only as much width as it needs.
+            /// Bach App twli responsive f Web ki tkabar w tsaghar L window
+            IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Form(
+                      key: _formkey,
+                      child: Column(
+                        children: [
+                          MyTextForm(
+                            controller: EmailController,
+                            hintText: "Numéro de Carte National",
+                            obscureText: false,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
 
-                    ///////////PASSWORD
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
-                      child: TextFormField(
-                        validator: (value) => value!.isEmpty
-                            ? 'This field cannot be empty'
-                            : null,
+                          ///////////PASSWORD
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+                            child: Container(
+                              width: MediaQuery.sizeOf(context).width < 1080
+                                  ? MediaQuery.sizeOf(context).width - 36
+                                  : 1080 - 36,
+                              child: TextFormField(
+                                validator: (value) => value!.isEmpty
+                                    ? 'This field cannot be empty'
+                                    : null,
 
-                        controller: PasswordController,
-                        keyboardType: TextInputType.visiblePassword,
-                        obscureText: _IsObsecure,
-                        cursorColor: Color(0xFF6DCEA1),
-                        // textAlign: TextAlign.justify,
+                                controller: PasswordController,
+                                keyboardType: TextInputType.visiblePassword,
+                                obscureText: _IsObsecure,
+                                cursorColor: Color(0xFF6DCEA1),
+                                // textAlign: TextAlign.justify,
 
-                        decoration: InputDecoration(
-                            labelText: "Password",
-                            labelStyle: TextStyle(
-                                color: Colors.grey[400], fontSize: 14),
-                            floatingLabelStyle: TextStyle(
-                                color: Color.fromARGB(255, 49, 143, 99)),
-                            suffixIcon: IconButton(
-                              icon: _IsObsecure
-                                  ? Icon(
-                                      Icons.visibility_off_outlined,
-                                      color: Color.fromARGB(45, 0, 0, 0),
-                                      size: 15,
-                                    )
-                                  : Icon(
-                                      Icons.visibility_outlined,
-                                      color: Color.fromARGB(45, 0, 0, 0),
-                                      size: 15,
+                                decoration: InputDecoration(
+                                    labelText: "Mot de passe",
+                                    labelStyle: TextStyle(
+                                        color: Colors.grey[400], fontSize: 14),
+                                    floatingLabelStyle: TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 49, 143, 99)),
+                                    suffixIcon: IconButton(
+                                      icon: _IsObsecure
+                                          ? Icon(
+                                              Icons.visibility_off_outlined,
+                                              color:
+                                                  Color.fromARGB(45, 0, 0, 0),
+                                              size: 15,
+                                            )
+                                          : Icon(
+                                              Icons.visibility_outlined,
+                                              color:
+                                                  Color.fromARGB(45, 0, 0, 0),
+                                              size: 15,
+                                            ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _IsObsecure = !_IsObsecure;
+                                        });
+                                      },
                                     ),
-                              onPressed: () {
-                                setState(() {
-                                  _IsObsecure = !_IsObsecure;
-                                });
-                              },
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide(
+                                            color: Colors.grey, width: 1)),
+                                    disabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide(
+                                            color:
+                                                Color.fromARGB(20, 82, 79, 79),
+                                            width: 1)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide(
+                                            color: Color(0xFF6DCEA1))),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide:
+                                            BorderSide(color: Colors.red))),
+                              ),
                             ),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide:
-                                    BorderSide(color: Colors.grey, width: 1)),
-                            disabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(20, 82, 79, 79),
-                                    width: 1)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide:
-                                    BorderSide(color: Color(0xFF6DCEA1))),
-                            errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: Colors.red))),
-                      ),
-                    ),
-                  ],
-                )),
-            // SizedBox(height: 15),
-            ///////////     FORGOT PASSWORD?
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        "NSIT L MODPASS YA KHO?",
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          color: Colors.lightBlue[300],
-                          letterSpacing: 0,
-                          decoration: TextDecoration.underline,
-                          decorationThickness: 0.5,
-                        ),
+                          ),
+                        ],
                       )),
-                ),
-              ],
-            ),
-            SizedBox(height: 40),
+                  // SizedBox(height: 15),
+                  ///////////     FORGOT PASSWORD?
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: GestureDetector(
+                          onTap: () {},
+                          child: Text(
+                            "Mot de passe oublié ?",
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              color: Colors.lightBlue[300],
+                              letterSpacing: 0,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 0.5,
+                            ),
+                          )),
+                    ),
 
-            MyButton(
-              onPressed: signUserIn,
-              buttonText: "Login",
-              ButtonColor: HexColor("509776"),
-              TextButtonColor: HexColor("f8f8f8"),
-            ),
+                    ///
+                  ]),
+                  SizedBox(height: 40),
+                  MyButton(
+                    onPressed: signUserIn,
+                    buttonText: "Se connecter",
+                    ButtonColor: HexColor("509776"),
+                    TextButtonColor: HexColor("f8f8f8"),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),

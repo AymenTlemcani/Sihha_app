@@ -29,6 +29,7 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
       CardPage(),
       DossierMedicalPage(),
       FamilyPage(),
+      // Profile(),
       ProfilePage(),
     ];
   }
@@ -76,9 +77,25 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
           textStyle: textstyle),
       PersistentBottomNavBarItem(
           icon: Icon(CupertinoIcons.person_fill),
+          // CircleAvatar(
+          //   // foregroundImage: AssetImage('assets/Etchiali.jpeg'),
+          //   radius: 100,
+          //   backgroundColor: Color.fromARGB(255, 109, 206, 161),
+          // ),
           // SvgPicture.asset("assets/Icons/user-circle.svg"),
           inactiveIcon: Icon(CupertinoIcons.person),
+          //     CircleAvatar(
+          //   // foregroundImage: AssetImage('assets/Etchiali.jpeg'),
+          //   radius: 100,
+          //   backgroundColor: Color.fromARGB(255, 109, 206, 161),
+          //   child: ClipOval(
+          //       child: SizedBox.fromSize(
+          //     size: Size.fromRadius(48),
+          //     child: Image.asset('assets/Etchiali.jpeg'),
+          //   )),
+          // ),
           title: ("Profile"),
+          // iconSize: ,
           activeColorPrimary: Color.fromARGB(255, 109, 206, 161),
           inactiveColorPrimary: CupertinoColors.systemGrey,
           textStyle: textstyle),
@@ -103,6 +120,7 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
       hideNavigationBarWhenKeyboardShows:
           true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
+        border: Border.symmetric(horizontal: BorderSide(color: Colors.black12)),
         borderRadius: BorderRadius.circular(8.0),
         colorBehindNavBar: Colors.white,
       ),
