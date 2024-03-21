@@ -31,7 +31,7 @@ class _HomeBodyState extends State<HomeBody> {
       itemColor1: SihhaGreen1.withOpacity(0.18),
       smallCircleColor1: Colors.white,
       onTapFunction: (BuildContext context) {
-        print('user tapped creat an account');
+        print('user tapped create an account');
       },
     ),
     MyTile(
