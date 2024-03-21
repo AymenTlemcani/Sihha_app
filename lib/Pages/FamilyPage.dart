@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sahha_app/Common/Variables.dart';
 
 class FamilyPage extends StatefulWidget {
   const FamilyPage({super.key});
@@ -11,6 +12,7 @@ class _FamilyPageState extends State<FamilyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: SihhaGreyBackgroundColor,
       body: Center(child: Text("Family")),
     );
   }

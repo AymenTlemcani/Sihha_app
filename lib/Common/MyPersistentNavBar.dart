@@ -1,15 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:sahha_app/Common/Variables.dart';
 import 'package:sahha_app/Pages/CardPage.dart';
-import 'package:sahha_app/Pages/DossierMedicalPage.dart';
 import 'package:sahha_app/Pages/FamilyPage.dart';
 import 'package:sahha_app/Pages/HomeBody.dart';
-import 'package:sahha_app/Pages/ProfilePage.dart';
 
 class PersistentTabSreen extends StatefulWidget {
-  const PersistentTabSreen({super.key});
+  final StreamController<bool> loginStreamController;
+  const PersistentTabSreen({super.key, required this.loginStreamController});
 
   @override
   State<PersistentTabSreen> createState() => _PersistentTabSreenState();
@@ -25,12 +27,12 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
 
   List<Widget> _buildScreens() {
     return [
-      HomeBody(),
+      HomeBody(loginStreamController: widget.loginStreamController),
       CardPage(),
-      DossierMedicalPage(),
+      // DossierMedicalPage(),
       FamilyPage(),
       // Profile(),
-      ProfilePage(),
+      // ProfilePage(),
     ];
   }
 
@@ -44,7 +46,7 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
         // SvgPicture.asset("assets/Icons/home.svg"),
         inactiveIcon: Icon(CupertinoIcons.house),
         title: ("Home"),
-        activeColorPrimary: const Color.fromARGB(255, 109, 206, 161),
+        activeColorPrimary: SihhaGreen1,
         inactiveColorPrimary: CupertinoColors.systemGrey,
         textStyle: textstyle,
       ),
@@ -53,52 +55,52 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
 
           // SvgPicture.asset("assets/Icons/card.svg"),
           inactiveIcon: Icon(CupertinoIcons.creditcard),
-          title: ("Card"),
-          activeColorPrimary: Color.fromARGB(255, 109, 206, 161),
+          title: ("Cards"),
+          activeColorPrimary: SihhaGreen1,
           inactiveColorPrimary: CupertinoColors.systemGrey,
           textStyle: textstyle),
-      PersistentBottomNavBarItem(
+      /*PersistentBottomNavBarItem(
           icon: Icon(CupertinoIcons.heart_fill),
 
           // SvgPicture.asset("assets/Icons/heart.svg"),
           inactiveIcon: Icon(CupertinoIcons.heart),
           title: ("Medical"),
-          activeColorPrimary: Color.fromARGB(255, 109, 206, 161),
+          activeColorPrimary: SihhaGreen1,
           inactiveColorPrimary: CupertinoColors.systemGrey,
-          textStyle: textstyle),
+          textStyle: textstyle),*/
       PersistentBottomNavBarItem(
           icon: Icon(CupertinoIcons.person_3_fill),
           // SvgPicture.asset("assets/Icons/Users.svg"),
 
           inactiveIcon: Icon(CupertinoIcons.person_3),
           title: ("Family"),
-          activeColorPrimary: Color.fromARGB(255, 109, 206, 161),
+          activeColorPrimary: SihhaGreen1,
           inactiveColorPrimary: CupertinoColors.systemGrey,
           textStyle: textstyle),
-      PersistentBottomNavBarItem(
-          icon: Icon(CupertinoIcons.person_fill),
-          // CircleAvatar(
-          //   // foregroundImage: AssetImage('assets/Etchiali.jpeg'),
-          //   radius: 100,
-          //   backgroundColor: Color.fromARGB(255, 109, 206, 161),
-          // ),
-          // SvgPicture.asset("assets/Icons/user-circle.svg"),
-          inactiveIcon: Icon(CupertinoIcons.person),
-          //     CircleAvatar(
-          //   // foregroundImage: AssetImage('assets/Etchiali.jpeg'),
-          //   radius: 100,
-          //   backgroundColor: Color.fromARGB(255, 109, 206, 161),
-          //   child: ClipOval(
-          //       child: SizedBox.fromSize(
-          //     size: Size.fromRadius(48),
-          //     child: Image.asset('assets/Etchiali.jpeg'),
-          //   )),
-          // ),
-          title: ("Profile"),
-          // iconSize: ,
-          activeColorPrimary: Color.fromARGB(255, 109, 206, 161),
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-          textStyle: textstyle),
+      // PersistentBottomNavBarItem(
+      //     icon: Icon(CupertinoIcons.person_fill),
+      //     // CircleAvatar(
+      //     //   // foregroundImage: AssetImage('assets/Etchiali.jpeg'),
+      //     //   radius: 100,
+      //     //   backgroundColor: SihhaGreen1,
+      //     // ),
+      //     // SvgPicture.asset("assets/Icons/user-circle.svg"),
+      //     inactiveIcon: Icon(CupertinoIcons.person),
+      //     //     CircleAvatar(
+      //     //   // foregroundImage: AssetImage('assets/Etchiali.jpeg'),
+      //     //   radius: 100,
+      //     //   backgroundColor: SihhaGreen1,
+      //     //   child: ClipOval(
+      //     //       child: SizedBox.fromSize(
+      //     //     size: Size.fromRadius(48),
+      //     //     child: Image.asset('assets/Etchiali.jpeg'),
+      //     //   )),
+      //     // ),
+      //     title: ("Profile"),
+      //     // iconSize: ,
+      //     activeColorPrimary: SihhaGreen1,
+      //     inactiveColorPrimary: CupertinoColors.systemGrey,
+      //     textStyle: textstyle),
     ];
   }
 

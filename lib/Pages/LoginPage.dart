@@ -1,96 +1,95 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:sahha_app/Common/my_button.dart';
-import 'package:sahha_app/Common/textForm.dart';
+import 'package:sahha_app/Common/Variables.dart';
+import 'package:sahha_app/Common/MyButton.dart';
+import 'package:sahha_app/Common/MyTextForm.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final StreamController<bool> loginStreamController;
+  const LoginPage({super.key, required this.loginStreamController});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // TODO:
+  //  National Id Validator W Password Validator w Password Hashing with Bcrypt
+  //  n7i les commentaires zyada
+  //  Add Biometrics login
+  //  Add Create user page in admin dashboard
+
   bool _IsObsecure = true;
 
-  List<bool> isSelected = [true, false];
   //Auth controllers
-  final EmailController = TextEditingController();
+  // final EmailController = TextEditingController();
+  final IdController = TextEditingController();
   final PasswordController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
-  //sign user in
-  bool isSignIN = false;
-  void signUserIn() async {
-    /// SHOW A LOADING CIRCLE
 
-    // showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return Center(child: CircularProgressIndicator());
-    //   },
-    // );
-    setState(() {
-      isSignIN = true;
-    });
+  // LOGIN WITH NATIONAL ID SECTION
+  /// NJIBO LES DOCUMENTS W NDIROHOM F DATA
+  List<QueryDocumentSnapshot>? data = [];
+  var collection = FirebaseFirestore.instance.collection('users');
 
-    /// TRY  TO LOGIN USER WITH EMAIL AND PASSWORD
+  void login(StreamController<bool> loginStreamController) async {
+    String inputPassword = PasswordController.text.trim();
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: EmailController.text.trim(),
-          password: PasswordController.text.trim());
-      // Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      showErrorMessage(e.code);
+      var allDocs = await collection
+          .where('IDN', isEqualTo: IdController.text.trim())
+          .where('password', isEqualTo: PasswordController.text.trim())
+          .get();
+      // var DocumentID = allDocs.docs.first.id;
+      var DocumentDATA = allDocs.docs.first.data();
 
-      if (e.code == 'network-request-failed') {}
-      if (e.code == 'channel-error') {}
-      if (e.code == 'invalid-email') {}
-      if (e.code == 'invalid-credential') {}
-      if (e.code == 'too-many-requests') {}
-      // Navigator.pop(context);
-      // print('Error : ${e.code}');
+      if (inputPassword == DocumentDATA['password']) {
+        setState(() {
+          IDN = DocumentDATA['IDN'];
+          familyName = DocumentDATA['familyName'];
+          name = DocumentDATA['name'];
+          sexe = DocumentDATA['sexe'];
+          birthDay = DocumentDATA['birthDay'];
+          birthMonth = DocumentDATA['birthMonth'];
+          birthYear = DocumentDATA['birthYear'];
+          birthPlace = DocumentDATA['birthPlace'];
 
-      // if (e.code == 'user-not-found') {
-      //   wrongEmailPopUP();
-      // } else if (e.code == "wrong-password") {
-      //   wrongPasswordPopUP();
-      // }
+          ///
+          isLoggedIN = true;
+          isAdmin = DocumentDATA['admin'];
+
+          isMedcin = DocumentDATA['medcin'];
+          isPharmacie = DocumentDATA['pharmacien'];
+        });
+        loginStreamController.add(isLoggedIN);
+      } else {
+        DocumentDATA = {};
+
+        ///wrong password
+      }
+
+      print('Is logged in : ' + isLoggedIN.toString());
+      print(DocumentDATA);
+      // print(inputPassword);
+      // print(DocumentDATA['name']);
+      // print(dateDeNaissance);
+    } on Error catch (e) {
+      print(e);
     }
-    setState(() {
-      isSignIN = false;
-    });
 
-    // Navigator.pop(context);
-  }
-
-  void showErrorMessage(String message) {
-    // Tampilkan dialog dengan pesan error
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(message),
-          );
-        });
-  }
-
-  void wrongEmailPopUP() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(title: Text('incorrect Email'));
-        });
-  }
-
-  void wrongPasswordPopUP() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(title: Text('incorrect password'));
-        });
+    ///version 9dima
+    // QuerySnapshot querySnapshot = await collection
+    //     .where('IDN', isEqualTo: IdController.text.trim())
+    //     .get();
+    // data?.addAll(querySnapshot.docs);
+    // setState(() {});
+    // print(data?.length);
+    // var infos = data?[0].data() as Map<String, dynamic>;
+    // print(infos['password']);
   }
 
   @override
@@ -99,7 +98,9 @@ class _LoginPageState extends State<LoginPage> {
       // backgroundColor: Colors.transparent,
       // backgroundColor: CupertinoColors.darkBackgroundGray,
       // backgroundColor: CupertinoColors.extraLightBackgroundGray,
-      backgroundColor: Color.fromARGB(255, 245, 245, 245),
+      // backgroundColor: Color.fromARGB(255, 245, 245, 245),
+      backgroundColor: Colors.white,
+
       body: SingleChildScrollView(
         reverse: true,
         // physics: NeverScrollableScrollPhysics(),
@@ -111,8 +112,9 @@ class _LoginPageState extends State<LoginPage> {
               decoration: BoxDecoration(
                   color: Colors.transparent,
                   image: DecorationImage(
-                      image: AssetImage("assets/background1.png"),
-                      fit: BoxFit.cover)),
+                      // image: AssetImage("assets/background1.png"),
+                      image: AssetImage("assets/back3.png"),
+                      fit: BoxFit.fill)),
               child: Column(children: [
                 //Row of the picture
                 Row(
@@ -185,19 +187,19 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         children: [
                           MyTextForm(
-                            controller: EmailController,
+                            controller: IdController,
                             hintText: "Numéro de Carte National",
                             obscureText: false,
-                            keyboardType: TextInputType.emailAddress,
+                            keyboardType: TextInputType.phone,
                           ),
 
                           ///////////PASSWORD
                           Padding(
                             padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
                             child: Container(
-                              width: MediaQuery.sizeOf(context).width < 1080
+                              width: MediaQuery.sizeOf(context).width < 600
                                   ? MediaQuery.sizeOf(context).width - 36
-                                  : 1080 - 36,
+                                  : 600 - 36,
                               child: TextFormField(
                                 validator: (value) => value!.isEmpty
                                     ? 'This field cannot be empty'
@@ -206,16 +208,15 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: PasswordController,
                                 keyboardType: TextInputType.visiblePassword,
                                 obscureText: _IsObsecure,
-                                cursorColor: Color(0xFF6DCEA1),
+                                cursorColor: SihhaGreen1,
                                 // textAlign: TextAlign.justify,
 
                                 decoration: InputDecoration(
                                     labelText: "Mot de passe",
                                     labelStyle: TextStyle(
                                         color: Colors.grey[400], fontSize: 14),
-                                    floatingLabelStyle: TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 49, 143, 99)),
+                                    floatingLabelStyle:
+                                        TextStyle(color: SihhaGreen3),
                                     suffixIcon: IconButton(
                                       icon: _IsObsecure
                                           ? Icon(
@@ -248,8 +249,8 @@ class _LoginPageState extends State<LoginPage> {
                                             width: 1)),
                                     focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: BorderSide(
-                                            color: Color(0xFF6DCEA1))),
+                                        borderSide:
+                                            BorderSide(color: SihhaGreen1)),
                                     errorBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
                                         borderSide:
@@ -282,9 +283,12 @@ class _LoginPageState extends State<LoginPage> {
                   ]),
                   SizedBox(height: 40),
                   MyButton(
-                    onPressed: signUserIn,
+                    onPressed: () {
+                      login(widget.loginStreamController);
+                    },
+                    //signUserIn,
                     buttonText: "Se connecter",
-                    ButtonColor: HexColor("509776"),
+                    ButtonColor: SihhaGreen2,
                     TextButtonColor: HexColor("f8f8f8"),
                   ),
                 ],

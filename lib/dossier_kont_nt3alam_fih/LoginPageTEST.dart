@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:sahha_app/Common/my_button.dart';
-import 'package:sahha_app/Common/slideControl.dart';
-import 'package:sahha_app/Common/textForm.dart';
+import 'package:sahha_app/Common/MyButton.dart';
+import 'package:sahha_app/Common/MySlideControl.dart';
+import 'package:sahha_app/Common/MyTextForm.dart';
 
 class LoginPageTEST extends StatefulWidget {
   const LoginPageTEST({super.key});

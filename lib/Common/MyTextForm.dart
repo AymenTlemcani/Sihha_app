@@ -23,9 +23,9 @@ class _MyTextFormState extends State<MyTextForm> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
       child: Container(
-        width: MediaQuery.sizeOf(context).width < 1080
+        width: MediaQuery.sizeOf(context).width < 600
             ? MediaQuery.sizeOf(context).width - 36
-            : 1080 - 36,
+            : 600 - 36,
         child: TextFormField(
           validator: (value) =>
               value!.isEmpty ? 'This field cannot be empty' : null,

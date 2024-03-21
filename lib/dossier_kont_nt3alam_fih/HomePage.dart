@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,8 +5,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:sahha_app/Pages/CardPage.dart';
 import 'package:sahha_app/Pages/DossierMedicalPage.dart';
 import 'package:sahha_app/Pages/FamilyPage.dart';
-import 'package:sahha_app/Pages/HomeBody.dart';
-import 'package:sahha_app/Pages/ProfilePage.dart';
+import 'package:sahha_app/dossier_kont_nt3alam_fih/ProfilePage.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
@@ -17,8 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final user = FirebaseAuth.instance.currentUser!;
-
   int _selectedindex = 0;
   void _navigateBottomBar(int index) {
     setState(() {
@@ -32,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     // IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.heart_fill)),
     // IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.person_3_fill)),
     // IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.settings)),
-    HomeBody(),
+    // HomeBody(),
     CardPage(),
     DossierMedicalPage(),
     FamilyPage(),
