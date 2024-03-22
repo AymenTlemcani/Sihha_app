@@ -58,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+//no need for this method we already have it in LoginControllerProvider.dart this is just the old version  of it before using Provider
   void login() async {
     String inputPassword = _passwordController.text.trim();
     Map<String, dynamic>? documentData;

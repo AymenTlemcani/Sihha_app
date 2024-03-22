@@ -63,9 +63,9 @@ class LoginControllerProvider extends ChangeNotifier {
           birthMonthProvider: documentData['birthMonth'],
           birthYearProvider: documentData['birthYear'],
           birthPlaceProvider: documentData['birthPlace'],
-          isAdminProvider: documentData['admin'],
-          isMedcinProvider: documentData['medcin'],
-          isPharmacieProvider: documentData['pharmacien'],
+          isAdminProvider: documentData['isAdmin'],
+          isMedcinProvider: documentData['isMedcin'],
+          isPharmacieProvider: documentData['isPharmacien'],
         );
 
         // Set login status
@@ -111,5 +111,12 @@ class LoginControllerProvider extends ChangeNotifier {
     loginStreamController.add(false);
     notifyListeners(); // Notify listeners after updating the state
     print(name);
+  }
+
+  @override
+  void dispose() {
+    // Close the loginStreamController when the provider is disposed of
+    loginStreamController.close();
+    super.dispose();
   }
 }
