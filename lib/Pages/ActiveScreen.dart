@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:sahha_app/Common/MyPersistentNavBar.dart';
 
 class ActiveScreen extends StatefulWidget {
-  final StreamController<bool> loginStreamController;
-  const ActiveScreen({super.key, required this.loginStreamController});
+  const ActiveScreen({
+    super.key,
+  });
 
   @override
   State<ActiveScreen> createState() => _ActiveScreenState();
@@ -14,7 +13,6 @@ class ActiveScreen extends StatefulWidget {
 class _ActiveScreenState extends State<ActiveScreen> {
   @override
   Widget build(BuildContext context) {
-    return PersistentTabSreen(
-        loginStreamController: widget.loginStreamController);
+    return PersistentTabSreen();
   }
 }

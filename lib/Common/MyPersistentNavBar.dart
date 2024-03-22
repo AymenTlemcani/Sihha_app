@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,8 +8,9 @@ import 'package:sahha_app/Pages/FamilyPage.dart';
 import 'package:sahha_app/Pages/HomeBody.dart';
 
 class PersistentTabSreen extends StatefulWidget {
-  final StreamController<bool> loginStreamController;
-  const PersistentTabSreen({super.key, required this.loginStreamController});
+  const PersistentTabSreen({
+    super.key,
+  });
 
   @override
   State<PersistentTabSreen> createState() => _PersistentTabSreenState();
@@ -27,7 +26,7 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
 
   List<Widget> _buildScreens() {
     return [
-      HomeBody(loginStreamController: widget.loginStreamController),
+      HomeBody(),
       CardPage(),
       // DossierMedicalPage(),
       FamilyPage(),

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter_svg/svg.dart';
@@ -8,13 +6,12 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/Common/MyTile.dart';
 import 'package:sahha_app/Common/Variables.dart';
 import 'package:sahha_app/Pages/Profile.dart';
-import 'package:sahha_app/Pages/admin/CreateUser.dart'; // Import your custom ListViewTile widget
+import 'package:sahha_app/Pages/admin/CreateUser.dart';
+// Import your custom ListViewTile widget
 
 class HomeBody extends StatefulWidget {
-  final StreamController<bool> loginStreamController;
   HomeBody({
     Key? key,
-    required this.loginStreamController,
   }) : super(key: key);
 
   @override
@@ -32,6 +29,12 @@ class _HomeBodyState extends State<HomeBody> {
       smallCircleColor1: Colors.white,
       onTapFunction: (BuildContext context) {
         print('user tapped create an account');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CreateUser(),
+          ),
+        );
       },
     ),
     MyTile(
@@ -201,12 +204,11 @@ class _HomeBodyState extends State<HomeBody> {
                 onTap: () {
                   print("User Pressed on Profile");
                   Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Profile(
-                                loginStreamController:
-                                    widget.loginStreamController,
-                              )));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Profile(),
+                    ),
+                  );
                 },
                 child: CircleAvatar(
                   backgroundColor: Colors.white,

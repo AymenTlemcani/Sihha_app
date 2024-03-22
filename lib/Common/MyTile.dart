@@ -87,7 +87,7 @@ class MyTile extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w400,
               color: titleColor1 ?? titleColor,
-              fontSize: 17,
+              fontSize: 16,
             ),
           ),
         )

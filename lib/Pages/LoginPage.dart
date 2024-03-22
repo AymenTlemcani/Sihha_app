@@ -1,17 +1,18 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
 import 'package:sahha_app/Common/Variables.dart';
 import 'package:sahha_app/Common/MyButton.dart';
 import 'package:sahha_app/Common/MyTextForm.dart';
+import 'package:sahha_app/Providers/LoginControllerProvider.dart';
 
 class LoginPage extends StatefulWidget {
-  final StreamController<bool> loginStreamController;
-  const LoginPage({super.key, required this.loginStreamController});
+  const LoginPage({
+    super.key,
+  });
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -24,72 +25,80 @@ class _LoginPageState extends State<LoginPage> {
   //  Add Biometrics login
   //  Add Create user page in admin dashboard
 
-  bool _IsObsecure = true;
+  // late final StreamController<bool> loginStreamController;
+  late bool _isObsecure;
+  late TextEditingController _idController;
+  late TextEditingController _passwordController;
+  late GlobalKey<FormState> _formKey;
 
-  //Auth controllers
-  // final EmailController = TextEditingController();
-  final IdController = TextEditingController();
-  final PasswordController = TextEditingController();
-  final _formkey = GlobalKey<FormState>();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _isObsecure = true;
+  //   _idController = TextEditingController();
+  //   _passwordController = TextEditingController();
+  //   _formKey = GlobalKey<FormState>();
+  //   _loginStreamController =
+  //       Provider.of<LoginControllerProvider>(context, listen: false)
+  //           .loginStreamController;
+  // }
+  @override
+  void initState() {
+    super.initState();
+    _isObsecure = true;
+    _idController = TextEditingController();
+    _passwordController = TextEditingController();
+    _formKey = GlobalKey<FormState>();
+  }
 
-  // LOGIN WITH NATIONAL ID SECTION
-  /// NJIBO LES DOCUMENTS W NDIROHOM F DATA
-  List<QueryDocumentSnapshot>? data = [];
-  var collection = FirebaseFirestore.instance.collection('users');
+  @override
+  void dispose() {
+    _idController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
-  void login(StreamController<bool> loginStreamController) async {
-    String inputPassword = PasswordController.text.trim();
+  void login() async {
+    String inputPassword = _passwordController.text.trim();
+    Map<String, dynamic>? documentData;
+
     try {
-      var allDocs = await collection
-          .where('IDN', isEqualTo: IdController.text.trim())
-          .where('password', isEqualTo: PasswordController.text.trim())
+      var allDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('IDN', isEqualTo: _idController.text.trim())
+          .where('password', isEqualTo: _passwordController.text.trim())
           .get();
-      // var DocumentID = allDocs.docs.first.id;
-      var DocumentDATA = allDocs.docs.first.data();
-
-      if (inputPassword == DocumentDATA['password']) {
-        setState(() {
-          IDN = DocumentDATA['IDN'];
-          familyName = DocumentDATA['familyName'];
-          name = DocumentDATA['name'];
-          sexe = DocumentDATA['sexe'];
-          birthDay = DocumentDATA['birthDay'];
-          birthMonth = DocumentDATA['birthMonth'];
-          birthYear = DocumentDATA['birthYear'];
-          birthPlace = DocumentDATA['birthPlace'];
-
-          ///
-          isLoggedIN = true;
-          isAdmin = DocumentDATA['admin'];
-
-          isMedcin = DocumentDATA['medcin'];
-          isPharmacie = DocumentDATA['pharmacien'];
-        });
-        loginStreamController.add(isLoggedIN);
+      documentData = allDocs.docs.first.data();
+      if (inputPassword == documentData['password']) {
+        IDN = documentData['IDN'];
+        familyName = documentData['familyName'];
+        name = documentData['name'];
+        sexe = documentData['sexe'];
+        birthDay = documentData['birthDay'];
+        birthMonth = documentData['birthMonth'];
+        birthYear = documentData['birthYear'];
+        birthPlace = documentData['birthPlace'];
+        isLoggedIN = true;
+        isAdmin = documentData['admin'];
+        isMedcin = documentData['medcin'];
+        isPharmacie = documentData['pharmacien'];
+        Provider.of<LoginControllerProvider>(context, listen: false)
+            .loginStreamController
+            .add(isLoggedIN);
       } else {
-        DocumentDATA = {};
-
-        ///wrong password
+        // Incorrect password
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Incorrect password. Please try again.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
-
-      print('Is logged in : ' + isLoggedIN.toString());
-      print(DocumentDATA);
-      // print(inputPassword);
-      // print(DocumentDATA['name']);
-      // print(dateDeNaissance);
     } on Error catch (e) {
-      print(e);
+      print('Error during login: $e');
     }
-
-    ///version 9dima
-    // QuerySnapshot querySnapshot = await collection
-    //     .where('IDN', isEqualTo: IdController.text.trim())
-    //     .get();
-    // data?.addAll(querySnapshot.docs);
-    // setState(() {});
-    // print(data?.length);
-    // var infos = data?[0].data() as Map<String, dynamic>;
-    // print(infos['password']);
+    print('Is logged in : $isLoggedIN');
+    print('Document data: $documentData');
   }
 
   @override
@@ -183,11 +192,11 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Form(
-                      key: _formkey,
+                      key: _formKey,
                       child: Column(
                         children: [
                           MyTextForm(
-                            controller: IdController,
+                            controller: _idController,
                             hintText: "Numéro de Carte National",
                             obscureText: false,
                             keyboardType: TextInputType.phone,
@@ -205,9 +214,9 @@ class _LoginPageState extends State<LoginPage> {
                                     ? 'This field cannot be empty'
                                     : null,
 
-                                controller: PasswordController,
+                                controller: _passwordController,
                                 keyboardType: TextInputType.visiblePassword,
-                                obscureText: _IsObsecure,
+                                obscureText: _isObsecure,
                                 cursorColor: SihhaGreen1,
                                 // textAlign: TextAlign.justify,
 
@@ -218,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                                     floatingLabelStyle:
                                         TextStyle(color: SihhaGreen3),
                                     suffixIcon: IconButton(
-                                      icon: _IsObsecure
+                                      icon: _isObsecure
                                           ? Icon(
                                               Icons.visibility_off_outlined,
                                               color:
@@ -233,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                       onPressed: () {
                                         setState(() {
-                                          _IsObsecure = !_IsObsecure;
+                                          _isObsecure = !_isObsecure;
                                         });
                                       },
                                     ),
@@ -284,7 +293,10 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 40),
                   MyButton(
                     onPressed: () {
-                      login(widget.loginStreamController);
+                      Provider.of<LoginControllerProvider>(context,
+                              listen: false)
+                          .login(_idController.text, _passwordController.text,
+                              context);
                     },
                     //signUserIn,
                     buttonText: "Se connecter",

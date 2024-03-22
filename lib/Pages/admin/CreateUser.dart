@@ -1,13 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:sahha_app/Common/MyBackButton.dart';
 import 'package:sahha_app/Common/Variables.dart';
 import 'package:sahha_app/Pages/HomeBody.dart';
 
 class CreateUser extends StatelessWidget {
-  final StreamController<bool> loginStreamController;
-  const CreateUser({super.key, required this.loginStreamController});
+  const CreateUser({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +19,11 @@ class CreateUser extends StatelessWidget {
           style: SihhaPoppins3,
         ),
         leading: MyBackButton(
-          OnTapFunction: () {
+          onTapFunction: () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    HomeBody(loginStreamController: loginStreamController),
+                builder: (context) => HomeBody(),
               ),
             );
           },
