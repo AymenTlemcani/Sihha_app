@@ -223,10 +223,10 @@ class _LoginPageState extends State<LoginPage> {
 
                                 decoration: InputDecoration(
                                     labelText: "Mot de passe",
-                                    labelStyle: TextStyle(
+                                    labelStyle: GoogleFonts.poppins(
                                         color: Colors.grey[400], fontSize: 14),
                                     floatingLabelStyle:
-                                        TextStyle(color: SihhaGreen3),
+                                        GoogleFonts.poppins(color: SihhaGreen3),
                                     suffixIcon: IconButton(
                                       icon: _isObsecure
                                           ? Icon(

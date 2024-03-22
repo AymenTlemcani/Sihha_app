@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyTextForm extends StatefulWidget {
   final String hintText;
@@ -37,9 +38,10 @@ class _MyTextFormState extends State<MyTextForm> {
 
           decoration: InputDecoration(
               labelText: widget.hintText,
-              labelStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+              labelStyle:
+                  GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
               floatingLabelStyle:
-                  TextStyle(color: Color.fromARGB(255, 49, 143, 99)),
+                  GoogleFonts.poppins(color: Color.fromARGB(255, 49, 143, 99)),
               // suffixIcon: Visibility(
               //     child: IconButton(
               //       icon: obscureText

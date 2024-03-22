@@ -145,9 +145,18 @@ class _HomeBodyState extends State<HomeBody> {
   Widget WrapAccesRapide() {
     return Material(
       color: Colors.white,
-      child: Wrap(alignment: WrapAlignment.center, children: tiles
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Wrap(
+          // alignment: WrapAlignment.center,
+          alignment: WrapAlignment.start,
+          runAlignment: WrapAlignment.center,
+
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: tiles,
           // tiles.map((tile) => tile.build(context)).toList(),
-          ),
+        ),
+      ),
     );
   }
 
@@ -194,93 +203,36 @@ class _HomeBodyState extends State<HomeBody> {
             fit: BoxFit.fill,
           )),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        //Row of the picture
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 45, 0, 0),
-              child: InkWell(
-                onTap: () {
-                  print("User Pressed on Profile");
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Profile(),
-                    ),
-                  );
-                },
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    // CupertinoIcons.person_fill,
-                    LineAwesomeIcons.user_tie,
-                    color: SihhaGreen2,
-                    size: 29,
-                  ),
-                  radius: 24,
-                ),
-              ),
-            ),
-            // SizedBox(width: MediaQuery.sizeOf(context).width - 160),
-            // Transform.translate(
-            //     offset: Offset(MediaQuery.sizeOf(context).width - 160, 30),
-            //     child: SvgPicture.asset(
-            //       "assets/svg-cropped.svg",
-            //       height: 60,
-            //     )),
-          ],
+        firstRowProfileButtonAndLogo(),
+
+        SizedBox(
+          height: 20,
         ),
 
-        // 2nd row fih logo and language selector
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Transform.translate(
-                offset: Offset(-30, -30),
-                child: SvgPicture.asset(
-                  "assets/svg-cropped.svg",
-                  height: 60,
-                )),
-          ],
+        Padding(
+          padding: const EdgeInsets.fromLTRB(40, 10, 5, 5),
+          child: Text('Bienvenu,',
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black,
+                  fontSize: 25)),
         ),
 
-        Transform.translate(
-          offset: Offset(0, -40),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(40, 0, 0, 0),
-            child: Text('Bienvenu,',
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
-                    fontSize: 25)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(40, 5, 5, 30),
+          child: Row(
+            children: [
+              modeMedcin || modePharmacie
+                  ? Text('Dr. ', style: SihhaPoppins2)
+                  : Text(sexe == 'male' ? 'M. ' : 'Mme. ',
+                      style: SihhaPoppins2),
+              Text(
+                  name == null
+                      ? 'userName'.toUpperCase()
+                      : '${familyName} ${name!.split(' ')[0]}',
+                  style: SihhaPoppins2),
+            ],
           ),
-        ),
-
-        Row(
-          children: [
-            Transform.translate(
-              offset: Offset(0, -30),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(40, 0, 0, 0),
-                child: modeMedcin || modePharmacie
-                    ? Text('Dr.', style: SihhaPoppins2)
-                    : Text(sexe == 'male' ? 'M.' : 'Mme.',
-                        style: SihhaPoppins2),
-              ),
-            ),
-            Transform.translate(
-              offset: Offset(0, -30),
-              child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  child: Text(
-                      name == null
-                          ? 'userName'.toUpperCase()
-                          : '${familyName} ${name!.split(' ')[0]}',
-                      style: SihhaPoppins2)),
-            ),
-          ],
         ),
 
         // Row(
@@ -291,6 +243,47 @@ class _HomeBodyState extends State<HomeBody> {
         //   ],
         // ),
       ]),
+    );
+  }
+
+  Row firstRowProfileButtonAndLogo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 45, 0, 0),
+          child: InkWell(
+            onTap: () {
+              print("User Pressed on Profile");
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Profile(),
+                ),
+              );
+            },
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Icon(
+                // CupertinoIcons.person_fill,
+                LineAwesomeIcons.user_tie,
+                color: SihhaGreen2,
+                size: 29,
+              ),
+              radius: 24,
+            ),
+          ),
+        ),
+        Spacer(
+          flex: 1,
+        ),
+        Transform.translate(
+            offset: Offset(-35, 40),
+            child: SvgPicture.asset(
+              "assets/svg-cropped.svg",
+              height: 70,
+            )),
+      ],
     );
   }
 }
