@@ -41,7 +41,57 @@ class LoginControllerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(String id, String password, BuildContext context) async {
+  // Future<void> login(String id, String password, BuildContext context) async {
+  //   String inputPassword = password.trim();
+  //   Map<String, dynamic>? documentData;
+
+  //   try {
+  //     var allDocs = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .where('IDN', isEqualTo: id.trim())
+  //         .where('password', isEqualTo: password.trim())
+  //         .get();
+  //     documentData = allDocs.docs.first.data();
+  //     if (inputPassword == documentData['password']) {
+  //       // After successful login, update user information
+  //       updateUserInformation(
+  //         id: documentData['IDN'],
+  //         familyNameProvider: documentData['familyName'],
+  //         nameProvider: documentData['name'],
+  //         sexeProvider: documentData['sexe'],
+  //         birthDayProvider: documentData['birthDay'],
+  //         birthMonthProvider: documentData['birthMonth'],
+  //         birthYearProvider: documentData['birthYear'],
+  //         birthPlaceProvider: documentData['birthPlace'],
+  //         isAdminProvider: documentData['isAdmin'],
+  //         isMedcinProvider: documentData['isMedcin'],
+  //         isPharmacieProvider: documentData['isPharmacien'],
+  //       );
+
+  //       // Set login status
+  //       Provider.of<LoginControllerProvider>(context, listen: false)
+  //           .loginStreamController
+  //           .add(true);
+  //       // Notify listeners of the change in login status
+  //       notifyListeners();
+  //     } else {
+  //       // Incorrect password
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Incorrect password. Please try again.'),
+  //           duration: Duration(seconds: 3),
+  //         ),
+  //       );
+  //     }
+  //   } on Error catch (e) {
+  //     print('Error during login: $e');
+  //   }
+  //   // Print debug information
+  //   print('Is logged in : $isLoggedIN');
+  //   print('Document data: $documentData');
+  // }
+  Future<String?> login(
+      String id, String password, BuildContext context) async {
     String inputPassword = password.trim();
     Map<String, dynamic>? documentData;
 
@@ -49,8 +99,12 @@ class LoginControllerProvider extends ChangeNotifier {
       var allDocs = await FirebaseFirestore.instance
           .collection('users')
           .where('IDN', isEqualTo: id.trim())
-          .where('password', isEqualTo: password.trim())
+          // .where('password', isEqualTo: password.trim())
           .get();
+      if (allDocs.docs.isEmpty) {
+        return 'User not found. Please check your ID and password.';
+      }
+
       documentData = allDocs.docs.first.data();
       if (inputPassword == documentData['password']) {
         // After successful login, update user information
@@ -74,21 +128,17 @@ class LoginControllerProvider extends ChangeNotifier {
             .add(true);
         // Notify listeners of the change in login status
         notifyListeners();
+        print('Login successful. User: ${documentData['name']}');
+        return null; // No error message if login is successful
       } else {
         // Incorrect password
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Incorrect password. Please try again.'),
-            duration: Duration(seconds: 3),
-          ),
-        );
+        print('Incorrect password for user ID: $id');
+        return 'Incorrect password. Please try again.';
       }
-    } on Error catch (e) {
+    } catch (e) {
       print('Error during login: $e');
+      return 'An error occurred. Please try again later.';
     }
-    // Print debug information
-    print('Is logged in : $isLoggedIN');
-    print('Document data: $documentData');
   }
 
   void logout() {
