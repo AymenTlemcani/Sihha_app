@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart'; // Import Provider
 import 'package:sahha_app/Common/Variables.dart';
-import 'package:sahha_app/Pages/AuthPage.dart';
+import 'package:sahha_app/Pages/user/AuthPage.dart';
 import 'package:sahha_app/Providers/LoginControllerProvider.dart';
 import 'package:sahha_app/firebase_options.dart';
 

@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sahha_app/Common/Variables.dart';
-import 'package:sahha_app/Pages/CardPage.dart';
-import 'package:sahha_app/Pages/FamilyPage.dart';
-import 'package:sahha_app/Pages/HomeBody.dart';
+
+import 'package:sahha_app/Pages/user/CardPage.dart';
+import 'package:sahha_app/Pages/user/FamilyPage.dart';
+import 'package:sahha_app/Pages/user/HomeBody.dart';
 
 class PersistentTabSreen extends StatefulWidget {
   const PersistentTabSreen({

@@ -15,7 +15,7 @@ String? IDN;
 String? familyName;
 String? name;
 String? birthPlace;
-String? sexe;
+String? gender;
 // String? dateDeNaissance;
 // String? lieuDeNaissance;
 String? adresse;

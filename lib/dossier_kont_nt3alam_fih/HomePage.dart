@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:sahha_app/Pages/CardPage.dart';
-import 'package:sahha_app/Pages/DossierMedicalPage.dart';
-import 'package:sahha_app/Pages/FamilyPage.dart';
+import 'package:sahha_app/Pages/user/CardPage.dart';
+import 'package:sahha_app/Pages/user/DossierMedicalPage.dart';
+import 'package:sahha_app/Pages/user/FamilyPage.dart';
 import 'package:sahha_app/dossier_kont_nt3alam_fih/ProfilePage.dart';
 
 class HomePage extends StatefulWidget {

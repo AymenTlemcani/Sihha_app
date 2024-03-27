@@ -15,7 +15,7 @@ class LoginControllerProvider extends ChangeNotifier {
     required String id,
     required String familyNameProvider,
     required String nameProvider,
-    required String sexeProvider,
+    required String genderProvider,
     required int birthDayProvider,
     required int birthMonthProvider,
     required int birthYearProvider,
@@ -28,7 +28,7 @@ class LoginControllerProvider extends ChangeNotifier {
     IDN = id;
     familyName = familyNameProvider;
     name = nameProvider;
-    sexe = sexeProvider;
+    gender = genderProvider;
     birthDay = birthDayProvider;
     birthMonth = birthMonthProvider;
     birthYear = birthYearProvider;
@@ -58,7 +58,7 @@ class LoginControllerProvider extends ChangeNotifier {
   //         id: documentData['IDN'],
   //         familyNameProvider: documentData['familyName'],
   //         nameProvider: documentData['name'],
-  //         sexeProvider: documentData['sexe'],
+  //         genderProvider: documentData['gender'],
   //         birthDayProvider: documentData['birthDay'],
   //         birthMonthProvider: documentData['birthMonth'],
   //         birthYearProvider: documentData['birthYear'],
@@ -112,7 +112,7 @@ class LoginControllerProvider extends ChangeNotifier {
           id: documentData['IDN'],
           familyNameProvider: documentData['familyName'],
           nameProvider: documentData['name'],
-          sexeProvider: documentData['sexe'],
+          genderProvider: documentData['gender'],
           birthDayProvider: documentData['birthDay'],
           birthMonthProvider: documentData['birthMonth'],
           birthYearProvider: documentData['birthYear'],
@@ -148,7 +148,7 @@ class LoginControllerProvider extends ChangeNotifier {
     IDN = null;
     familyName = null;
     name = null;
-    sexe = null;
+    gender = null;
     birthDay = null;
     birthMonth = null;
     birthYear = null;

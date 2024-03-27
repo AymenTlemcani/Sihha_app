@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -241,12 +241,17 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+// TODO : add id history to show the id next time the user signs in again
   MyTextForm IDtextForm() {
     return MyTextForm(
       controller: _idController,
       hintText: "Numéro de Carte National",
       obscureText: false,
       keyboardType: TextInputType.phone,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(18),
+      ],
       validator: (value) {
         if (value!.isEmpty) {
           return 'Veuillez entrer votre numéro de carte national';
@@ -277,6 +282,9 @@ class _LoginPageState extends State<LoginPage> {
             }
             return null;
           },
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+          ),
           controller: _passwordController,
           keyboardType: TextInputType.visiblePassword,
           obscureText: _isObsecure,

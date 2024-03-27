@@ -5,8 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/Common/MyTile.dart';
 import 'package:sahha_app/Common/Variables.dart';
-import 'package:sahha_app/Pages/Profile.dart';
 import 'package:sahha_app/Pages/admin/CreateUser.dart';
+import 'package:sahha_app/Pages/services/QR_scanner_Page.dart';
+import 'package:sahha_app/Pages/user/Profile.dart';
 // Import your custom ListViewTile widget
 
 class HomeBody extends StatefulWidget {
@@ -19,23 +20,58 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
-  List<MyTile> tiles = [
+  List<Widget> tiles = [
     // List of MyTile widgets here
-    MyTile(
-      icon: LineAwesomeIcons.user_plus,
-      title: 'Créer un compte',
-      iconColor: SihhaGreen2,
-      itemColor1: SihhaGreen1.withOpacity(0.18),
-      smallCircleColor1: Colors.white,
-      onTapFunction: (BuildContext context) {
-        print('user tapped create an account');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CreateUser(),
-          ),
-        );
-      },
+    Visibility(
+      //FIXME add mode Admin Toggle and remove isAdmin
+      visible: isAdmin || modeAdmin,
+      child: MyTile(
+        icon: LineAwesomeIcons.user_plus,
+        title: 'Créer un compte',
+        iconColor: SihhaGreen2,
+        itemColor1: SihhaGreen1.withOpacity(0.18),
+        smallCircleColor1: Colors.white,
+        onTapFunction: (BuildContext context) {
+          print('user tapped create an account');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateUser(),
+            ),
+          );
+        },
+      ),
+    ),
+    Visibility(
+      visible: isAdmin || modeAdmin || isMedcin,
+      child: MyTile(
+        icon: LineAwesomeIcons.qrcode,
+        title: 'Scanner un Code QR',
+        iconColor: SihhaGreen2,
+        itemColor1: SihhaGreen1.withOpacity(0.18),
+        smallCircleColor1: Colors.white,
+        onTapFunction: (p0) {},
+        // (BuildContext context) {
+        //   print('user tapped Qr Scanner');
+        //   Navigator.pushReplacement(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => QRCodeScannerPage(),
+        //     ),
+        //   );
+        // },
+      ),
+    ),
+    Visibility(
+      visible: isAdmin || modeAdmin,
+      child: MyTile(
+        icon: LineAwesomeIcons.user_edit,
+        title: 'Modifier un compte',
+        iconColor: SihhaGreen2,
+        itemColor1: SihhaGreen1.withOpacity(0.18),
+        smallCircleColor1: Colors.white,
+        onTapFunction: (BuildContext context) {},
+      ),
     ),
     MyTile(
       icon: LineAwesomeIcons.laptop_code,
@@ -224,7 +260,7 @@ class _HomeBodyState extends State<HomeBody> {
             children: [
               modeMedcin || modePharmacie
                   ? Text('Dr. ', style: SihhaPoppins2)
-                  : Text(sexe == 'male' ? 'M. ' : 'Mme. ',
+                  : Text(gender == 'male' ? 'M. ' : 'Mme. ',
                       style: SihhaPoppins2),
               Text(
                   name == null

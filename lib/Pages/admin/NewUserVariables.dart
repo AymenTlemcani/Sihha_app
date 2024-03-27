@@ -8,7 +8,7 @@ String? newPassword;
 String? newFamilyName;
 String? newName;
 String? newBirthPlace;
-String? newSexe;
+String? newgender;
 String? newAdresse;
 
 int? newBirthDay;

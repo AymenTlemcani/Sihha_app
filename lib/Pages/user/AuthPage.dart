@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sahha_app/Common/Variables.dart';
-
-import 'package:sahha_app/Pages/ActiveScreen.dart';
+import 'package:sahha_app/Pages/user/ActiveScreen.dart';
+import 'package:sahha_app/Pages/user/LoginPage.dart';
 import 'package:sahha_app/Providers/LoginControllerProvider.dart';
-import 'package:sahha_app/Pages/LoginPage.dart';
 
 class AuthPage extends StatefulWidget {
   AuthPage({Key? key}) : super(key: key);

@@ -81,9 +81,10 @@ class MyTile extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
           child: Text(
             title,
+            textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w400,
               color: titleColor1 ?? titleColor,
