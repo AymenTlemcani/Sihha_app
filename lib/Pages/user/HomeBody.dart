@@ -1,14 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:sahha_app/Common/MyTile.dart';
-import 'package:sahha_app/Common/Variables.dart';
+import 'package:sahha_app/CommonWidgets/MyTile.dart';
+import 'package:sahha_app/utils/Variables.dart';
 import 'package:sahha_app/Pages/admin/CreateUser.dart';
-import 'package:sahha_app/Pages/services/QR_scanner_Page.dart';
+import 'package:sahha_app/Pages/services/ScanQR.dart';
 import 'package:sahha_app/Pages/user/Profile.dart';
-// Import your custom ListViewTile widget
 
 class HomeBody extends StatefulWidget {
   HomeBody({
@@ -27,13 +27,13 @@ class _HomeBodyState extends State<HomeBody> {
       visible: isAdmin || modeAdmin,
       child: MyTile(
         icon: LineAwesomeIcons.user_plus,
-        title: 'Créer un compte',
+        title: 'Créer un\n compte',
         iconColor: SihhaGreen2,
         itemColor1: SihhaGreen1.withOpacity(0.18),
         smallCircleColor1: Colors.white,
         onTapFunction: (BuildContext context) {
           print('user tapped create an account');
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => CreateUser(),
@@ -50,16 +50,15 @@ class _HomeBodyState extends State<HomeBody> {
         iconColor: SihhaGreen2,
         itemColor1: SihhaGreen1.withOpacity(0.18),
         smallCircleColor1: Colors.white,
-        onTapFunction: (p0) {},
-        // (BuildContext context) {
-        //   print('user tapped Qr Scanner');
-        //   Navigator.pushReplacement(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => QRCodeScannerPage(),
-        //     ),
-        //   );
-        // },
+        onTapFunction: (BuildContext context) {
+          print('user tapped Qr Scanner');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QRCodeScannerPage(),
+            ),
+          );
+        },
       ),
     ),
     Visibility(
@@ -291,22 +290,42 @@ class _HomeBodyState extends State<HomeBody> {
           child: InkWell(
             onTap: () {
               print("User Pressed on Profile");
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => Profile(),
                 ),
               );
             },
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(
-                // CupertinoIcons.person_fill,
-                LineAwesomeIcons.user_tie,
-                color: SihhaGreen2,
-                size: 29,
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    )
+                  ]),
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 24,
+                child: profilePicUrl == ''
+                    ? Icon(
+                        CupertinoIcons.person,
+                        // LineAwesomeIcons.user_tie,
+                        color: SihhaGreen2,
+                        size: 29,
+                      )
+                    : SizedBox(
+                        width: 43,
+                        height: 43,
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.network(profilePicUrl!,
+                                fit: BoxFit.cover)),
+                      ),
               ),
-              radius: 24,
             ),
           ),
         ),

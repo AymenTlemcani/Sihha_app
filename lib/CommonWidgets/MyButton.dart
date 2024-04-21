@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:sahha_app/Common/Variables.dart';
+import 'package:sahha_app/utils/Variables.dart';
 
 class MyButton extends StatelessWidget {
   final VoidCallback? onPressed;

@@ -16,14 +16,16 @@ String? familyName;
 String? name;
 String? birthPlace;
 String? gender;
-// String? dateDeNaissance;
-// String? lieuDeNaissance;
 String? adresse;
 int? ageUser;
 int? birthDay;
 int? birthMonth;
 int? birthYear;
 int? telephone;
+
+String? profilePicUrl = '';
+String? bio = '';
+String? documentId;
 
 ///COLOR PALLETE
 HexColor SihhaGreen1 = HexColor("6dcea1");

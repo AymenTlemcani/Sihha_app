@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sahha_app/Common/Variables.dart';
+import 'package:sahha_app/utils/Variables.dart';
 
 class FamilyPage extends StatefulWidget {
   const FamilyPage({super.key});

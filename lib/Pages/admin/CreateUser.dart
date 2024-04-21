@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:sahha_app/Common/MyBackButton.dart';
-import 'package:sahha_app/Common/Variables.dart';
-import 'package:sahha_app/Common/MyTextForm.dart';
-import 'package:sahha_app/Common/MyButton.dart';
+import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
+import 'package:sahha_app/utils/Variables.dart';
+import 'package:sahha_app/CommonWidgets/MyTextForm.dart';
+import 'package:sahha_app/CommonWidgets/MyButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';
 
@@ -335,7 +335,7 @@ class _CreateUserState extends State<CreateUser> {
                     int birthMonthNewUser =
                         int.parse(_birthMonthController.text);
                     int birthYearNewUser = int.parse(_birthYearController.text);
-                    int telephoneNewUser = int.parse(_telephoneController.text);
+                    String telephoneNewUser = _telephoneController.text;
 
                     // Upload data to Firestore
                     FirebaseFirestore.instance.collection('users').add({
@@ -353,6 +353,8 @@ class _CreateUserState extends State<CreateUser> {
                       'isPharmacien': newIsPharmacie,
                       'isMedcin': newIsMedcin,
                       'isAdmin': newIsAdmin,
+                      'bio': '',
+                      'profilePicUrl': '',
                     }).then((value) {
                       print(value.id);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -482,7 +484,7 @@ class _CreateUserState extends State<CreateUser> {
         ),
         leading: MyBackButton(
           onTapFunction: () {
-            Navigator.pushReplacement(
+            Navigator.pop(
               context,
               MaterialPageRoute(
                 builder: (context) => HomeBody(),

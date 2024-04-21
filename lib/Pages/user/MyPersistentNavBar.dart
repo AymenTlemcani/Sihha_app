@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:sahha_app/Common/Variables.dart';
+import 'package:sahha_app/utils/Variables.dart';
 
 import 'package:sahha_app/Pages/user/CardPage.dart';
 import 'package:sahha_app/Pages/user/FamilyPage.dart';

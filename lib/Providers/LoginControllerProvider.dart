@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sahha_app/Common/Variables.dart';
+import 'package:sahha_app/utils/Variables.dart';
 
 class LoginControllerProvider extends ChangeNotifier {
   final StreamController<bool> loginStreamController;
@@ -11,19 +11,20 @@ class LoginControllerProvider extends ChangeNotifier {
     required this.loginStreamController,
   });
 
-  void updateUserInformation({
-    required String id,
-    required String familyNameProvider,
-    required String nameProvider,
-    required String genderProvider,
-    required int birthDayProvider,
-    required int birthMonthProvider,
-    required int birthYearProvider,
-    required String birthPlaceProvider,
-    required bool isAdminProvider,
-    required bool isMedcinProvider,
-    required bool isPharmacieProvider,
-  }) {
+  void updateUserInformation(
+      {required String id,
+      required String familyNameProvider,
+      required String nameProvider,
+      required String genderProvider,
+      required int birthDayProvider,
+      required int birthMonthProvider,
+      required int birthYearProvider,
+      required String birthPlaceProvider,
+      required bool isAdminProvider,
+      required bool isMedcinProvider,
+      required bool isPharmacieProvider,
+      String? profilePicUrlProvider,
+      String? bioProvider}) {
     // Update global variables using the provider variables
     IDN = id;
     familyName = familyNameProvider;
@@ -36,6 +37,8 @@ class LoginControllerProvider extends ChangeNotifier {
     isAdmin = isAdminProvider;
     isMedcin = isMedcinProvider;
     isPharmacie = isPharmacieProvider;
+    profilePicUrl = profilePicUrlProvider;
+    bio = bioProvider;
 
     // Notify listeners that user information has been updated
     notifyListeners();
@@ -104,7 +107,7 @@ class LoginControllerProvider extends ChangeNotifier {
       if (allDocs.docs.isEmpty) {
         return 'User not found. Please check your ID and password.';
       }
-
+      documentId = allDocs.docs.first.id;
       documentData = allDocs.docs.first.data();
       if (inputPassword == documentData['password']) {
         // After successful login, update user information
@@ -120,6 +123,8 @@ class LoginControllerProvider extends ChangeNotifier {
           isAdminProvider: documentData['isAdmin'],
           isMedcinProvider: documentData['isMedcin'],
           isPharmacieProvider: documentData['isPharmacien'],
+          profilePicUrlProvider: documentData['profilePicUrl'],
+          bioProvider: documentData['bio'],
         );
 
         // Set login status
@@ -145,6 +150,9 @@ class LoginControllerProvider extends ChangeNotifier {
     // Reset user-related variables
     isLoggedIN = false;
     modeAdmin = false;
+    modePharmacie = false;
+    modeMedcin = false;
+    documentId = null;
     IDN = null;
     familyName = null;
     name = null;
@@ -156,6 +164,8 @@ class LoginControllerProvider extends ChangeNotifier {
     isAdmin = false;
     isMedcin = false;
     isPharmacie = false;
+    profilePicUrl = null;
+    bio = null;
 
     // Notify listeners to update UI
     loginStreamController.add(false);
