@@ -4,6 +4,7 @@ import 'package:hexcolor/hexcolor.dart';
 
 class MyTile extends StatelessWidget {
   final String title;
+
   final HexColor? titleColor;
   final HexColor? itemColor;
   final HexColor? smallCircleColor;
@@ -48,7 +49,8 @@ class MyTile extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(1.0),
           child: Container(
-            width: 160,
+            width: 145,
+            height: 145,
             decoration: BoxDecoration(
               color: itemColor ?? itemColor1,
               borderRadius: BorderRadius.circular(30),

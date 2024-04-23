@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:sahha_app/Pages/user/MedicalPage.dart';
 import 'package:sahha_app/utils/Variables.dart';
 
 import 'package:sahha_app/Pages/user/CardPage.dart';
@@ -29,7 +30,7 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
     return [
       HomeBody(),
       CardPage(),
-      // DossierMedicalPage(),
+      MedicalPage(),
       FamilyPage(),
       // Profile(),
       // ProfilePage(),
@@ -59,15 +60,15 @@ class _PersistentTabSreenState extends State<PersistentTabSreen> {
           activeColorPrimary: SihhaGreen1,
           inactiveColorPrimary: CupertinoColors.systemGrey,
           textStyle: textstyle),
-      /*PersistentBottomNavBarItem(
+      PersistentBottomNavBarItem(
           icon: Icon(CupertinoIcons.heart_fill),
 
           // SvgPicture.asset("assets/Icons/heart.svg"),
           inactiveIcon: Icon(CupertinoIcons.heart),
-          title: ("Medical"),
+          title: ("Médical"),
           activeColorPrimary: SihhaGreen1,
           inactiveColorPrimary: CupertinoColors.systemGrey,
-          textStyle: textstyle),*/
+          textStyle: textstyle),
       PersistentBottomNavBarItem(
           icon: Icon(CupertinoIcons.person_3_fill),
           // SvgPicture.asset("assets/Icons/Users.svg"),

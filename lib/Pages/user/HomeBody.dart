@@ -5,9 +5,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
+import 'package:sahha_app/Pages/services/DossierMedical.dart';
+import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
 import 'package:sahha_app/utils/Variables.dart';
 import 'package:sahha_app/Pages/admin/CreateUser.dart';
-import 'package:sahha_app/Pages/services/ScanQR.dart';
+
 import 'package:sahha_app/Pages/user/Profile.dart';
 
 class HomeBody extends StatefulWidget {
@@ -61,6 +63,22 @@ class _HomeBodyState extends State<HomeBody> {
         },
       ),
     ),
+    MyTile(
+      icon: LineAwesomeIcons.heartbeat,
+      title: 'Dossier Medical',
+      iconColor: SihhaGreen2,
+      itemColor1: SihhaGreen1.withOpacity(0.18),
+      smallCircleColor1: Colors.white,
+      onTapFunction: (BuildContext context) {
+        print('user tapped Dossier Medical');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DossierMedical(),
+          ),
+        );
+      },
+    ),
     Visibility(
       visible: isAdmin || modeAdmin,
       child: MyTile(
@@ -72,6 +90,7 @@ class _HomeBodyState extends State<HomeBody> {
         onTapFunction: (BuildContext context) {},
       ),
     ),
+
     MyTile(
       icon: LineAwesomeIcons.laptop_code,
       title: 'item1',

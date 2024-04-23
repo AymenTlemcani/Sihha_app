@@ -50,9 +50,9 @@ dependencies:
   pretty_qr_code: ^3.3.0
   image_picker: ^1.0.7
   firebase_storage: ^11.6.9
+  shared_preferences: ^2.2.3
 
   # # auth0_flutter: ^1.5.0
-  # provider: ^6.1.2
   # dio: ^5.4.1
   # toast: ^0.3.0
   # flutter_secure_storage: ^9.0.0
@@ -63,8 +63,9 @@ flutter_native_splash:
   ios: true
   web: false
   # background_image: "assets/SplashScreen.png"
-  background_image: "assets/SplashScreenBackGround.png"
-  image: "assets/AppLogo2.png"
+  # background_image: "assets/SplashScreenBackGround.png"
+  image: "assets/500.png"
+  color: "#ffffff"
 
 dev_dependencies:
   flutter_test:

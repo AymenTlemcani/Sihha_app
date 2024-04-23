@@ -32,7 +32,8 @@ HexColor SihhaGreen1 = HexColor("6dcea1");
 HexColor SihhaGreen2 = HexColor("509776");
 HexColor SihhaGreen3 = HexColor("318f63");
 // HexColor SihhaGreyBackgroundColor = HexColor("f2f2f2");
-HexColor SihhaGreyBackgroundColor = HexColor("f8f8f8");
+HexColor SihhaGreyBackgroundColor1 = HexColor("f2f2f6");
+HexColor SihhaGreyBackgroundColor2 = HexColor("f8f8f8");
 
 TextStyle SihhaTextStyleH1 = GoogleFonts.sarabun(
     color: const Color.fromARGB(255, 12, 12, 12),
@@ -46,6 +47,8 @@ TextStyle SihhaTextStyleH3 = GoogleFonts.sarabun(
     color: const Color.fromARGB(255, 12, 12, 12), fontWeight: FontWeight.w300);
 
 ///
+TextStyle SihhaPoppins1 = GoogleFonts.poppins(
+    color: Colors.black, fontWeight: FontWeight.w500, fontSize: 28);
 TextStyle SihhaPoppins2 = GoogleFonts.poppins(
     color: Colors.black, fontWeight: FontWeight.w500, fontSize: 25);
 

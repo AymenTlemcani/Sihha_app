@@ -12,7 +12,7 @@ class _FamilyPageState extends State<FamilyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SihhaGreyBackgroundColor,
+      backgroundColor: SihhaGreyBackgroundColor1,
       body: Center(child: Text("Family")),
     );
   }
