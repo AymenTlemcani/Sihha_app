@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:sahha_app/Pages/user/CardPage.dart';
-import 'package:sahha_app/Pages/user/MedicalPage.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/MedicalPage.dart';
 import 'package:sahha_app/Pages/user/FamilyPage.dart';
 import 'package:sahha_app/dossier_kont_nt3alam_fih/ProfilePage.dart';
 

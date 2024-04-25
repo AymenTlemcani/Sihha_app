@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sahha_app/Models/Variables.dart';
-import 'package:sahha_app/Pages/user/MedicalPage.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/MedicalPage.dart';
 import 'package:sahha_app/Pages/user/CardPage.dart';
 import 'package:sahha_app/Pages/user/FamilyPage.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';

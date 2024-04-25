@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:sahha_app/Models/Variables.dart';
-import 'package:sahha_app/Providers/LoginControllerProvider.dart';
 
 class OrdonnancePage extends StatefulWidget {
   const OrdonnancePage({super.key});
@@ -106,16 +104,10 @@ class _OrdonnancePageState extends State<OrdonnancePage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadPrescriptions() async {
-    // 1. Get the current user ID from the LoginControllerProvider
-    final loginControllerProvider =
-        Provider.of<LoginControllerProvider>(context, listen: false);
-    final currentUserID = loginControllerProvider.userId;
-
-    print('currentID is: $currentUserID');
-
-    final query = firestore
-        .collection('ordonnances')
-        .where('iduser', isEqualTo: currentUserID);
+    print('currentID is: $IDN');
+//TODO CHange iduser to IDN
+    final query =
+        firestore.collection('ordonnances').where('iduser', isEqualTo: IDN);
     final querySnapshot = await query.get();
     final filteredPrescriptions =
         querySnapshot.docs.map((doc) => doc.data()).toList();

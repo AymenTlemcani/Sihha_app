@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:sahha_app/Models/Variables.dart';
-import 'package:sahha_app/Providers/LoginControllerProvider.dart';
 
 class OperationsPage extends StatefulWidget {
   const OperationsPage({super.key});
@@ -16,7 +12,6 @@ class OperationsPage extends StatefulWidget {
 
 class _OperationsPageState extends State<OperationsPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final FirebaseAuth auth = FirebaseAuth.instance;
   final List<Map<String, dynamic>> operations =
       []; // Initialize with an empty list
 
@@ -112,16 +107,9 @@ class _OperationsPageState extends State<OperationsPage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadOprations() async {
-    // 1. Get the current user ID from the LoginControllerProvider
-    final loginControllerProvider =
-        Provider.of<LoginControllerProvider>(context, listen: false);
-    final currentUserID = loginControllerProvider.userId;
-
-    print('currentID is: $currentUserID');
-
-    final query = firestore
-        .collection('operations')
-        .where('iduser', isEqualTo: currentUserID);
+    print('currentID is: $IDN');
+    final query =
+        firestore.collection('operations').where('iduser', isEqualTo: IDN);
     final querySnapshot = await query.get();
     final filteredOperations =
         querySnapshot.docs.map((doc) => doc.data()).toList();

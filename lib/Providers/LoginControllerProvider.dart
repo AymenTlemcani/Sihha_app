@@ -10,7 +10,6 @@ class LoginControllerProvider extends ChangeNotifier {
   LoginControllerProvider({
     required this.loginStreamController,
   });
-  String? IDN; // Keep the null safety operator on IDN
 
   String get userId => IDN ?? '';
   void updateUserInformation(

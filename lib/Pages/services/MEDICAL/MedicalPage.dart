@@ -5,10 +5,10 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
-import 'package:sahha_app/Pages/user/yahia/operations_page.dart';
-import 'package:sahha_app/Pages/user/yahia/ordonnaces_page.dart';
-import 'package:sahha_app/Pages/user/yahia/vaccins_page.dart';
-import 'package:sahha_app/Pages/user/yahia/visites_medicales_page.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/operations_page.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/ordonnaces_page.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/vaccins_page.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/visites_medicales_page.dart';
 
 class MedicalPage extends StatefulWidget {
   const MedicalPage({super.key});

@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:sahha_app/Models/Variables.dart';
-import 'package:sahha_app/Providers/LoginControllerProvider.dart';
 
 class VisitesMedicalesPage extends StatefulWidget {
   const VisitesMedicalesPage({super.key});
@@ -15,7 +12,6 @@ class VisitesMedicalesPage extends StatefulWidget {
 
 class _VisitesMedicalesPageState extends State<VisitesMedicalesPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final FirebaseAuth auth = FirebaseAuth.instance;
   final List<Map<String, dynamic>> visits = []; // Initialize with an empty list
 
   @override
@@ -107,20 +103,14 @@ class _VisitesMedicalesPageState extends State<VisitesMedicalesPage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadVisits() async {
-    // 1. Get the current user ID from the LoginControllerProvider
-    final loginControllerProvider =
-        Provider.of<LoginControllerProvider>(context, listen: false);
-    final currentUserID = loginControllerProvider.userId;
-
-    print('currentID is: $currentUserID');
+    print('currentID is: $IDN');
 
     final query = firestore
         .collection('visites_medicales')
-        .where('iduser', isEqualTo: currentUserID);
+        .where('iduser', isEqualTo: IDN);
     final querySnapshot = await query.get();
     final filteredVisits = querySnapshot.docs.map((doc) => doc.data()).toList();
 
-    // 4. Return the filtered list of visits
     return filteredVisits;
   }
 }

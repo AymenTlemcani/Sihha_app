@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:sahha_app/Models/Variables.dart';
-import 'package:sahha_app/Providers/LoginControllerProvider.dart';
 
 class VaccinsPage extends StatefulWidget {
   const VaccinsPage({super.key});
@@ -16,9 +12,8 @@ class VaccinsPage extends StatefulWidget {
 
 class _VaccinsPageState extends State<VaccinsPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final List<Map<String, dynamic>> vaccins =
-      []; // Initialize with an empty list
+  final List<Map<String, dynamic>> vaccins = [];
+  // Initialize with an empty list
 
   @override
   void initState() {
@@ -92,16 +87,10 @@ class _VaccinsPageState extends State<VaccinsPage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadVaccins() async {
-    // 1. Get the current user ID from the LoginControllerProvider
-    final loginControllerProvider =
-        Provider.of<LoginControllerProvider>(context, listen: false);
-    final currentUserID = loginControllerProvider.userId;
+    print('currentID is: $IDN');
 
-    print('currentID is: $currentUserID');
-
-    final query = firestore
-        .collection('vaccins')
-        .where('iduser', isEqualTo: currentUserID);
+    final query =
+        firestore.collection('vaccins').where('iduser', isEqualTo: IDN);
     final querySnapshot = await query.get();
     final filteredVaccins =
         querySnapshot.docs.map((doc) => doc.data()).toList();
