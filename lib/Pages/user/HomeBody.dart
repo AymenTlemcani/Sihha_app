@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:sahha_app/CommonWidgets/MyProfilePicture.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
@@ -166,11 +166,22 @@ class _HomeBodyState extends State<HomeBody> {
 
     // Add other MyTile widgets as needed
   ];
-
+  List<String> prescriptions = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (prescriptions.length < 8) {
+            setState(() {
+              prescriptions.add('(Nom de Medcin) ${prescriptions.length + 1}');
+            });
+          }
+        },
+        tooltip: 'Add Prescription',
+        child: Icon(Icons.add),
+      ),
       body: SingleChildScrollView(
         reverse: false,
         child: Column(
@@ -179,12 +190,96 @@ class _HomeBodyState extends State<HomeBody> {
             AppBarHomePage(),
             SizedBox(height: 20),
             Titre('Accés rapide'),
-
             // Use either ListView or Wrap 3la 7sab lplatform
             _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
             SizedBox(height: 10),
-            Titre('Les ordonnances')
+            Titre('Les ordonnances'),
+            OrdonnancesListView(),
           ],
+        ),
+      ),
+    );
+  }
+
+  Padding OrdonnancesListView() {
+    int totalPrescriptions = prescriptions.length;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: SihhaGreen1.withOpacity(0.18),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(), // Disable scrolling
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: prescriptions.asMap().entries.map((entry) {
+                int index = entry.key;
+                String prescription = entry.value;
+                return Ordonnance(prescription, index, totalPrescriptions);
+              }).toList(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget Ordonnance(String prescription, int index, int totalPrescriptions) {
+    return Column(
+      children: [
+        Container(
+          height: 70,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: MyProfilePicture(URL: profilePicUrl, radius: 20),
+              ),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      prescription,
+                      style: GoogleFonts.poppins(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                          letterSpacing: 1.3),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+        if (index == totalPrescriptions - 1) SizedBox(height: 10),
+        if (index < totalPrescriptions - 1) // Check if it's not the last item
+          Divider(
+            endIndent: 10,
+            indent: 60,
+            thickness: 0.4,
+          )
+      ],
+    );
+  }
+
+  ListTile OrdonnanceNoDetails(String prescription) {
+    return ListTile(
+      leading: MyProfilePicture(
+        URL: profilePicUrl,
+        radius: 20,
+      ),
+      title: Text(
+        prescription,
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          // color: Colors.black54,
         ),
       ),
     );
@@ -316,47 +411,24 @@ class _HomeBodyState extends State<HomeBody> {
                 ),
               );
             },
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 6,
-                      offset: Offset(0, 2),
-                    )
-                  ]),
-              child: CircleAvatar(
-                backgroundColor: Colors.white,
+            child: MyProfilePicture(
+                URL: profilePicUrl,
                 radius: 24,
-                child: profilePicUrl == ''
-                    ? Icon(
-                        CupertinoIcons.person,
-                        // LineAwesomeIcons.user_tie,
-                        color: SihhaGreen2,
-                        size: 29,
-                      )
-                    : SizedBox(
-                        width: 43,
-                        height: 43,
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.network(profilePicUrl!,
-                                fit: BoxFit.cover)),
-                      ),
-              ),
-            ),
+                ImageHeight: 43,
+                ImageWidth: 43,
+                borderColor: Colors.white),
           ),
         ),
         Spacer(
           flex: 1,
         ),
         Transform.translate(
-            offset: Offset(-35, 40),
-            child: SvgPicture.asset(
-              "assets/svg-cropped.svg",
-              height: 70,
-            )),
+          offset: Offset(-35, 40),
+          child: SvgPicture.asset(
+            "assets/svg-cropped.svg",
+            height: 70,
+          ),
+        ),
       ],
     );
   }

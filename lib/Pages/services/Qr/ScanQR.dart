@@ -4,9 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
+import 'package:sahha_app/Models/Patient.dart';
 import 'package:sahha_app/Pages/services/Qr/OverlayQR.dart';
 import 'package:sahha_app/utils/Variables.dart';
-import 'package:sahha_app/utils/Patient.dart';
 
 import 'package:sahha_app/Pages/user/PatientPage.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';

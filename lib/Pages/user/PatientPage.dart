@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
+import 'package:sahha_app/Models/Patient.dart';
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
 import 'package:sahha_app/utils/Variables.dart';
-import 'package:sahha_app/utils/Patient.dart';
 
 class PatientPage extends StatefulWidget {
   final Patient? patient;

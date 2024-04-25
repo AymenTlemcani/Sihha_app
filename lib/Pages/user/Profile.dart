@@ -55,104 +55,7 @@ class _ProfileState extends State<Profile> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // -- IMAGE
-              Stack(
-                children: [
-                  SizedBox(
-                    width: 120,
-                    height: 120,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: _isUploading
-                          ? Center(
-                              child:
-                                  CircularProgressIndicator(color: SihhaGreen1),
-                            )
-                          : profilePicUrl == ''
-                              ? ColoredBox(
-                                  color: HexColor('e4e6e7'),
-                                  child: Icon(
-                                    CupertinoIcons.person_fill,
-                                    size: 100,
-                                    color: HexColor('aeb4b7'),
-                                  ),
-                                )
-                              : Image.network(profilePicUrl!,
-                                  fit: BoxFit.cover),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: SihhaGreen1.withOpacity(0.85),
-                      ),
-                      child: IconButton(
-                        alignment: Alignment.center,
-                        onPressed: () async {
-                          setState(() {
-                            _isUploading = true; // Show loading indicator
-                          });
-
-                          //Pick the image
-                          ImagePicker imagePicker = ImagePicker();
-                          XFile? pickedFile = await imagePicker.pickImage(
-                              source: ImageSource.gallery);
-                          print('PICKED FILE PATH : ${pickedFile?.path}');
-                          if (pickedFile == null) {
-                            setState(() {
-                              _isUploading = false; // Hide loading indicator
-                            });
-                            return;
-                          }
-
-                          //Get the ref
-                          Reference referenceRoot =
-                              FirebaseStorage.instance.ref();
-                          Reference referenceDirProfilePics =
-                              referenceRoot.child("ProfilePics");
-                          Reference referenceImageToUploaod =
-                              referenceDirProfilePics
-                                  .child("${familyName}_${name}.jpeg");
-
-                          print(documentId.toString());
-
-                          try {
-                            //Upload to Firebase Storage
-                            await referenceImageToUploaod
-                                .putFile(File(pickedFile.path));
-                            // Get the download URL and update it in Firestore Database
-                            profilePicUrl =
-                                await referenceImageToUploaod.getDownloadURL();
-                            print(profilePicUrl);
-                            Map<String, dynamic> dataToUpload = {
-                              'profilePicUrl': profilePicUrl.toString(),
-                            };
-                            //Update User Data in Firestore
-                            await _reference
-                                .doc(documentId)
-                                .update(dataToUpload);
-                          } catch (e) {
-                            print(e);
-                          }
-
-                          setState(() {
-                            _isUploading = false; // Hide loading indicator
-                          });
-                        },
-                        icon: Icon(
-                          LineAwesomeIcons.alternate_pencil,
-                          color: Colors.black,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              ProfilePic2(),
               const SizedBox(height: 15),
               Text(
                 '${familyName} ${name}',
@@ -224,6 +127,207 @@ class _ProfileState extends State<Profile> {
           ),
         ),
       ),
+    );
+  }
+
+  Stack ProfilePic() {
+    return Stack(
+      children: [
+        SizedBox(
+          width: 120,
+          height: 120,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: _isUploading
+                ? Center(
+                    child: CircularProgressIndicator(color: SihhaGreen1),
+                  )
+                : profilePicUrl == ''
+                    ? ColoredBox(
+                        color: HexColor('e4e6e7'),
+                        child: Icon(
+                          CupertinoIcons.person_fill,
+                          size: 100,
+                          color: HexColor('aeb4b7'),
+                        ),
+                      )
+                    : Image.network(profilePicUrl!, fit: BoxFit.cover),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: SihhaGreen1.withOpacity(0.85),
+            ),
+            child: IconButton(
+              alignment: Alignment.center,
+              onPressed: () async {
+                setState(() {
+                  _isUploading = true; // Show loading indicator
+                });
+
+                //Pick the image
+                ImagePicker imagePicker = ImagePicker();
+                XFile? pickedFile =
+                    await imagePicker.pickImage(source: ImageSource.gallery);
+                print('PICKED FILE PATH : ${pickedFile?.path}');
+                if (pickedFile == null) {
+                  setState(() {
+                    _isUploading = false; // Hide loading indicator
+                  });
+                  return;
+                }
+
+                //Get the ref
+                Reference referenceRoot = FirebaseStorage.instance.ref();
+                Reference referenceDirProfilePics =
+                    referenceRoot.child("ProfilePics");
+                Reference referenceImageToUploaod =
+                    referenceDirProfilePics.child("${familyName}_${name}.jpeg");
+
+                print(documentId.toString());
+
+                try {
+                  //Upload to Firebase Storage
+                  await referenceImageToUploaod.putFile(File(pickedFile.path));
+                  // Get the download URL and update it in Firestore Database
+                  profilePicUrl =
+                      await referenceImageToUploaod.getDownloadURL();
+                  print(profilePicUrl);
+                  Map<String, dynamic> dataToUpload = {
+                    'profilePicUrl': profilePicUrl.toString(),
+                  };
+                  //Update User Data in Firestore
+                  await _reference.doc(documentId).update(dataToUpload);
+                } catch (e) {
+                  print(e);
+                }
+
+                setState(() {
+                  _isUploading = false; // Hide loading indicator
+                });
+              },
+              icon: Icon(
+                LineAwesomeIcons.alternate_pencil,
+                color: Colors.black,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Stack ProfilePic2() {
+    return Stack(
+      children: [
+        SizedBox(
+          width: 120,
+          height: 120,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: _isUploading
+                ? Center(
+                    child: CircularProgressIndicator(color: SihhaGreen1),
+                  )
+                : profilePicUrl == null || profilePicUrl!.isEmpty
+                    ? ColoredBox(
+                        color: Colors.grey.shade100,
+                        child: Icon(
+                          CupertinoIcons.person_fill,
+                          size: 100,
+                          color: HexColor('aeb4b7'),
+                        ),
+                      )
+                    : Image.network(
+                        profilePicUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          return ColoredBox(
+                            color: Colors.grey.shade100,
+                            child: Icon(
+                              CupertinoIcons.exclamationmark_triangle,
+                              size: 100,
+                              color: Colors.red.shade100,
+                            ),
+                          );
+                        },
+                      ),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: SihhaGreen1.withOpacity(0.85),
+            ),
+            child: IconButton(
+              alignment: Alignment.center,
+              onPressed: () async {
+                setState(() {
+                  _isUploading = true; // Show loading indicator
+                });
+
+                // Pick the image
+                ImagePicker imagePicker = ImagePicker();
+                XFile? pickedFile =
+                    await imagePicker.pickImage(source: ImageSource.gallery);
+                print('PICKED FILE PATH : ${pickedFile?.path}');
+                if (pickedFile == null) {
+                  setState(() {
+                    _isUploading = false; // Hide loading indicator
+                  });
+                  return;
+                }
+
+                // Get the ref
+                Reference referenceRoot = FirebaseStorage.instance.ref();
+                Reference referenceDirProfilePics =
+                    referenceRoot.child("ProfilePics");
+                Reference referenceImageToUpload =
+                    referenceDirProfilePics.child("${familyName}_${name}.jpeg");
+
+                print(documentId.toString());
+
+                try {
+                  // Upload to Firebase Storage
+                  await referenceImageToUpload.putFile(File(pickedFile.path));
+                  // Get the download URL and update it in Firestore Database
+                  profilePicUrl = await referenceImageToUpload.getDownloadURL();
+                  print(profilePicUrl);
+                  Map<String, dynamic> dataToUpload = {
+                    'profilePicUrl': profilePicUrl.toString(),
+                  };
+                  // Update User Data in Firestore
+                  await _reference.doc(documentId).update(dataToUpload);
+                } catch (e) {
+                  print(e);
+                }
+
+                setState(() {
+                  _isUploading = false; // Hide loading indicator
+                });
+              },
+              icon: Icon(
+                LineAwesomeIcons.alternate_pencil,
+                color: Colors.black,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

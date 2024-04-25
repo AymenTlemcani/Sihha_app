@@ -54,3 +54,8 @@ TextStyle SihhaPoppins2 = GoogleFonts.poppins(
 
 TextStyle SihhaPoppins3 = GoogleFonts.poppins(
     color: Colors.black, fontWeight: FontWeight.w500, fontSize: 20);
+TextStyle SihhaPoppins4 = GoogleFonts.poppins(
+    color: Colors.black,
+    fontWeight: FontWeight.w500,
+    fontSize: 17,
+    letterSpacing: 2);
