@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
+import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
-import 'package:sahha_app/utils/Variables.dart';
+import 'package:sahha_app/Pages/user/yahia/operations_page.dart';
+import 'package:sahha_app/Pages/user/yahia/ordonnaces_page.dart';
+import 'package:sahha_app/Pages/user/yahia/vaccins_page.dart';
+import 'package:sahha_app/Pages/user/yahia/visites_medicales_page.dart';
 
 class MedicalPage extends StatefulWidget {
   const MedicalPage({super.key});
@@ -39,7 +43,31 @@ List<Widget> MedicalTiles = [
     iconColor: SihhaGreen2,
     itemColor1: SihhaGreen1.withOpacity(0.18),
     smallCircleColor1: Colors.white,
-    onTapFunction: (BuildContext context) {},
+    onTapFunction: (BuildContext context) {
+      print('user tapped Dossier Medical');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OrdonnancePage(),
+        ),
+      );
+    },
+  ),
+  MyTile(
+    icon: LineAwesomeIcons.stethoscope,
+    title: 'Visites medicales',
+    iconColor: SihhaGreen2,
+    itemColor1: SihhaGreen1.withOpacity(0.18),
+    smallCircleColor1: Colors.white,
+    onTapFunction: (BuildContext context) {
+      print('user tapped Dossier Medical');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VisitesMedicalesPage(),
+        ),
+      );
+    },
   ),
 
   MyTile(
@@ -48,7 +76,15 @@ List<Widget> MedicalTiles = [
     iconColor: SihhaGreen2,
     itemColor1: SihhaGreen1.withOpacity(0.18),
     smallCircleColor1: Colors.white,
-    onTapFunction: (BuildContext context) {},
+    onTapFunction: (BuildContext context) {
+      print('user tapped Dossier Medical');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VaccinsPage(),
+        ),
+      );
+    },
   ),
   MyTile(
     icon: LineAwesomeIcons.microscope,
@@ -57,6 +93,22 @@ List<Widget> MedicalTiles = [
     itemColor1: SihhaGreen1.withOpacity(0.18),
     smallCircleColor1: Colors.white,
     onTapFunction: (BuildContext context) {},
+  ),
+  MyTile(
+    icon: LineAwesomeIcons.hospital,
+    title: 'Operations',
+    iconColor: SihhaGreen2,
+    itemColor1: SihhaGreen1.withOpacity(0.18),
+    smallCircleColor1: Colors.white,
+    onTapFunction: (BuildContext context) {
+      print('user tapped Dossier Medical');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OperationsPage(),
+        ),
+      );
+    },
   ),
 
   // Add other MyTile widgets as needed

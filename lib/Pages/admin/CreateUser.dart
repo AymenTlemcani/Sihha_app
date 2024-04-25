@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
-import 'package:sahha_app/utils/Variables.dart';
+import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/CommonWidgets/MyTextForm.dart';
 import 'package:sahha_app/CommonWidgets/MyButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

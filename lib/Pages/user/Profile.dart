@@ -10,7 +10,7 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
 import 'package:sahha_app/CommonWidgets/MyProfileMenuWidget.dart';
-import 'package:sahha_app/utils/Variables.dart';
+import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';
 import 'package:sahha_app/Providers/LoginControllerProvider.dart';
 

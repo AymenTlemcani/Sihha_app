@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
-import 'package:sahha_app/utils/Variables.dart';
+import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/CommonWidgets/MyButton.dart';
 import 'package:sahha_app/CommonWidgets/MyTextForm.dart';
 import 'package:sahha_app/Providers/LoginControllerProvider.dart';

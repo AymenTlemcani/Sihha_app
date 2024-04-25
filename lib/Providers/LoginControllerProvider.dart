@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sahha_app/utils/Variables.dart';
+import 'package:sahha_app/Models/Variables.dart';
 
 class LoginControllerProvider extends ChangeNotifier {
   final StreamController<bool> loginStreamController;
@@ -10,7 +10,9 @@ class LoginControllerProvider extends ChangeNotifier {
   LoginControllerProvider({
     required this.loginStreamController,
   });
+  String? IDN; // Keep the null safety operator on IDN
 
+  String get userId => IDN ?? '';
   void updateUserInformation(
       {required String id,
       required String familyNameProvider,

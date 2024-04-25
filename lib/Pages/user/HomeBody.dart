@@ -5,11 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyProfilePicture.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
+import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
-import 'package:sahha_app/utils/Variables.dart';
 import 'package:sahha_app/Pages/admin/CreateUser.dart';
-
 import 'package:sahha_app/Pages/user/Profile.dart';
 
 class HomeBody extends StatefulWidget {
@@ -166,22 +165,14 @@ class _HomeBodyState extends State<HomeBody> {
 
     // Add other MyTile widgets as needed
   ];
-  List<String> prescriptions = [];
+  // List<String> prescriptions = [];
+  List<Map<String, dynamic>> prescriptions = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (prescriptions.length < 8) {
-            setState(() {
-              prescriptions.add('(Nom de Medcin) ${prescriptions.length + 1}');
-            });
-          }
-        },
-        tooltip: 'Add Prescription',
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: AddOrdonnance(),
       body: SingleChildScrollView(
         reverse: false,
         child: Column(
@@ -198,6 +189,26 @@ class _HomeBodyState extends State<HomeBody> {
           ],
         ),
       ),
+    );
+  }
+
+  FloatingActionButton AddOrdonnance() {
+    return FloatingActionButton(
+      onPressed: () {
+        if (prescriptions.length < 8) {
+          DateTime now = DateTime.now();
+          setState(() {
+            prescriptions.add({
+              'doctorName': '(Nom de Medcin) ${prescriptions.length + 1}',
+              'specialty': 'Specialty',
+              'dateOfCreation': now,
+              'prescriptionId': 'ID_${now.microsecondsSinceEpoch}',
+            });
+          });
+        }
+      },
+      tooltip: 'Add Prescription',
+      child: Icon(Icons.add),
     );
   }
 
@@ -218,8 +229,15 @@ class _HomeBodyState extends State<HomeBody> {
               mainAxisSize: MainAxisSize.min,
               children: prescriptions.asMap().entries.map((entry) {
                 int index = entry.key;
-                String prescription = entry.value;
-                return Ordonnance(prescription, index, totalPrescriptions);
+                Map<String, dynamic> prescriptionTileData = entry.value;
+                return Ordonnance(
+                  prescriptionTileData['doctorName'],
+                  prescriptionTileData['specialty'],
+                  prescriptionTileData['dateOfCreation'],
+                  prescriptionTileData['prescriptionId'],
+                  index,
+                  totalPrescriptions,
+                );
               }).toList(),
             ),
           ),
@@ -228,7 +246,14 @@ class _HomeBodyState extends State<HomeBody> {
     );
   }
 
-  Widget Ordonnance(String prescription, int index, int totalPrescriptions) {
+  Widget Ordonnance(
+    String doctorName,
+    String specialty,
+    DateTime dateOfCreation,
+    String prescriptionId,
+    int index,
+    int totalPrescriptions,
+  ) {
     return Column(
       children: [
         Container(
@@ -244,7 +269,7 @@ class _HomeBodyState extends State<HomeBody> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Text(
-                      prescription,
+                      doctorName,
                       style: GoogleFonts.poppins(
                           color: Colors.black,
                           fontWeight: FontWeight.w400,

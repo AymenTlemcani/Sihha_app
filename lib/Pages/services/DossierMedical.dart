@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
+import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';
-import 'package:sahha_app/utils/Variables.dart';
 
 class DossierMedical extends StatefulWidget {
   const DossierMedical({super.key});
