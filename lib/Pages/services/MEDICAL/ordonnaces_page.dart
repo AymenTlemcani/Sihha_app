@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sahha_app/Models/Variables.dart';
@@ -13,7 +12,6 @@ class OrdonnancePage extends StatefulWidget {
 
 class _OrdonnancePageState extends State<OrdonnancePage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final FirebaseAuth auth = FirebaseAuth.instance;
   final List<Map<String, dynamic>> prescriptions =
       []; // Initialize with an empty list
 

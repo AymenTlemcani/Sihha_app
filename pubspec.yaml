@@ -40,8 +40,6 @@ dependencies:
   hexcolor: ^3.0.1
   lite_rolling_switch: ^1.0.1
   firebase_core: ^2.25.4
-  firebase_auth: ^4.17.4
-  get: ^4.6.6
   persistent_bottom_nav_bar: ^5.0.2
   cloud_firestore: ^4.15.8
   line_awesome_flutter: ^2.0.0

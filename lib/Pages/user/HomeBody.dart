@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter_svg/svg.dart';
@@ -5,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyProfilePicture.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
+import 'package:sahha_app/Models/Ordonnance.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
@@ -165,56 +167,160 @@ class _HomeBodyState extends State<HomeBody> {
 
     // Add other MyTile widgets as needed
   ];
-  // List<String> prescriptions = [];
-  List<Map<String, dynamic>> prescriptions = [];
+
+  List<Ordonnance> ordonnances = [];
+  @override
+  void initState() {
+    super.initState();
+    fetchOrdonnances();
+    setState(() {});
+  }
+
+  Future<void> fetchOrdonnances() async {
+    final ordonnancesRef = FirebaseFirestore.instance.collection('ordonnances');
+    QuerySnapshot querySnapshot =
+        await ordonnancesRef.where('patientIDN', isEqualTo: IDN).get();
+    setState(() {
+      ordonnances = querySnapshot.docs
+          .map((doc) => Ordonnance.fromFirestore(doc))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: AddOrdonnance(),
-      body: SingleChildScrollView(
-        reverse: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppBarHomePage(),
-            SizedBox(height: 20),
-            Titre('Accés rapide'),
-            // Use either ListView or Wrap 3la 7sab lplatform
-            _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
-            SizedBox(height: 10),
-            Titre('Les ordonnances'),
-            OrdonnancesListView(),
+      body: RefreshIndicator(
+        color: SihhaGreen1,
+        onRefresh: () async {
+          await fetchOrdonnances();
+          setState(() {});
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppBarHomePage(),
+                  SizedBox(height: 20),
+                  Titre('Accés rapide'),
+                  _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
+                  SizedBox(height: 10),
+                  Titre('Les ordonnances'),
+                  ordonnances.isEmpty
+                      ? NoDataContainer()
+                      : OrdonnancesListView()
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     backgroundColor: Colors.white,
+  //     body: CustomScrollView(
+  //       slivers: [
+  //         SliverToBoxAdapter(
+  //           child: RefreshIndicator(
+  //             color: Colors.red,
+  //             onRefresh: () async {
+  //               await fetchOrdonnances();
+  //               setState(() {});
+  //             },
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 AppBarHomePage(),
+  //                 SizedBox(height: 20),
+  //                 Titre('Accés rapide'),
+  //                 _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
+  //                 SizedBox(height: 10),
+  //                 Titre('Les ordonnances'),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //         SliverList(
+  //           delegate: SliverChildListDelegate([
+  //             OrdonnancesListView(),
+  //           ]),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  FloatingActionButton AddOrdonnance() {
-    return FloatingActionButton(
-      onPressed: () {
-        if (prescriptions.length < 8) {
-          DateTime now = DateTime.now();
-          setState(() {
-            prescriptions.add({
-              'doctorName': '(Nom de Medcin) ${prescriptions.length + 1}',
-              'specialty': 'Specialty',
-              'dateOfCreation': now,
-              'prescriptionId': 'ID_${now.microsecondsSinceEpoch}',
-            });
-          });
-        }
-      },
-      tooltip: 'Add Prescription',
-      child: Icon(Icons.add),
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     backgroundColor: Colors.white,
+  //     // floatingActionButton: AddOrdonnance(),
+  //     body: RefreshIndicator(
+  //       onRefresh: () async {
+  //         await fetchOrdonnances();
+
+  //         setState(() {});
+  //       },
+  //       child: SingleChildScrollView(
+  //         reverse: false,
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             AppBarHomePage(),
+  //             SizedBox(height: 20),
+  //             Titre('Accés rapide'),
+  //             // Use either ListView or Wrap 3la 7sab lplatform
+  //             _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
+  //             SizedBox(height: 10),
+  //             Titre('Les ordonnances'),
+  //             OrdonnancesListView(),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  Widget NoDataContainer() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: SihhaGreen1.withOpacity(0.05),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+              child: Center(
+                child: Text(
+                  'Aucune ordonnance trouvée.',
+                  style:
+                      SihhaPoppins3.copyWith(color: Colors.grey, fontSize: 14),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Padding OrdonnancesListView() {
-    int totalPrescriptions = prescriptions.length;
+    // Sort ordonnances by date of creation in descending order
+    ordonnances.sort((a, b) => b.dateOfCreation.compareTo(a.dateOfCreation));
 
+    // Take the last 5 ordonnances
+    List<Ordonnance> displayedOrdonnances = ordonnances.take(5).toList();
+
+    int totalOrdonnaces = displayedOrdonnances.length;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Container(
@@ -227,16 +333,24 @@ class _HomeBodyState extends State<HomeBody> {
             physics: NeverScrollableScrollPhysics(), // Disable scrolling
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: prescriptions.asMap().entries.map((entry) {
+              children: displayedOrdonnances.asMap().entries.map((entry) {
                 int index = entry.key;
-                Map<String, dynamic> prescriptionTileData = entry.value;
-                return Ordonnance(
-                  prescriptionTileData['doctorName'],
-                  prescriptionTileData['specialty'],
-                  prescriptionTileData['dateOfCreation'],
-                  prescriptionTileData['prescriptionId'],
-                  index,
-                  totalPrescriptions,
+                Ordonnance ordonnance = entry.value;
+                return Column(
+                  children: [
+                    OrdonnanceTile(ordonnance: ordonnance),
+                    if (index <
+                        totalOrdonnaces - 1) // Check if it's not the last item
+                      Divider(
+                        endIndent: 10,
+                        indent: 60,
+                        thickness: 0.4,
+                      )
+                    else
+                      SizedBox(
+                          height:
+                              10), // Use SizedBox instead of Divider for the last item
+                  ],
                 );
               }).toList(),
             ),
@@ -246,69 +360,96 @@ class _HomeBodyState extends State<HomeBody> {
     );
   }
 
-  Widget Ordonnance(
-    String doctorName,
-    String specialty,
-    DateTime dateOfCreation,
-    String prescriptionId,
-    int index,
-    int totalPrescriptions,
-  ) {
-    return Column(
-      children: [
-        Container(
+  Widget OrdonnanceTile({required Ordonnance ordonnance}) {
+    return FutureBuilder<List<String?>>(
+      future: ordonnance.fetchDoctorProfilePicUrls([ordonnance.doctorIDN]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(height: 70);
+          // CircularProgressIndicator(color: Colors.white,);
+        }
+        if (snapshot.hasError) {
+          return Text('Error fetching profile picture');
+        }
+        List<String?> doctorProfilePicUrls = snapshot.data ?? [];
+        return Container(
           height: 70,
           child: Row(
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: MyProfilePicture(URL: profilePicUrl, radius: 20),
+                child: Row(
+                  children: doctorProfilePicUrls.map((url) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: MyProfilePicture(URL: url, radius: 20),
+                    );
+                  }).toList(),
+                ),
               ),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Text(
-                      doctorName,
+                      ordonnance.doctorName,
                       style: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          letterSpacing: 1.3),
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        letterSpacing: 1.3,
+                      ),
                     ),
-                  )
+                  ),
+                  Text(
+                    ordonnance.speciality,
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      letterSpacing: 1.3,
+                    ),
+                  ),
                 ],
-              )
+              ),
+              Spacer(),
+              Text(
+                '${ordonnance.dateOfCreation.toDate().day}/${ordonnance.dateOfCreation.toDate().month}/${ordonnance.dateOfCreation.toDate().year}\n     ${ordonnance.dateOfCreation.toDate().hour}:${ordonnance.dateOfCreation.toDate().minute}',
+                style: GoogleFonts.poppins(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  letterSpacing: 1.3,
+                ),
+              ),
+              SizedBox(width: 10),
             ],
           ),
-        ),
-        if (index == totalPrescriptions - 1) SizedBox(height: 10),
-        if (index < totalPrescriptions - 1) // Check if it's not the last item
-          Divider(
-            endIndent: 10,
-            indent: 60,
-            thickness: 0.4,
-          )
-      ],
+        );
+      },
     );
   }
 
-  ListTile OrdonnanceNoDetails(String prescription) {
-    return ListTile(
-      leading: MyProfilePicture(
-        URL: profilePicUrl,
-        radius: 20,
-      ),
-      title: Text(
-        prescription,
-        style: GoogleFonts.poppins(
-          fontSize: 16,
-          fontWeight: FontWeight.w400,
-          // color: Colors.black54,
-        ),
-      ),
-    );
-  }
+  // FloatingActionButton AddOrdonnance() {
+  //   return FloatingActionButton(
+  //     onPressed: () {
+  //       if (prescriptions.length < 8) {
+  //         DateTime now = DateTime.now();
+  //         setState(() {
+  //           prescriptions.add({
+  //             'doctorName': '(Nom de Medcin) ${prescriptions.length + 1}',
+  //             'specialty': 'Specialty',
+  //             'dateOfCreation': now,
+  //             'prescriptionId': 'ID_${now.microsecondsSinceEpoch}',
+  //           });
+  //         });
+  //       }
+  //     },
+  //     tooltip: 'Add Prescription',
+  //     child: Icon(Icons.add),
+  //   );
+  // }
 
   bool _shouldUseWrap() {
     return !(defaultTargetPlatform == TargetPlatform.iOS ||
@@ -428,7 +569,6 @@ class _HomeBodyState extends State<HomeBody> {
           padding: const EdgeInsets.fromLTRB(20, 45, 0, 0),
           child: InkWell(
             onTap: () {
-              print("User Pressed on Profile");
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -436,6 +576,9 @@ class _HomeBodyState extends State<HomeBody> {
                 ),
               );
             },
+
+            //TODO ki nbdlo photo de profile w nwliw l homePage la photo marahach ttl3 khas 7eta dir logout
+            //we can use stream builder or future buider to get the user image from firebase storage or in init state
             child: MyProfilePicture(
                 URL: profilePicUrl,
                 radius: 24,
