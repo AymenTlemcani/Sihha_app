@@ -360,6 +360,7 @@ class _HomeBodyState extends State<HomeBody> {
     );
   }
 
+//TODO Switch Tiles to inkwells that navigate to a page with more details about each prescription
   Widget OrdonnanceTile({required Ordonnance ordonnance}) {
     return FutureBuilder<List<String?>>(
       future: ordonnance.fetchDoctorProfilePicUrls([ordonnance.doctorIDN]),
@@ -392,16 +393,23 @@ class _HomeBodyState extends State<HomeBody> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      ordonnance.doctorName,
-                      style: GoogleFonts.poppins(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        letterSpacing: 1.3,
-                      ),
-                    ),
+                    child: Text(ordonnance.doctorName,
+                        //
+                        style:
+                            //
+                            SihhaPoppins3.copyWith(
+                                fontSize: 16, letterSpacing: 1.2)
+                        //
+                        // GoogleFonts.poppins(
+                        //   color: Colors.black,
+                        //   fontWeight: FontWeight.w400,
+                        //   fontSize: 16,
+                        //   letterSpacing: 1.3,
+                        // ),
+                        //
+                        ),
                   ),
+                  SizedBox(height: 5),
                   Text(
                     ordonnance.speciality,
                     style: GoogleFonts.poppins(

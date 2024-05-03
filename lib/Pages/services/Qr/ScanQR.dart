@@ -12,6 +12,7 @@ import 'package:sahha_app/Pages/user/PatientPage.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';
 
 bool isScanned = false;
+bool isControllerStarted = false;
 
 class QRCodeScannerPage extends StatefulWidget {
   const QRCodeScannerPage({Key? key}) : super(key: key);
@@ -25,7 +26,6 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
   // there was an error 'Called start() while already started' when you lock
   // the screen  and then try to open this page again, so we used a bool flag
   // to check if the cameraController has been initialized or not
-  bool isControllerStarted = false;
   @override
   void initState() {
     super.initState();
@@ -38,6 +38,13 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
         print('Error starting camera controller: $e');
       }
     }
+  }
+
+  @override
+  void dispose() {
+    cameraController.dispose();
+    print('cameraController DISPOSED');
+    super.dispose();
   }
 
   @override
@@ -280,12 +287,5 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
         // });
       }
     });
-  }
-
-  @override
-  void dispose() {
-    cameraController.dispose();
-    print('cameraController DISPOSED');
-    super.dispose();
   }
 }

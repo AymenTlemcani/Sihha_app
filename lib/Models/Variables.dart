@@ -47,6 +47,7 @@ TextStyle SihhaTextStyleH3 = GoogleFonts.sarabun(
     color: const Color.fromARGB(255, 12, 12, 12), fontWeight: FontWeight.w300);
 
 ///
+TextStyle SihhaFont = GoogleFonts.poppins(color: Colors.black);
 TextStyle SihhaPoppins1 = GoogleFonts.poppins(
     color: Colors.black, fontWeight: FontWeight.w500, fontSize: 28);
 TextStyle SihhaPoppins2 = GoogleFonts.poppins(
