@@ -67,7 +67,7 @@ class _PatientPageState extends State<PatientPage>
                             children: [
                               _GreySmallText('@Username'),
                               _GreySmallText(
-                                  '|      ${widget.patient!.id ?? ''}'),
+                                  '|      ${widget.patient!.IDN ?? ''}'),
 
                               // _GreySmallText(widget.patient!.telephone ?? ''),
                             ],

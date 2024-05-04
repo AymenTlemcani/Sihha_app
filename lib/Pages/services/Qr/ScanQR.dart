@@ -194,7 +194,7 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
         Map<String, dynamic>? userData =
             documentSnapshot.data() as Map<String, dynamic>;
         patient = Patient(
-          id: userData['IDN'],
+          IDN: userData['IDN'],
           familyName: userData['familyName'],
           name: userData['name'],
           gender: userData['gender'],

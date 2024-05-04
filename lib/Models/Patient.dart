@@ -1,7 +1,7 @@
 //TODO: We will add more  fields here as we go on.
 //Ordonnaces , family , radios , analyses  etc...
 class Patient {
-  String? id;
+  String? IDN;
   String? familyName;
   String? name;
   String? gender;
@@ -18,7 +18,7 @@ class Patient {
   double? height;
 
   Patient({
-    this.id,
+    this.IDN,
     this.familyName,
     this.name,
     this.gender,
@@ -36,7 +36,7 @@ class Patient {
   });
 
   void updatePatientInformation(
-      {required String id,
+      {required String IDN,
       required String familyName,
       required String name,
       required String gender,
@@ -51,7 +51,7 @@ class Patient {
       required String bloodType,
       required double weight,
       required double height}) {
-    this.id = id;
+    this.IDN = IDN;
     this.familyName = familyName;
     this.name = name;
     this.gender = gender;
