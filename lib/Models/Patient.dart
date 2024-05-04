@@ -13,6 +13,9 @@ class Patient {
   String? bio;
   String? documentId;
   String? telephone;
+  String? bloodType;
+  double? weight;
+  double? height;
 
   Patient({
     this.id,
@@ -27,22 +30,27 @@ class Patient {
     this.bio,
     this.documentId,
     this.telephone,
+    this.bloodType,
+    this.height,
+    this.weight,
   });
 
-  void updatePatientInformation({
-    required String id,
-    required String familyName,
-    required String name,
-    required String gender,
-    required int birthDay,
-    required int birthMonth,
-    required int birthYear,
-    required String birthPlace,
-    String? profilePicUrl,
-    String? bio,
-    String? documentId,
-    String? telephone,
-  }) {
+  void updatePatientInformation(
+      {required String id,
+      required String familyName,
+      required String name,
+      required String gender,
+      required int birthDay,
+      required int birthMonth,
+      required int birthYear,
+      required String birthPlace,
+      String? profilePicUrl,
+      String? bio,
+      String? documentId,
+      String? telephone,
+      required String bloodType,
+      required double weight,
+      required double height}) {
     this.id = id;
     this.familyName = familyName;
     this.name = name;
@@ -55,5 +63,8 @@ class Patient {
     this.bio = bio;
     this.documentId = documentId;
     this.telephone = telephone;
+    this.bloodType = bloodType;
+    this.weight = weight;
+    this.height = height;
   }
 }

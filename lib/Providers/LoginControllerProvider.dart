@@ -25,7 +25,10 @@ class LoginControllerProvider extends ChangeNotifier {
       required bool isMedcinProvider,
       required bool isPharmacieProvider,
       String? profilePicUrlProvider,
-      String? bioProvider}) {
+      String? bioProvider,
+      required String? bloodTypeProvider,
+      required double? weightProvider,
+      required double? heightProvider}) {
     // Update global variables using the provider variables
     IDN = id;
     familyName = familyNameProvider;
@@ -40,6 +43,9 @@ class LoginControllerProvider extends ChangeNotifier {
     isPharmacie = isPharmacieProvider;
     profilePicUrl = profilePicUrlProvider;
     bio = bioProvider;
+    bloodType = bloodTypeProvider;
+    weight = weightProvider;
+    height = heightProvider;
 
     // Notify listeners that user information has been updated
     notifyListeners();
@@ -126,6 +132,9 @@ class LoginControllerProvider extends ChangeNotifier {
           isPharmacieProvider: documentData['isPharmacien'],
           profilePicUrlProvider: documentData['profilePicUrl'],
           bioProvider: documentData['bio'],
+          bloodTypeProvider: documentData['bloodType'],
+          weightProvider: documentData['weight'],
+          heightProvider: documentData['height'],
         );
 
         // Set login status
@@ -167,6 +176,9 @@ class LoginControllerProvider extends ChangeNotifier {
     isPharmacie = false;
     profilePicUrl = null;
     bio = null;
+    bloodType = null;
+    weight = null;
+    height = null;
 
     // Notify listeners to update UI
     loginStreamController.add(false);

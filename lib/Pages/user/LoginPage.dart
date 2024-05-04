@@ -8,6 +8,7 @@ import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/CommonWidgets/MyButton.dart';
 import 'package:sahha_app/CommonWidgets/MyTextForm.dart';
 import 'package:sahha_app/Providers/LoginControllerProvider.dart';
+import 'package:sahha_app/utils/add_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -109,6 +110,14 @@ class _LoginPageState extends State<LoginPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
+        floatingActionButton: Visibility(
+          visible: false,
+          child: FloatingActionButton(
+            onPressed: () async {
+              addFieldToAllDocuments();
+            },
+          ),
+        ),
         body: SingleChildScrollView(
           reverse: true,
 // physics: NeverScrollableScrollPhysics(),

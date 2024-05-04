@@ -206,6 +206,9 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
           bio: userData['bio'],
           telephone: userData['telephone'],
           documentId: documentSnapshot.id,
+          bloodType: userData['bloodType'],
+          weight: userData['weight'],
+          height: userData['height'],
         );
         Navigator.push(
           context,

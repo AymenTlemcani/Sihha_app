@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
 import 'package:sahha_app/CommonWidgets/MyProfilePicture.dart';
 import 'package:sahha_app/Models/Patient.dart';
@@ -23,6 +24,10 @@ class _PatientPageState extends State<PatientPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    // cameraController.dispose();
+    // print('camera controller disposed from patient page');
+    // isControllerStarted = false;
+    // isScanned = false;
   }
 
   @override
@@ -58,18 +63,36 @@ class _PatientPageState extends State<PatientPage>
                           _AppBarPatientPage(),
                           _NameAndFamilyName(),
                           //TODO add user name to database
-                          _Username(),
+                          Row(
+                            children: [
+                              _GreySmallText('@Username'),
+                              _GreySmallText(
+                                  '|      ${widget.patient!.id ?? ''}'),
+
+                              // _GreySmallText(widget.patient!.telephone ?? ''),
+                            ],
+                          ),
                           _TabBar(),
-                        ],
-                      ),
-                    ),
-                    SliverFillRemaining(
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _buildDetailsTab(),
-                          _buildMedicalTab(),
-                          _buildFamilleTab(),
+                          Container(
+                            color:
+                                //
+                                Colors.white,
+                            //
+                            // SihhaGreen1.withOpacity(1),
+                            //
+                            height:
+                                //
+                                0.55 * MediaQuery.sizeOf(context).height,
+                            //
+                            child: TabBarView(
+                              controller: _tabController,
+                              children: [
+                                _buildDetailsTab(),
+                                _buildMedicalTab(),
+                                _buildFamilleTab(),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -80,74 +103,19 @@ class _PatientPageState extends State<PatientPage>
     );
   }
 
-  // Widget build(BuildContext context) {
-  //   return PopScope(
-  //     onPopInvoked: (didPop) async {
-  //       setState(() {
-  //         isScanned = false;
-  //       });
-  //     },
-  //     child: Scaffold(
-  //       backgroundColor: Colors.white,
-  //       body: widget.patient == null
-  //           ? Center(child: Text('No patient data'))
-  //           : RefreshIndicator(
-  //               color: SihhaGreen1,
-  //               onRefresh: () async {
-  //                 // await fetchOrdonnances();
-  //                 setState(() {});
-  //               },
-  //               child: CustomScrollView(
-  //                 slivers: [
-  //                   SliverToBoxAdapter(
-  //                     child: Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       children: [
-  //                         _AppBarPatientPage(),
-  //                         _NameAndFamilyName(),
-  //                         _Username(),
-  //                         // SizedBox(height: 10),
-
-  //                         _TabBar(),
-  //                         // SizedBox(height: 10),
-  //                         Container(
-  //                           color:
-  //                               //
-  //                               Colors.red,
-  //                           //
-  //                           // SihhaGreen1.withOpacity(0.03),
-  //                           //
-  //                           // height: 400, // Adjust height as needed
-  //                           child: TabBarView(
-  //                             controller: _tabController,
-  //                             children: [
-  //                               _buildDetailsTab(),
-  //                               _buildMedicalTab(),
-  //                               _buildFamilleTab(),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //     ),
-  //   );
-  // }
-
   TabBar _TabBar() {
     return TabBar(
       controller: _tabController,
       labelStyle: SihhaFont.copyWith(
-          fontSize: 15.5, fontWeight: FontWeight.w500, letterSpacing: 1.1),
+          fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: 1.1),
       tabs: [
         Tab(text: 'Détails'),
         Tab(text: 'Médical'),
         Tab(text: 'Famille'),
       ],
       labelColor: Colors.black,
+      unselectedLabelStyle:
+          SihhaFont.copyWith(fontSize: 15.5, fontWeight: FontWeight.w100),
       unselectedLabelColor: Color(0xFFb0b3b8),
       // Colors.grey,
       indicatorColor: SihhaGreen1,
@@ -158,11 +126,11 @@ class _PatientPageState extends State<PatientPage>
     );
   }
 
-  Padding _Username() {
+  Padding _GreySmallText(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Text(
-        '@Username',
+        text,
         style: SihhaFont.copyWith(fontSize: 14, color: Color(0xFFb0b3b8)),
       ),
     );
@@ -199,7 +167,7 @@ class _PatientPageState extends State<PatientPage>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 10, top: 25),
+                  padding: const EdgeInsets.only(left: 10, top: 35),
                   child: MyBackButton(
                     onTapFunction: () {
                       print(
@@ -222,11 +190,7 @@ class _PatientPageState extends State<PatientPage>
                 Spacer()
               ],
             ),
-            //
-            SizedBox(
-              height: 10,
-            ),
-            //
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: MyProfilePicture(
@@ -238,58 +202,41 @@ class _PatientPageState extends State<PatientPage>
               ),
             ),
             //
-            SizedBox(height: 15),
+            SizedBox(height: 10),
           ]),
     );
   }
 
-  // Widget _buildDetailsTab() {
-  //   return Column(
-  //     children: [
-  //       // Place your details content here
-  //       Row(
-  //         children: [
-  //           Expanded(
-  //             child: Padding(
-  //               padding: const EdgeInsets.all(20.0),
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   Container(
-  //                       color: SihhaGreen1.withOpacity(1),
-  //                       child: _buildPatientInfo()),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ],
-  //   );
-  // }
   Widget _buildDetailsTab() {
-    return ListView(
-      shrinkWrap: true,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      // mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 800,
-                color: SihhaGreen1.withOpacity(1),
-                child: _buildPatientInfo(),
-              ),
-            ],
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    // border: Border.all(color: SihhaGreen1.withOpacity(0.5)),
+                    // color: SihhaGreen1.withOpacity(0.18),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20)),
+                child: _buildPatientInfo()),
           ),
         ),
+        Container(
+          height: 5,
+          color: Colors.black,
+        )
       ],
     );
   }
 
   Widget _buildMedicalTab() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         // Place your medical content here
         // You can customize this according to your requirement
@@ -300,6 +247,7 @@ class _PatientPageState extends State<PatientPage>
 
   Widget _buildFamilleTab() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         // Place your famille content here
         // You can customize this according to your requirement
@@ -320,81 +268,128 @@ class _PatientPageState extends State<PatientPage>
   }
 
   Widget _buildPatientInfo() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Name',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DetailsLine(
+            'Nom : ${widget.patient!.familyName} \nPrenom : ${widget.patient!.name}',
+            LineAwesomeIcons.identification_card,
           ),
-        ),
-        Text(
-          '${widget.patient!.name} ${widget.patient!.familyName}',
-          style: GoogleFonts.poppins(fontSize: 16),
-        ),
-        SizedBox(height: 16),
-        Text(
-          'Gender',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+          SizedBox(height: 16),
+          DetailsLine(
+            '${widget.patient!.birthDay ?? 'N/A'} . ${widget.patient!.birthMonth ?? 'N/A'} . ${widget.patient!.birthYear ?? 'N/A'}     |     ${(DateTime.now().year - (widget.patient!.birthYear ?? 0))} ans',
+            LineAwesomeIcons.birthday_cake,
           ),
-        ),
-        Text(
-          widget.patient!.gender ?? 'N/A',
-          style: GoogleFonts.poppins(fontSize: 16),
-        ),
-        SizedBox(height: 16),
-        Text(
-          'Birth Date',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+          SizedBox(height: 16),
+          DetailsLine(
+            '${widget.patient!.birthPlace ?? 'N/A'}',
+            LineAwesomeIcons.map_marker,
           ),
-        ),
-        Text(
-          '${widget.patient!.birthDay}/${widget.patient!.birthMonth}/${widget.patient!.birthYear}',
-          style: GoogleFonts.poppins(fontSize: 16),
-        ),
-        SizedBox(height: 16),
-        Text(
-          'Birth Place',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+          SizedBox(height: 16),
+          DetailsLine(
+            widget.patient!.gender != null && widget.patient!.gender == 'male'
+                ? '${widget.patient!.gender ?? 'N/A'}'
+                : '${widget.patient!.gender ?? 'N/A'}',
+            widget.patient!.gender != null && widget.patient!.gender == 'male'
+                ? LineAwesomeIcons.male
+                : LineAwesomeIcons.female,
           ),
-        ),
-        Text(
-          widget.patient!.birthPlace ?? 'N/A',
-          style: GoogleFonts.poppins(fontSize: 16),
-        ),
-        SizedBox(height: 16),
-        Text(
-          'Phone Number',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+          SizedBox(height: 16),
+          Row(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                // color: Colors.amber,
+                width: 120,
+                child: DetailsLine(
+                  '${widget.patient!.weight ?? 'null' + '  Kg'}',
+                  LineAwesomeIcons.hanging_weight,
+                ),
+              ),
+              Container(
+                // color: Colors.amber,
+                width: 120,
+                child: DetailsLine(
+                  '${widget.patient!.height ?? 'null' + '  cm'}',
+                  LineAwesomeIcons.ruler,
+                ),
+              ),
+              Container(
+                // color: Colors.amber,
+                width: 120,
+                child: DetailsLine(
+                  // '${widget.patient!.bloodType ?? 'O+'}',
+
+                  'O+',
+                  LineAwesomeIcons.tint,
+                ),
+              ),
+            ],
           ),
-        ),
-        Text(
-          widget.patient!.telephone ?? 'N/A',
-          style: GoogleFonts.poppins(fontSize: 16),
-        ),
-        SizedBox(height: 16),
-        Text(
-          'Bio',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+          SizedBox(height: 16),
+
+          Text(
+            'Birth Place',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
-        ),
-        Text(
-          widget.patient!.bio ?? 'N/A',
-          style: GoogleFonts.poppins(fontSize: 16),
-        ),
-      ],
+          Text(
+            widget.patient!.birthPlace ?? 'N/A',
+            style: GoogleFonts.poppins(fontSize: 16),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Phone Number',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          Text(
+            widget.patient!.telephone ?? 'N/A',
+            style: GoogleFonts.poppins(fontSize: 16),
+          ),
+          SizedBox(height: 16),
+          // Text(
+          //   'Bio',
+          //   style: GoogleFonts.poppins(
+          //     fontWeight: FontWeight.bold,
+          //     fontSize: 18,
+          //   ),
+          // ),
+          // Text(
+          //   widget.patient!.bio ?? 'N/A',
+          //   style: GoogleFonts.poppins(fontSize: 16),
+          // ),
+        ],
+      ),
+    );
+  }
+
+  Container DetailsLine(String text, IconData icon) {
+    return Container(
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Icon(
+              icon,
+              size: 27,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              text,
+              style: SihhaFont.copyWith(fontSize: 17),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
