@@ -5,10 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 class MyTextForm extends StatefulWidget {
   final String hintText;
   final bool obscureText;
+  final bool? readOnly;
   final TextInputType keyboardType;
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final List<TextInputFormatter>? inputFormatters;
+  final VoidCallback? onTapFunction;
 
   const MyTextForm({
     super.key,
@@ -18,6 +20,8 @@ class MyTextForm extends StatefulWidget {
     required this.controller,
     this.validator,
     this.inputFormatters,
+    this.onTapFunction,
+    this.readOnly,
   });
 
   @override
@@ -30,7 +34,7 @@ class _MyTextFormState extends State<MyTextForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
       child: Container(
         width: MediaQuery.of(context).size.width < 600
             ? MediaQuery.of(context).size.width - 36
@@ -39,6 +43,8 @@ class _MyTextFormState extends State<MyTextForm> {
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: TextFormField(
+            onTap: widget.onTapFunction,
+            readOnly: widget.readOnly ?? false,
             validator: widget.validator,
             inputFormatters: widget.inputFormatters,
             keyboardType: widget.keyboardType,

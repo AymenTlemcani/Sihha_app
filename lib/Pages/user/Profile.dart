@@ -58,7 +58,7 @@ class _ProfileState extends State<Profile> {
               ProfilePic2(),
               const SizedBox(height: 15),
               Text(
-                '${familyName} ${name}',
+                '${user!.familyName} ${user!.name}',
                 style: SihhaPoppins3,
               ),
               const SizedBox(height: 20),
@@ -74,7 +74,7 @@ class _ProfileState extends State<Profile> {
                 icon: Icons.settings,
                 onPress: () {},
               ),
-              if (isAdmin)
+              if (user!.isAdmin)
                 MyProfileMenuWidget(
                   title: "Administration",
                   icon: Icons.admin_panel_settings,
@@ -103,6 +103,7 @@ class _ProfileState extends State<Profile> {
                         actions: [
                           ElevatedButton(
                             onPressed: () {
+                              //TODO Add LastLogin field to users collection
                               Provider.of<LoginControllerProvider>(
                                 context,
                                 listen: false,
@@ -142,7 +143,7 @@ class _ProfileState extends State<Profile> {
                 ? Center(
                     child: CircularProgressIndicator(color: SihhaGreen1),
                   )
-                : profilePicUrl == ''
+                : user!.profilePicUrl == ''
                     ? ColoredBox(
                         color: HexColor('e4e6e7'),
                         child: Icon(
@@ -151,7 +152,7 @@ class _ProfileState extends State<Profile> {
                           color: HexColor('aeb4b7'),
                         ),
                       )
-                    : Image.network(profilePicUrl!, fit: BoxFit.cover),
+                    : Image.network(user!.profilePicUrl!, fit: BoxFit.cover),
           ),
         ),
         Positioned(
@@ -187,23 +188,23 @@ class _ProfileState extends State<Profile> {
                 Reference referenceRoot = FirebaseStorage.instance.ref();
                 Reference referenceDirProfilePics =
                     referenceRoot.child("ProfilePics");
-                Reference referenceImageToUploaod =
-                    referenceDirProfilePics.child("${familyName}_${name}.jpeg");
+                Reference referenceImageToUploaod = referenceDirProfilePics
+                    .child("${user!.familyName}_${user!.name}.jpeg");
 
-                print(documentId.toString());
+                print(user!.documentId.toString());
 
                 try {
                   //Upload to Firebase Storage
                   await referenceImageToUploaod.putFile(File(pickedFile.path));
                   // Get the download URL and update it in Firestore Database
-                  profilePicUrl =
-                      await referenceImageToUploaod.getDownloadURL();
-                  print(profilePicUrl);
+                  String url = await referenceImageToUploaod.getDownloadURL();
+                  user!.updateProfilePicUrl(url);
+                  print(user!.profilePicUrl);
                   Map<String, dynamic> dataToUpload = {
-                    'profilePicUrl': profilePicUrl.toString(),
+                    'profilePicUrl': user!.profilePicUrl.toString(),
                   };
                   //Update User Data in Firestore
-                  await _reference.doc(documentId).update(dataToUpload);
+                  await _reference.doc(user!.documentId).update(dataToUpload);
                 } catch (e) {
                   print(e);
                 }
@@ -236,7 +237,7 @@ class _ProfileState extends State<Profile> {
                 ? Center(
                     child: CircularProgressIndicator(color: SihhaGreen1),
                   )
-                : profilePicUrl == null || profilePicUrl!.isEmpty
+                : user!.profilePicUrl == null || user!.profilePicUrl!.isEmpty
                     ? ColoredBox(
                         color: Colors.grey.shade100,
                         child: Icon(
@@ -246,7 +247,7 @@ class _ProfileState extends State<Profile> {
                         ),
                       )
                     : Image.network(
-                        profilePicUrl!,
+                        user!.profilePicUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (BuildContext context, Object exception,
                             StackTrace? stackTrace) {
@@ -295,8 +296,8 @@ class _ProfileState extends State<Profile> {
                 Reference referenceRoot = FirebaseStorage.instance.ref();
                 Reference referenceDirProfilePics =
                     referenceRoot.child("ProfilePics");
-                Reference referenceImageToUpload =
-                    referenceDirProfilePics.child("${familyName}_${name}.jpeg");
+                Reference referenceImageToUpload = referenceDirProfilePics
+                    .child("${user!.familyName}_${user!.name}.jpeg");
 
                 print(documentId.toString());
 
@@ -304,13 +305,14 @@ class _ProfileState extends State<Profile> {
                   // Upload to Firebase Storage
                   await referenceImageToUpload.putFile(File(pickedFile.path));
                   // Get the download URL and update it in Firestore Database
-                  profilePicUrl = await referenceImageToUpload.getDownloadURL();
-                  print(profilePicUrl);
+                  String url = await referenceImageToUpload.getDownloadURL();
+                  user!.updateProfilePicUrl(url);
+                  print(user!.profilePicUrl);
                   Map<String, dynamic> dataToUpload = {
-                    'profilePicUrl': profilePicUrl.toString(),
+                    'profilePicUrl': user!.profilePicUrl.toString(),
                   };
                   // Update User Data in Firestore
-                  await _reference.doc(documentId).update(dataToUpload);
+                  await _reference.doc(user!.documentId).update(dataToUpload);
                 } catch (e) {
                   print(e);
                 }

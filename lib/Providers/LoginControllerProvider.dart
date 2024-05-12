@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:sahha_app/Models/Variables.dart';
+import 'package:sahha_app/Models/Actors/User.dart';
+import 'package:sahha_app/Models/Variables.dart'; // Import User model
 
 class LoginControllerProvider extends ChangeNotifier {
   final StreamController<bool> loginStreamController;
@@ -11,47 +11,91 @@ class LoginControllerProvider extends ChangeNotifier {
     required this.loginStreamController,
   });
 
-  String get userId => IDN ?? '';
-  void updateUserInformation(
-      {required String id,
-      required String familyNameProvider,
-      required String nameProvider,
-      required String genderProvider,
-      required int birthDayProvider,
-      required int birthMonthProvider,
-      required int birthYearProvider,
-      required String birthPlaceProvider,
-      required bool isAdminProvider,
-      required bool isMedcinProvider,
-      required bool isPharmacieProvider,
-      String? profilePicUrlProvider,
-      String? bioProvider,
-      required String? bloodTypeProvider,
-      required double? weightProvider,
-      required double? heightProvider}) {
-    // Update global variables using the provider variables
-    IDN = id;
-    familyName = familyNameProvider;
-    name = nameProvider;
-    gender = genderProvider;
-    birthDay = birthDayProvider;
-    birthMonth = birthMonthProvider;
-    birthYear = birthYearProvider;
-    birthPlace = birthPlaceProvider;
-    isAdmin = isAdminProvider;
-    isMedcin = isMedcinProvider;
-    isPharmacie = isPharmacieProvider;
-    profilePicUrl = profilePicUrlProvider;
-    bio = bioProvider;
-    bloodType = bloodTypeProvider;
-    weight = weightProvider;
-    height = heightProvider;
+  Future<String?> login(
+      String id, String password, BuildContext context) async {
+    String inputPassword = password.trim();
 
-    // Notify listeners that user information has been updated
+    try {
+      var allDocs = await FirebaseFirestore.instance
+          .collection('users')
+          .where('IDN', isEqualTo: id.trim())
+          // .where('password', isEqualTo: password.trim())
+          .get();
+
+      var userDoc = allDocs.docs.first;
+
+      if (!userDoc.exists) {
+        return 'User not found. Please check your ID and password.';
+      }
+      documentId = userDoc.id;
+
+      // Construct a User object from Firestore data
+      User loggedInUser = User.fromJson(userDoc.data());
+
+      // Verify password
+      if (inputPassword != loggedInUser.password) {
+        return 'Incorrect password. Please try again.';
+      }
+
+      // Set the logged-in user
+      user = loggedInUser;
+      user?.updateDocumentId(documentId);
+
+      // Notify listeners of the change in login status
+      loginStreamController.add(true);
+      // Provider.of<LoginControllerProvider>(context, listen: false)
+      //     .loginStreamController
+      //     .add(true);
+      notifyListeners();
+
+      print('Login successful. User: ${loggedInUser.name}');
+      return null; // No error message if login is successful
+    } catch (e) {
+      print('Error during login: $e');
+
+      return e.toString() == 'Bad state: No element'
+          ? 'User not found. Please check your ID and password.'
+          : 'An error occurred. Please try again later.';
+    }
+  }
+
+  void logout() {
+    // Reset the logged-in user
+    user = null;
+    patients?.clear;
+    print('Current number of patients : ${patients?.length}');
+
+    // Notify listeners to update UI
+    loginStreamController.add(false);
     notifyListeners();
   }
 
-  // Future<void> login(String id, String password, BuildContext context) async {
+  @override
+  void dispose() {
+    // Close the loginStreamController when the provider is disposed of
+    loginStreamController.close();
+    super.dispose();
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Future<void> login(String id, String password, BuildContext context) async {
   //   String inputPassword = password.trim();
   //   Map<String, dynamic>? documentData;
 
@@ -100,96 +144,3 @@ class LoginControllerProvider extends ChangeNotifier {
   //   print('Is logged in : $isLoggedIN');
   //   print('Document data: $documentData');
   // }
-  Future<String?> login(
-      String id, String password, BuildContext context) async {
-    String inputPassword = password.trim();
-    Map<String, dynamic>? documentData;
-
-    try {
-      var allDocs = await FirebaseFirestore.instance
-          .collection('users')
-          .where('IDN', isEqualTo: id.trim())
-          // .where('password', isEqualTo: password.trim())
-          .get();
-      if (allDocs.docs.isEmpty) {
-        return 'User not found. Please check your ID and password.';
-      }
-      documentId = allDocs.docs.first.id;
-      documentData = allDocs.docs.first.data();
-      if (inputPassword == documentData['password']) {
-        // After successful login, update user information
-        updateUserInformation(
-          id: documentData['IDN'],
-          familyNameProvider: documentData['familyName'],
-          nameProvider: documentData['name'],
-          genderProvider: documentData['gender'],
-          birthDayProvider: documentData['birthDay'],
-          birthMonthProvider: documentData['birthMonth'],
-          birthYearProvider: documentData['birthYear'],
-          birthPlaceProvider: documentData['birthPlace'],
-          isAdminProvider: documentData['isAdmin'],
-          isMedcinProvider: documentData['isMedcin'],
-          isPharmacieProvider: documentData['isPharmacien'],
-          profilePicUrlProvider: documentData['profilePicUrl'],
-          bioProvider: documentData['bio'],
-          bloodTypeProvider: documentData['bloodType'],
-          weightProvider: documentData['weight'],
-          heightProvider: documentData['height'],
-        );
-
-        // Set login status
-        Provider.of<LoginControllerProvider>(context, listen: false)
-            .loginStreamController
-            .add(true);
-        // Notify listeners of the change in login status
-        notifyListeners();
-        print('Login successful. User: ${documentData['name']}');
-        return null; // No error message if login is successful
-      } else {
-        // Incorrect password
-        print('Incorrect password for user ID: $id');
-        return 'Incorrect password. Please try again.';
-      }
-    } catch (e) {
-      print('Error during login: $e');
-      return 'An error occurred. Please try again later.';
-    }
-  }
-
-  void logout() {
-    // Reset user-related variables
-    isLoggedIN = false;
-    modeAdmin = false;
-    modePharmacie = false;
-    modeMedcin = false;
-    documentId = null;
-    IDN = null;
-    familyName = null;
-    name = null;
-    gender = null;
-    birthDay = null;
-    birthMonth = null;
-    birthYear = null;
-    birthPlace = null;
-    isAdmin = false;
-    isMedcin = false;
-    isPharmacie = false;
-    profilePicUrl = null;
-    bio = null;
-    bloodType = null;
-    weight = null;
-    height = null;
-
-    // Notify listeners to update UI
-    loginStreamController.add(false);
-    notifyListeners(); // Notify listeners after updating the state
-    print(name);
-  }
-
-  @override
-  void dispose() {
-    // Close the loginStreamController when the provider is disposed of
-    loginStreamController.close();
-    super.dispose();
-  }
-}

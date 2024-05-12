@@ -2,9 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
-import 'package:sahha_app/Models/Patient.dart';
+import 'package:sahha_app/Models/Actors/Patient.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/Qr/OverlayQR.dart';
 
@@ -155,19 +154,130 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
                 children: [
                   MobileScanner(
                     controller: cameraController,
-                    //TODO : check if the medcin is scanning his own qrcode or not
-                    //the pharmacist can scan his own qr code but the medcin should not be able to do it
+                    //the pharmacist can scan his own qr code but the medcin should not be able to do it  /* DONE */
                     //tip: to implement this we need to check if the user document ID matches with the one in the qrcode
                     onDetect: (barcodes) {
                       final scannedCode = barcodes.barcodes.first.rawValue;
-                      if (scannedCode != null &&
-                          scannedCode.length == 20 &&
-                          !isScanned) {
+                      //if the code is valid and not scanned
+                      if ((scannedCode != null) &&
+                          (scannedCode.length == 20) &&
+                          (!isScanned)) {
                         //we add isScanned because we don't want to allow multiple scans of the same code
+                        //if the user is scanning his own code
+                        if (scannedCode == user!.documentId && user!.isMedcin) {
+                          isScanned =
+                              true; //to make sure the code is scanned once
 
-                        isScanned = true;
-                        fetchUserData(scannedCode);
-                      }
+                          showCupertinoDialog(
+                            // Show a Cupertino dialog indicating that the user cannot scan their own QR code
+                            context: context,
+                            builder: (BuildContext context) {
+                              return PopScope(
+                                onPopInvoked: (didPop) {
+                                  setState(() {
+                                    isScanned = false; //to re-scan again
+                                  });
+                                },
+                                child: CupertinoAlertDialog(
+                                  title: Text(
+                                    "Vous ne pouvez pas scanner votre propre code QR !",
+                                    style: GoogleFonts.poppins(
+                                      letterSpacing: 1.2,
+                                      fontWeight: FontWeight.w500,
+                                      color: CupertinoColors.label,
+                                    ),
+                                  ),
+                                  actions: [
+                                    CupertinoButton(
+                                      child: Icon(
+                                        CupertinoIcons.refresh_thick,
+                                        color: SihhaGreen3,
+                                      ),
+                                      onPressed: () {
+                                        isScanned = false;
+                                        Navigator.of(context).pop();
+                                      },
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                          //else if he is scanning another nigga's code
+                        } else {
+                          isScanned = true;
+                          // fetchUserData(scannedCode);
+                          Patient.fetchPatientData(scannedCode).then(
+                            (patient) {
+                              //and that nigga's code is valid
+                              if (patient != null) {
+                                // Check if patients list is not null before adding the patient
+                                if (patients != null) {
+                                  // Check if the patient is already in the list
+                                  bool isPatientExists = patients!.any((p) =>
+                                      p.documentId == patient.documentId);
+
+                                  if (!isPatientExists) {
+                                    patients!.add(patient);
+                                    print(
+                                        'Current number of patients : ${patients!.length}');
+                                  } else {
+                                    print('Patient already exists in the list');
+                                  }
+                                } else {
+                                  // Initialize the patients list if it's null
+                                  patients = [patient];
+                                  print(
+                                      'Current number of patients : ${patients!.length}');
+                                }
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PatientPage(patient: patient),
+                                  ),
+                                );
+                                // if that nigga's code is not valid tell em 'Nigga yo code aint valid'
+                              } else {
+                                showCupertinoDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return PopScope(
+                                      onPopInvoked: (didPop) {
+                                        setState(() {
+                                          isScanned = false;
+                                        });
+                                      },
+                                      child: CupertinoAlertDialog(
+                                        title: Text(
+                                          "Utilisateur introuvable !",
+                                          style: GoogleFonts.poppins(
+                                            letterSpacing: 1.2,
+                                            fontWeight: FontWeight.w500,
+                                            color: CupertinoColors.label,
+                                          ),
+                                        ),
+                                        actions: [
+                                          CupertinoButton(
+                                            child: Icon(
+                                              CupertinoIcons.refresh_thick,
+                                              color: SihhaGreen3,
+                                            ),
+                                            onPressed: () {
+                                              isScanned = false;
+                                              Navigator.of(context).pop();
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                          );
+                        }
+                      } //end if the code is valid and not scanned
                     },
                   ),
                   QRScannerOverlay(overlayColour: Colors.white),
@@ -182,113 +292,115 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
       ),
     );
   }
-
-  Patient? patient;
-  void fetchUserData(String userId) {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        Map<String, dynamic>? userData =
-            documentSnapshot.data() as Map<String, dynamic>;
-        patient = Patient(
-          IDN: userData['IDN'],
-          familyName: userData['familyName'],
-          name: userData['name'],
-          gender: userData['gender'],
-          birthDay: userData['birthDay'],
-          birthMonth: userData['birthMonth'],
-          birthYear: userData['birthYear'],
-          birthPlace: userData['birthPlace'],
-          profilePicUrl: userData['profilePicUrl'],
-          bio: userData['bio'],
-          telephone: userData['telephone'],
-          documentId: documentSnapshot.id,
-          bloodType: userData['bloodType'],
-          weight: userData['weight'],
-          height: userData['height'],
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PatientPage(patient: patient),
-          ),
-        );
-        print('User data: ${userData['name']}');
-        // print('User data: ${documentSnapshot.data()}');
-        // print('User data: ${documentSnapshot.id}');
-      } else {
-        //TODO Show alert dialog
-        showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return PopScope(
-              onPopInvoked: (didPop) {
-                setState(() {
-                  isScanned = false;
-                });
-              },
-              child: CupertinoAlertDialog(
-                title: Text(
-                  "Utilisateur introuvable !",
-                  // "User not found !",
-                  style: GoogleFonts.poppins(
-                      letterSpacing: 1.2,
-                      fontWeight: FontWeight.w500,
-                      color: CupertinoColors.label),
-                ),
-                // content: Text(
-                //   "would you like to try again?",
-                //   style: GoogleFonts.poppins(),
-                // ),
-                actions: [
-                  CupertinoButton(
-                    child: Icon(
-                      CupertinoIcons.refresh_thick,
-                      color: SihhaGreen3,
-                    ),
-                    onPressed: () {
-                      isScanned = false;
-                      Navigator.of(context).pop();
-                    },
-                    //   CupertinoDialogAction(
-                    //     isDestructiveAction: true,
-                    //     onPressed: () {
-                    //       Navigator.pop(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //           builder: (context) => HomeBody(),
-                    //         ),
-                    //       );
-                    //     },
-                    //     child: Text(
-                    //       "Non",
-                    //       style: GoogleFonts.poppins(),
-                    //     ),
-                    //   ),
-                    //   CupertinoDialogAction(
-                    //     onPressed: () {
-                    //       isScanned = false;
-                    //       Navigator.of(context).pop();
-                    //     },
-                    //     child: Text(
-                    //       "Oui",
-                    //       style: GoogleFonts.poppins(),
-                    //     ),
-                    //   ),
-                  )
-                ],
-              ),
-            );
-          },
-        );
-
-        print('User not found');
-        // setState(() {
-        // });
-      }
-    });
-  }
 }
+// Patient? patient;
+// patients.add(patient);
+// void fetchUserData(String userId) {
+//   FirebaseFirestore.instance
+//       .collection('users')
+//       .doc(userId)
+//       .get()
+//       .then((DocumentSnapshot documentSnapshot) {
+//     if (documentSnapshot.exists) {
+//       Map<String, dynamic>? userData =
+//           documentSnapshot.data() as Map<String, dynamic>;
+//       patient = Patient(
+//         IDN: userData['IDN'],
+//         familyName: userData['familyName'],
+//         name: userData['name'],
+//         gender: userData['gender'],
+//         birthDay: userData['birthDay'],
+//         birthMonth: userData['birthMonth'],
+//         birthYear: userData['birthYear'],
+//         birthPlace: userData['birthPlace'],
+//         profilePicUrl: userData['profilePicUrl'],
+//         bio: userData['bio'],
+//         telephone: userData['telephone'],
+//         documentId: documentSnapshot.id,
+//         bloodType: userData['bloodType'],
+//         weight: userData['weight'],
+//         height: userData['height'],
+
+//         //TODO add ordonannces and other fields
+//       );
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => PatientPage(patient: patient),
+//         ),
+//       );
+//       print('User data: ${userData['name']}');
+//       // print('User data: ${documentSnapshot.data()}');
+//       // print('User data: ${documentSnapshot.id}');
+//     } else {
+//       //TODO Show alert dialog
+//       showCupertinoDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return PopScope(
+//             onPopInvoked: (didPop) {
+//               setState(() {
+//                 isScanned = false;
+//               });
+//             },
+//             child: CupertinoAlertDialog(
+//               title: Text(
+//                 "Utilisateur introuvable !",
+//                 // "User not found !",
+//                 style: GoogleFonts.poppins(
+//                     letterSpacing: 1.2,
+//                     fontWeight: FontWeight.w500,
+//                     color: CupertinoColors.label),
+//               ),
+//               // content: Text(
+//               //   "would you like to try again?",
+//               //   style: GoogleFonts.poppins(),
+//               // ),
+//               actions: [
+//                 CupertinoButton(
+//                   child: Icon(
+//                     CupertinoIcons.refresh_thick,
+//                     color: SihhaGreen3,
+//                   ),
+//                   onPressed: () {
+//                     isScanned = false;
+//                     Navigator.of(context).pop();
+//                   },
+//                   //   CupertinoDialogAction(
+//                   //     isDestructiveAction: true,
+//                   //     onPressed: () {
+//                   //       Navigator.pop(
+//                   //         context,
+//                   //         MaterialPageRoute(
+//                   //           builder: (context) => HomeBody(),
+//                   //         ),
+//                   //       );
+//                   //     },
+//                   //     child: Text(
+//                   //       "Non",
+//                   //       style: GoogleFonts.poppins(),
+//                   //     ),
+//                   //   ),
+//                   //   CupertinoDialogAction(
+//                   //     onPressed: () {
+//                   //       isScanned = false;
+//                   //       Navigator.of(context).pop();
+//                   //     },
+//                   //     child: Text(
+//                   //       "Oui",
+//                   //       style: GoogleFonts.poppins(),
+//                   //     ),
+//                   //   ),
+//                 )
+//               ],
+//             ),
+//           );
+//         },
+//       );
+
+//       print('User not found');
+//       // setState(() {
+//       // });
+//     }
+//   });
+// }

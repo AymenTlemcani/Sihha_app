@@ -5,7 +5,9 @@ Future<void> addFieldToAllDocuments() async {
       FirebaseFirestore.instance.collection('users');
 
   // Fetch all documents from the collection
-  final QuerySnapshot querySnapshot = await collectionRef.get();
+
+  final QuerySnapshot querySnapshot =
+      await collectionRef.where('isMedcin', isEqualTo: true).get();
 
   // Iterate over each document
   for (DocumentSnapshot doc in querySnapshot.docs) {
@@ -13,7 +15,11 @@ Future<void> addFieldToAllDocuments() async {
     final String docId = doc.id;
 
     // Update the document with the new field
-    await collectionRef.doc(docId).update({'height': null});
+    await collectionRef.doc(docId).update({
+      'speciality': 'généraliste',
+      'clinicName': 'el-Azhar',
+      'digitalSignature': null
+    });
   }
 
   print('Field added to all documents successfully');

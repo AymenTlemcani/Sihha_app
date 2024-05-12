@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:sahha_app/Models/Actors/Patient.dart';
+import 'package:sahha_app/Models/Actors/User.dart';
 
+User? user;
+List<Patient>? patients;
 bool modeAdmin = false;
 bool modeMedcin = false;
 bool modePharmacie = false;
@@ -34,6 +38,7 @@ String? documentId;
 HexColor SihhaGreen1 = HexColor("6dcea1");
 HexColor SihhaGreen2 = HexColor("509776");
 HexColor SihhaGreen3 = HexColor("318f63");
+HexColor SihhaWhite = HexColor('#FFFFFF');
 // HexColor SihhaGreyBackgroundColor = HexColor("f2f2f2");
 HexColor SihhaGreyBackgroundColor1 = HexColor("f2f2f6");
 HexColor SihhaGreyBackgroundColor2 = HexColor("f8f8f8");

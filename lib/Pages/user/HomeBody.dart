@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter_svg/svg.dart';
@@ -6,11 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyProfilePicture.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
-import 'package:sahha_app/Models/Ordonnance.dart';
+import 'package:sahha_app/Models/Objects/Ordonnance.dart';
+import 'package:sahha_app/Models/Actors/Patient.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
-import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
 import 'package:sahha_app/Pages/admin/CreateUser.dart';
+import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
+import 'package:sahha_app/Pages/user/PatientPage.dart';
 import 'package:sahha_app/Pages/user/Profile.dart';
 
 class HomeBody extends StatefulWidget {
@@ -27,7 +28,7 @@ class _HomeBodyState extends State<HomeBody> {
     // List of MyTile widgets here
     Visibility(
       //FIXME add mode Admin Toggle and remove isAdmin
-      visible: isAdmin || modeAdmin,
+      visible: user!.isAdmin || modeAdmin,
       child: MyTile(
         icon: LineAwesomeIcons.user_plus,
         title: 'Créer un\n compte',
@@ -46,7 +47,7 @@ class _HomeBodyState extends State<HomeBody> {
       ),
     ),
     Visibility(
-      visible: isAdmin || modeAdmin || isMedcin,
+      visible: user!.isAdmin || modeAdmin || user!.isMedcin,
       child: MyTile(
         icon: LineAwesomeIcons.qrcode,
         title: 'Scanner un Code QR',
@@ -54,6 +55,17 @@ class _HomeBodyState extends State<HomeBody> {
         itemColor1: SihhaGreen1.withOpacity(0.18),
         smallCircleColor1: Colors.white,
         onTapFunction: (BuildContext context) {
+          // //TODO Add Qr USB SCAN for pc
+          // Patient.fetchPatientData('QSLvoTr1Tdf0XU9TwfTB').then(
+          //   (patient) {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => PatientPage(patient: patient),
+          //       ),
+          //     );
+
+          //********************************************************************************* */
           print('user tapped Qr Scanner');
           Navigator.push(
             context,
@@ -81,7 +93,7 @@ class _HomeBodyState extends State<HomeBody> {
       },
     ),
     Visibility(
-      visible: isAdmin || modeAdmin,
+      visible: user!.isAdmin || modeAdmin,
       child: MyTile(
         icon: LineAwesomeIcons.user_edit,
         title: 'Modifier un compte',
@@ -167,34 +179,53 @@ class _HomeBodyState extends State<HomeBody> {
 
     // Add other MyTile widgets as needed
   ];
-
-  List<Ordonnance> ordonnances = [];
   @override
   void initState() {
-    super.initState();
-    fetchOrdonnances();
+    user!.fetchOrdonnances();
     setState(() {});
+    super.initState();
   }
 
-  Future<void> fetchOrdonnances() async {
-    final ordonnancesRef = FirebaseFirestore.instance.collection('ordonnances');
-    QuerySnapshot querySnapshot =
-        await ordonnancesRef.where('patientIDN', isEqualTo: IDN).get();
-    setState(() {
-      ordonnances = querySnapshot.docs
-          .map((doc) => Ordonnance.fromFirestore(doc))
-          .toList();
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   fetchOrdonnances();
+  //   setState(() {});
+  // }
 
+//TODO move this method to ordonnace model
+  // Future<void> fetchOrdonnances() async {
+  //   final ordonnancesRef = FirebaseFirestore.instance.collection('ordonnances');
+  //   QuerySnapshot querySnapshot =
+  //       await ordonnancesRef.where('patientIDN', isEqualTo: user!.IDN).get();
+  //   setState(() {
+  //     user!.updateUserInformation(
+  //         ordonnances: querySnapshot.docs
+  //             .map((doc) => Ordonnance.fromFirestore(doc))
+  //             .toList());
+  //   });
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: Visibility(
+        visible: false,
+        child: FloatingActionButton(
+          onPressed: () {
+            print(user!.documentId);
+            // print(user!.ordonnances![0].medicaments![0].name);
+            // print(user!.speciality);
+            // print(patients?.length);
+            // print(patients?[0].familyName ?? '');
+            // patients?.clear();
+          },
+        ),
+      ),
       body: RefreshIndicator(
         color: SihhaGreen1,
         onRefresh: () async {
-          await fetchOrdonnances();
+          await user!.fetchOrdonnances();
           setState(() {});
         },
         child: CustomScrollView(
@@ -205,13 +236,22 @@ class _HomeBodyState extends State<HomeBody> {
                 children: [
                   AppBarHomePage(),
                   SizedBox(height: 20),
-                  Titre('Accés rapide'),
+                  Titre('Accès rapide'),
                   _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
                   SizedBox(height: 10),
                   Titre('Les ordonnances'),
-                  ordonnances.isEmpty
-                      ? NoDataContainer()
-                      : OrdonnancesListView()
+                  FutureBuilder<void>(
+                    future: user!.fetchOrdonnances(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return OrdonnancesListView();
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
@@ -220,72 +260,7 @@ class _HomeBodyState extends State<HomeBody> {
       ),
     );
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     backgroundColor: Colors.white,
-  //     body: CustomScrollView(
-  //       slivers: [
-  //         SliverToBoxAdapter(
-  //           child: RefreshIndicator(
-  //             color: Colors.red,
-  //             onRefresh: () async {
-  //               await fetchOrdonnances();
-  //               setState(() {});
-  //             },
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 AppBarHomePage(),
-  //                 SizedBox(height: 20),
-  //                 Titre('Accés rapide'),
-  //                 _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
-  //                 SizedBox(height: 10),
-  //                 Titre('Les ordonnances'),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //         SliverList(
-  //           delegate: SliverChildListDelegate([
-  //             OrdonnancesListView(),
-  //           ]),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     backgroundColor: Colors.white,
-  //     // floatingActionButton: AddOrdonnance(),
-  //     body: RefreshIndicator(
-  //       onRefresh: () async {
-  //         await fetchOrdonnances();
-
-  //         setState(() {});
-  //       },
-  //       child: SingleChildScrollView(
-  //         reverse: false,
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             AppBarHomePage(),
-  //             SizedBox(height: 20),
-  //             Titre('Accés rapide'),
-  //             // Use either ListView or Wrap 3la 7sab lplatform
-  //             _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
-  //             SizedBox(height: 10),
-  //             Titre('Les ordonnances'),
-  //             OrdonnancesListView(),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget NoDataContainer() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -313,12 +288,22 @@ class _HomeBodyState extends State<HomeBody> {
     );
   }
 
-  Padding OrdonnancesListView() {
+  Widget OrdonnancesListView() {
+    if (user == null || user!.ordonnances == null) {
+      return NoDataContainer();
+    }
+
+    if (user!.ordonnances!.isEmpty) {
+      return NoDataContainer();
+    }
+
     // Sort ordonnances by date of creation in descending order
-    ordonnances.sort((a, b) => b.dateOfCreation.compareTo(a.dateOfCreation));
+    user!.ordonnances!
+        .sort((a, b) => b.dateOfFilling!.compareTo(a.dateOfFilling!));
 
     // Take the last 5 ordonnances
-    List<Ordonnance> displayedOrdonnances = ordonnances.take(5).toList();
+    List<Ordonnance?> displayedOrdonnances =
+        user!.ordonnances!.take(5).toList();
 
     int totalOrdonnaces = displayedOrdonnances.length;
     return Padding(
@@ -335,7 +320,7 @@ class _HomeBodyState extends State<HomeBody> {
               mainAxisSize: MainAxisSize.min,
               children: displayedOrdonnances.asMap().entries.map((entry) {
                 int index = entry.key;
-                Ordonnance ordonnance = entry.value;
+                Ordonnance ordonnance = entry.value!;
                 return Column(
                   children: [
                     OrdonnanceTile(ordonnance: ordonnance),
@@ -360,10 +345,82 @@ class _HomeBodyState extends State<HomeBody> {
     );
   }
 
+  // Padding OrdonnancesListView() {
+  //   if (user == null || user!.ordonnances == null) {
+  //     return Padding(
+  //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+  //       child: Container(
+  //         decoration: BoxDecoration(
+  //           borderRadius: BorderRadius.circular(30),
+  //           color: SihhaGreen1.withOpacity(0.18),
+  //         ),
+  //         child: Center(
+  //           child: Text(
+  //             'Chargement...',
+  //             style: GoogleFonts.poppins(
+  //               color: Colors.grey,
+  //               fontWeight: FontWeight.w400,
+  //               fontSize: 16,
+  //               letterSpacing: 1.3,
+  //             ), // Adjust the style as needed
+  //           ),
+  //         ),
+  //       ),
+  //     );
+  //   }
+
+  //   // Sort ordonnances by date of creation in descending order
+  //   user!.ordonnances!
+  //       .sort((a, b) => b.dateOfFilling!.compareTo(a.dateOfFilling!));
+
+  //   // Take the last 5 ordonnances
+  //   List<Ordonnance?> displayedOrdonnances =
+  //       user!.ordonnances!.take(5).toList();
+
+  //   int totalOrdonnaces = displayedOrdonnances.length;
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         borderRadius: BorderRadius.circular(30),
+  //         color: SihhaGreen1.withOpacity(0.18),
+  //       ),
+  //       child: Center(
+  //         child: SingleChildScrollView(
+  //           physics: NeverScrollableScrollPhysics(), // Disable scrolling
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: displayedOrdonnances.asMap().entries.map((entry) {
+  //               int index = entry.key;
+  //               Ordonnance ordonnance = entry.value!;
+  //               return Column(
+  //                 children: [
+  //                   OrdonnanceTile(ordonnance: ordonnance),
+  //                   if (index <
+  //                       totalOrdonnaces - 1) // Check if it's not the last item
+  //                     Divider(
+  //                       endIndent: 10,
+  //                       indent: 60,
+  //                       thickness: 0.4,
+  //                     )
+  //                   else
+  //                     SizedBox(
+  //                         height:
+  //                             10), // Use SizedBox instead of Divider for the last item
+  //                 ],
+  //               );
+  //             }).toList(),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
 //TODO Switch Tiles to inkwells that navigate to a page with more details about each prescription
   Widget OrdonnanceTile({required Ordonnance ordonnance}) {
     return FutureBuilder<List<String?>>(
-      future: ordonnance.fetchDoctorProfilePicUrls([ordonnance.doctorIDN]),
+      future: ordonnance.fetchDoctorProfilePicUrls([ordonnance.doctorIDN!]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(height: 70);
@@ -393,7 +450,7 @@ class _HomeBodyState extends State<HomeBody> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(ordonnance.doctorName,
+                    child: Text(ordonnance.doctorName!,
                         //
                         style:
                             //
@@ -411,7 +468,7 @@ class _HomeBodyState extends State<HomeBody> {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    ordonnance.speciality,
+                    ordonnance.doctorSpeciality!,
                     style: GoogleFonts.poppins(
                       color: Colors.grey,
                       fontWeight: FontWeight.w400,
@@ -423,7 +480,7 @@ class _HomeBodyState extends State<HomeBody> {
               ),
               Spacer(),
               Text(
-                '${ordonnance.dateOfCreation.toDate().day}/${ordonnance.dateOfCreation.toDate().month}/${ordonnance.dateOfCreation.toDate().year}\n     ${ordonnance.dateOfCreation.toDate().hour}:${ordonnance.dateOfCreation.toDate().minute}',
+                '${ordonnance.dateOfFilling!.toDate().day}/${ordonnance.dateOfFilling!.toDate().month}/${ordonnance.dateOfFilling!.toDate().year}\n     ${ordonnance.dateOfFilling!.toDate().hour}:${ordonnance.dateOfFilling!.toDate().minute}',
                 style: GoogleFonts.poppins(
                   color: Colors.grey,
                   fontWeight: FontWeight.w400,
@@ -448,7 +505,7 @@ class _HomeBodyState extends State<HomeBody> {
   //           prescriptions.add({
   //             'doctorName': '(Nom de Medcin) ${prescriptions.length + 1}',
   //             'specialty': 'Specialty',
-  //             'dateOfCreation': now,
+  //             'dateOfFilling': now,
   //             'prescriptionId': 'ID_${now.microsecondsSinceEpoch}',
   //           });
   //         });
@@ -547,12 +604,12 @@ class _HomeBodyState extends State<HomeBody> {
             children: [
               modeMedcin || modePharmacie
                   ? Text('Dr. ', style: SihhaPoppins2)
-                  : Text(gender == 'male' ? 'M. ' : 'Mme. ',
+                  : Text(user!.gender == 'male' ? 'M. ' : 'Mme. ',
                       style: SihhaPoppins2),
               Text(
-                  name == null
+                  user!.name == null
                       ? 'userName'.toUpperCase()
-                      : '${familyName} ${name!.split(' ')[0]}',
+                      : '${user!.familyName} ${user!.name!.split(' ')[0]}',
                   style: SihhaPoppins2),
             ],
           ),
@@ -588,7 +645,7 @@ class _HomeBodyState extends State<HomeBody> {
             //TODO ki nbdlo photo de profile w nwliw l homePage la photo marahach ttl3 khas 7eta dir logout
             //we can use stream builder or future buider to get the user image from firebase storage or in init state
             child: MyProfilePicture(
-                URL: profilePicUrl,
+                URL: user!.profilePicUrl,
                 radius: 24,
                 ImageHeight: 43,
                 ImageWidth: 43,

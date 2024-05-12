@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sahha_app/Models/Variables.dart';
@@ -43,20 +44,46 @@ class MyProfilePicture extends StatelessWidget {
                 height: ImageHeight ?? 1000,
                 width: ImageWidth ?? 1000, // same for the width
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: Image.network(
-                    URL!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (BuildContext context, Object exception,
-                        StackTrace? stackTrace) {
-                      return Icon(
-                        CupertinoIcons.exclamationmark_triangle,
-                        color: Colors.red,
-                        size: 29,
-                      );
-                    },
-                  ),
-                ),
+                    borderRadius: BorderRadius.circular(100),
+                    child: CachedNetworkImage(
+                      imageUrl: URL!,
+                      fit: BoxFit.cover,
+                      progressIndicatorBuilder: (context, url, progress) {
+                        return Container(
+                          child: Padding(
+                            padding: EdgeInsets.all(130),
+                            child: CircularProgressIndicator(
+                              value: progress.progress,
+                              color: SihhaGreen3,
+                            ),
+                          ),
+                        );
+                      },
+                      errorWidget: (context, url, error) {
+                        print(
+                            'Error on MyProfilePicture.dart : ${error.toString()}');
+                        return Icon(
+                          CupertinoIcons.exclamationmark_triangle,
+                          color: Colors.red,
+                          size: 29,
+                        );
+                      },
+                    )
+                    // Image.network(
+                    //   URL!,
+                    //   fit: BoxFit.cover,
+                    //   errorBuilder: (BuildContext context, Object exception,
+                    //       StackTrace? stackTrace) {
+                    //     print(
+                    //         'Error on MyProfilePicture.dart : ${exception.toString()}');
+                    // return Icon(
+                    //   CupertinoIcons.exclamationmark_triangle,
+                    //   color: Colors.red,
+                    //   size: 29,
+                    // );
+                    //   },
+                    // ),
+                    ),
               ),
       ),
     );

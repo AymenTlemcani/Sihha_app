@@ -6,7 +6,7 @@ import 'package:sahha_app/CommonWidgets/MyTile.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/operations_page.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/ordonnaces_page.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/ordonnacesPage.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/vaccins_page.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/visites_medicales_page.dart';
 
@@ -48,7 +48,7 @@ List<Widget> MedicalTiles = [
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => OrdonnancePage(),
+          builder: (context) => OrdonnancePage(patient: user!),
         ),
       );
     },
