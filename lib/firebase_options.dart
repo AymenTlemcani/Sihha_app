@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -49,6 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '78588377384',
     projectId: 'sahhaapp-6e10d',
     authDomain: 'sahhaapp-6e10d.firebaseapp.com',
+    databaseURL: 'https://sahhaapp-6e10d-default-rtdb.firebaseio.com',
     storageBucket: 'sahhaapp-6e10d.appspot.com',
   );
 
@@ -57,6 +55,7 @@ class DefaultFirebaseOptions {
     appId: '1:78588377384:android:9864aabc29745f1a52381d',
     messagingSenderId: '78588377384',
     projectId: 'sahhaapp-6e10d',
+    databaseURL: 'https://sahhaapp-6e10d-default-rtdb.firebaseio.com',
     storageBucket: 'sahhaapp-6e10d.appspot.com',
   );
 
@@ -65,16 +64,29 @@ class DefaultFirebaseOptions {
     appId: '1:78588377384:ios:fc508551d3782b2d52381d',
     messagingSenderId: '78588377384',
     projectId: 'sahhaapp-6e10d',
+    databaseURL: 'https://sahhaapp-6e10d-default-rtdb.firebaseio.com',
     storageBucket: 'sahhaapp-6e10d.appspot.com',
     iosBundleId: 'com.example.sahhaApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCps5X_UaskviW-OCtRU18jCdKda73cjj0',
-    appId: '1:78588377384:ios:54961939c9486cd752381d',
+    appId: '1:78588377384:ios:fc508551d3782b2d52381d',
     messagingSenderId: '78588377384',
     projectId: 'sahhaapp-6e10d',
+    databaseURL: 'https://sahhaapp-6e10d-default-rtdb.firebaseio.com',
     storageBucket: 'sahhaapp-6e10d.appspot.com',
-    iosBundleId: 'com.example.sahhaApp.RunnerTests',
+    iosBundleId: 'com.example.sahhaApp',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyD6dXQG3AWe52nWUkiSjwXSfsfPwj3BR4E',
+    appId: '1:78588377384:web:5193470a8b9effc752381d',
+    messagingSenderId: '78588377384',
+    projectId: 'sahhaapp-6e10d',
+    authDomain: 'sahhaapp-6e10d.firebaseapp.com',
+    databaseURL: 'https://sahhaapp-6e10d-default-rtdb.firebaseio.com',
+    storageBucket: 'sahhaapp-6e10d.appspot.com',
+  );
+
 }

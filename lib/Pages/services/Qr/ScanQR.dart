@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,7 +7,7 @@ import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
 import 'package:sahha_app/Models/Actors/Patient.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/Qr/OverlayQR.dart';
-
+import 'package:sahha_app/Pages/services/Qr/USBScannerPage.dart';
 import 'package:sahha_app/Pages/user/PatientPage.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';
 
@@ -28,26 +29,45 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
   @override
   void initState() {
     super.initState();
-    if (!isControllerStarted) {
-      try {
-        cameraController.start();
-        print('cameraController STARTED');
-        isControllerStarted = true;
-      } catch (e) {
-        print('Error starting camera controller: $e');
+    if (Platform.isIOS || Platform.isAndroid) {
+      if (!isControllerStarted) {
+        try {
+          cameraController.start();
+          print('cameraController STARTED');
+          isControllerStarted = true;
+        } catch (e) {
+          print('Error starting camera controller: $e');
+        }
       }
     }
   }
 
   @override
   void dispose() {
-    cameraController.dispose();
-    print('cameraController DISPOSED');
+    if (Platform.isIOS || Platform.isAndroid) {
+      cameraController.dispose();
+      print('cameraController DISPOSED');
+    }
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isIOS || Platform.isAndroid) {
+      return _PhoneVersion(context);
+    } else {
+      return UsbScannerPage();
+      // Center(
+      //   child: Text(
+      //     'QR code Scanning on Windows.',
+      //     style: SihhaPoppins1,
+      //   ),
+      // );
+    }
+  }
+
+  Widget _PhoneVersion(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPop) {
         setState(() {

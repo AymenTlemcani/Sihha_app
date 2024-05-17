@@ -13,16 +13,16 @@ import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnanceDetails.da
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
 import 'package:sahha_app/Pages/user/Profile.dart';
 
-class HomeBody extends StatefulWidget {
-  HomeBody({
+class HomeBodyDesktop extends StatefulWidget {
+  HomeBodyDesktop({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<HomeBody> createState() => _HomeBodyState();
+  State<HomeBodyDesktop> createState() => _HomeBodyDesktopState();
 }
 
-class _HomeBodyState extends State<HomeBody> {
+class _HomeBodyDesktopState extends State<HomeBodyDesktop> {
   List<Widget> tiles = [
     // List of MyTile widgets here
     Visibility(
@@ -30,7 +30,7 @@ class _HomeBodyState extends State<HomeBody> {
       visible: user!.isAdmin || modeAdmin,
       child: MyTile(
         icon: LineAwesomeIcons.user_plus,
-        title: 'Créer un\n compte',
+        title: 'Créer un compte',
         iconColor: SihhaGreen2,
         itemColor1: SihhaGreen1.withOpacity(0.18),
         smallCircleColor1: Colors.white,
@@ -190,25 +190,6 @@ class _HomeBodyState extends State<HomeBody> {
     super.initState();
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchOrdonnances();
-  //   setState(() {});
-  // }
-
-//TODO move this method to ordonnace model
-  // Future<void> fetchOrdonnances() async {
-  //   final ordonnancesRef = FirebaseFirestore.instance.collection('ordonnances');
-  //   QuerySnapshot querySnapshot =
-  //       await ordonnancesRef.where('patientIDN', isEqualTo: user!.IDN).get();
-  //   setState(() {
-  //     user!.updateUserInformation(
-  //         ordonnances: querySnapshot.docs
-  //             .map((doc) => Ordonnance.fromFirestore(doc))
-  //             .toList());
-  //   });
-  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -229,41 +210,34 @@ class _HomeBodyState extends State<HomeBody> {
           },
         ),
       ),
-      body: RefreshIndicator(
-        color: SihhaGreen1,
-        onRefresh: () async {
-          await user!.fetchOrdonnances();
-          setState(() {});
-        },
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppBarHomePage(),
-                  SizedBox(height: 20),
-                  Titre('Accès rapide'),
-                  _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
-                  SizedBox(height: 10),
-                  Titre('Les ordonnances'),
-                  FutureBuilder<void>(
-                    future: user!.fetchOrdonnances(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return OrdonnancesListView();
-                      }
-                    },
-                  ),
-                ],
-              ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // AppBarHomePage(),
+                // SizedBox(height: 20),
+                Titre('Accès rapide'),
+                _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
+                SizedBox(height: 10),
+                Titre('Les ordonnances'),
+                FutureBuilder<void>(
+                  future: user!.fetchOrdonnances(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return OrdonnancesListView();
+                    }
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -666,9 +640,6 @@ class _HomeBodyState extends State<HomeBody> {
                 ),
               );
             },
-
-            //TODO ki nbdlo photo de profile w nwliw l homePage la photo marahach ttl3 khas 7eta dir logout
-            //we can use stream builder or future buider to get the user image from firebase storage or in init state
             child: MyProfilePicture(
                 URL: user!.profilePicUrl,
                 radius: 24,

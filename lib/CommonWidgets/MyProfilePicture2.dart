@@ -3,21 +3,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sahha_app/Models/Variables.dart';
 
-class MyProfilePicture extends StatelessWidget {
+class MyProfilePicture2 extends StatelessWidget {
   final String? URL;
   final double? iconSize;
-  final double? ImageHeight;
-  final double? ImageWidth;
-  final double radius;
+  final double frameRadius;
+  final double? pictureRadius;
   final Color? borderColor;
-  const MyProfilePicture(
+  const MyProfilePicture2(
       {super.key,
       required this.URL,
-      this.ImageHeight,
-      this.ImageWidth,
-      required this.radius,
+      required this.frameRadius,
       this.borderColor,
-      this.iconSize});
+      this.iconSize,
+      this.pictureRadius});
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +32,11 @@ class MyProfilePicture extends StatelessWidget {
       ),
       child: CircleAvatar(
         backgroundColor: borderColor ?? Colors.white,
-        radius: radius,
+        radius: frameRadius,
         child: URL == null || URL!.isEmpty
             ? CircleAvatar(
                 backgroundColor: Colors.white,
-                radius: radius - 5,
+                radius: frameRadius - 5,
                 child: Center(
                   child: Icon(
                     CupertinoIcons.person,
@@ -47,10 +45,8 @@ class MyProfilePicture extends StatelessWidget {
                   ),
                 ),
               )
-            : SizedBox(
-                //if no height is provided then it will take the maximum possible space available in its parent container
-                height: ImageHeight ?? 1000,
-                width: ImageWidth ?? 1000, // same for the width
+            : CircleAvatar(
+                radius: pictureRadius ?? frameRadius,
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
                     child: CachedNetworkImage(
@@ -69,7 +65,7 @@ class MyProfilePicture extends StatelessWidget {
                       },
                       errorWidget: (context, url, error) {
                         print(
-                            'Error on MyProfilePicture.dart : ${error.toString()}');
+                            'Error on MyProfilePicture2.dart : ${error.toString()}');
                         return Icon(
                           CupertinoIcons.exclamationmark_triangle,
                           color: Colors.red,

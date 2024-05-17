@@ -110,6 +110,28 @@ class _AddOrdonnancePageState extends State<AddOrdonnancePage> {
     });
   }
 
+  // Method to collect instructions from all instruction rows
+  List<String> _collectInstructions() {
+    List<String> instructions = [];
+    for (MyTextForm instructionRow in _instructionRows) {
+      if (instructionRow.controller.text.isNotEmpty) {
+        instructions.add(instructionRow.controller.text);
+      }
+    }
+    return instructions;
+  }
+
+  // Method to collect notes from all note rows
+  List<String> _collectNotes() {
+    List<String> notes = [];
+    for (MyTextForm noteRow in _noteRows) {
+      if (noteRow.controller.text.isNotEmpty) {
+        notes.add(noteRow.controller.text);
+      }
+    }
+    return notes;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -360,66 +382,98 @@ class _AddOrdonnancePageState extends State<AddOrdonnancePage> {
                 ..._noteRows,
 
                 SizedBox(height: 20),
-                MyButton(
-                  ButtonColor: SihhaGreen2,
-                  TextButtonColor: SihhaWhite,
-                  buttonText: 'Sauvegarder',
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Collect medicaments from all medication widgets
-                      List<Medicament> medicaments = _medicamentsWidgets
-                          .map((widget) => widget.getMedicament())
-                          .toList();
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width < 600
+                          ? MediaQuery.of(context).size.width - 36
+                          : 600 - 36,
+                      child: MyButton(
+                        ButtonColor: SihhaGreen2,
+                        TextButtonColor: SihhaWhite,
+                        buttonText: 'Sauvegarder',
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Collect medicaments from all medication widgets
+                            List<Medicament> medicaments = _medicamentsWidgets
+                                .map((widget) => widget.getMedicament())
+                                .toList();
 
-                      // Create Ordonnance object with entered data
-                      Ordonnance ordonnance = Ordonnance(
-                        doctorIDN: widget.medcin.IDN,
-                        patientIDN: widget.patient.IDN,
-                        patientName: widget.patient.familyName! +
-                            ' ' +
-                            widget.patient.name!,
-                        doctorName: widget.medcin.familyName! +
-                            ' ' +
-                            widget.medcin.name!,
-                        clinicName: widget.medcin.clinicName,
-                        doctorSpeciality: widget.medcin.speciality,
-                        dateOfFilling: Timestamp.fromDate(_dateOfFilling!),
-                        dateOfExpiry: Timestamp.fromDate(_dateOfExpiry!),
-                        medicaments: medicaments, // Add collected medicaments
-                        instructions: [_instructionsController.text],
-                        notes: [_notesController.text],
-                      );
+                            List<String> instructions = _collectInstructions();
+                            List<String> notes = _collectNotes();
 
-                      // Upload ordonnance data to Firestore
-                      FirebaseFirestore.instance
-                          .collection('ordonnances')
-                          .add(ordonnance.toFirestore())
-                          .then((value) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Ordonnance added successfully.'),
-                          ),
-                        );
+                            // Create Ordonnance object with entered data
+                            Ordonnance ordonnance = Ordonnance(
+                              doctorIDN: widget.medcin.IDN,
+                              patientIDN: widget.patient.IDN,
+                              patientName: widget.patient.familyName! +
+                                  ' ' +
+                                  widget.patient.name!,
+                              doctorName: widget.medcin.familyName! +
+                                  ' ' +
+                                  widget.medcin.name!,
+                              clinicName: widget.medcin.clinicName,
+                              doctorSpeciality: widget.medcin.speciality,
+                              dateOfFilling:
+                                  Timestamp.fromDate(_dateOfFilling!),
+                              dateOfExpiry: Timestamp.fromDate(_dateOfExpiry!),
+                              medicaments:
+                                  medicaments, // Add collected medicaments
+                              instructions: instructions,
+                              notes: notes,
+                              clinicLocation: widget.medcin.clinicLocation,
+                              clinicPhoneNumber:
+                                  widget.medcin.clinicPhoneNumber,
+                              doctorDigitalSignature:
+                                  widget.medcin.digitalSignature,
+                              doctorProfessionalPhoneNumber:
+                                  widget.medcin.doctorProfessionalPhoneNumber,
+                            );
 
-                        // Clear text fields after successful upload
+                            // Upload ordonnance data to Firestore
+                            FirebaseFirestore.instance
+                                .collection('ordonnances')
+                                .add(ordonnance.toFirestore())
+                                .then((value) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Ordonnance added successfully.'),
+                                ),
+                              );
 
-                        _instructionsController.clear();
-                        _notesController.clear();
-                        setState(() {
-                          _dateOfExpiry = null;
-                          _medicamentsWidgets
-                              .clear(); // Clear medication widgets
-                          _addNewMedicamentRow(); // Add a new medication row
-                        });
-                      }).catchError((error) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error adding ordonnance: $error'),
-                          ),
-                        );
-                      });
-                    }
-                  },
+                              // Clear text fields after successful upload
+
+                              _instructionsController.clear();
+                              _notesController.clear();
+                              setState(
+                                () {
+                                  _dateOfExpiry = null;
+                                  _medicamentsWidgets
+                                      .clear(); // Clear medication widgets
+                                  _addNewMedicamentRow(); // Add a new medication row
+                                  _instructionRows.clear();
+                                  _addInstructionRow(
+                                      _instructionRows.length + 1);
+                                  _noteRows.clear();
+                                  _addNoteRow(_noteRows.length + 1);
+                                },
+                              );
+                              Navigator.pop(context);
+                            }).catchError((error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Error adding ordonnance: $error'),
+                                ),
+                              );
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:sahha_app/Pages/user/Responsive/DesktopResponsive.dart';
 import 'package:sahha_app/Pages/user/MyPersistentNavBar.dart';
 
 class ActiveScreen extends StatefulWidget {
@@ -13,6 +16,8 @@ class ActiveScreen extends StatefulWidget {
 class _ActiveScreenState extends State<ActiveScreen> {
   @override
   Widget build(BuildContext context) {
-    return PersistentTabSreen();
+    return (Platform.isAndroid || Platform.isIOS)
+        ? PersistentTabSreen()
+        : DesktopResponsive();
   }
 }

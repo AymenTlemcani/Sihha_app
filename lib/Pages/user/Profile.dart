@@ -12,6 +12,7 @@ import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
 import 'package:sahha_app/CommonWidgets/MyProfileMenuWidget.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';
+import 'package:sahha_app/Providers/DesktopNavigationProvider.dart';
 import 'package:sahha_app/Providers/LoginControllerProvider.dart';
 
 class Profile extends StatefulWidget {
@@ -104,6 +105,11 @@ class _ProfileState extends State<Profile> {
                           ElevatedButton(
                             onPressed: () {
                               //TODO Add LastLogin field to users collection
+                              DesktopNavigationProvider navigationProvider =
+                                  Provider.of<DesktopNavigationProvider>(
+                                      context,
+                                      listen: false);
+                              navigationProvider.setSelectedIndex(1);
                               Provider.of<LoginControllerProvider>(
                                 context,
                                 listen: false,
@@ -167,52 +173,7 @@ class _ProfileState extends State<Profile> {
             ),
             child: IconButton(
               alignment: Alignment.center,
-              onPressed: () async {
-                setState(() {
-                  _isUploading = true; // Show loading indicator
-                });
-
-                //Pick the image
-                ImagePicker imagePicker = ImagePicker();
-                XFile? pickedFile =
-                    await imagePicker.pickImage(source: ImageSource.gallery);
-                print('PICKED FILE PATH : ${pickedFile?.path}');
-                if (pickedFile == null) {
-                  setState(() {
-                    _isUploading = false; // Hide loading indicator
-                  });
-                  return;
-                }
-
-                //Get the ref
-                Reference referenceRoot = FirebaseStorage.instance.ref();
-                Reference referenceDirProfilePics =
-                    referenceRoot.child("ProfilePics");
-                Reference referenceImageToUploaod = referenceDirProfilePics
-                    .child("${user!.familyName}_${user!.name}.jpeg");
-
-                print(user!.documentId.toString());
-
-                try {
-                  //Upload to Firebase Storage
-                  await referenceImageToUploaod.putFile(File(pickedFile.path));
-                  // Get the download URL and update it in Firestore Database
-                  String url = await referenceImageToUploaod.getDownloadURL();
-                  user!.updateProfilePicUrl(url);
-                  print(user!.profilePicUrl);
-                  Map<String, dynamic> dataToUpload = {
-                    'profilePicUrl': user!.profilePicUrl.toString(),
-                  };
-                  //Update User Data in Firestore
-                  await _reference.doc(user!.documentId).update(dataToUpload);
-                } catch (e) {
-                  print(e);
-                }
-
-                setState(() {
-                  _isUploading = false; // Hide loading indicator
-                });
-              },
+              onPressed: PickAndUpload,
               icon: Icon(
                 LineAwesomeIcons.alternate_pencil,
                 color: Colors.black,
@@ -223,6 +184,52 @@ class _ProfileState extends State<Profile> {
         ),
       ],
     );
+  }
+
+  PickAndUpload() async {
+    setState(() {
+      _isUploading = true; // Show loading indicator
+    });
+
+    //Pick the image
+    ImagePicker imagePicker = ImagePicker();
+    XFile? pickedFile =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+    print('PICKED FILE PATH : ${pickedFile?.path}');
+    if (pickedFile == null) {
+      setState(() {
+        _isUploading = false; // Hide loading indicator
+      });
+      return;
+    }
+
+    //Get the ref
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference referenceDirProfilePics = referenceRoot.child("ProfilePics");
+    Reference referenceImageToUploaod =
+        referenceDirProfilePics.child("${user!.familyName}_${user!.name}.jpeg");
+
+    print(user!.documentId.toString());
+
+    try {
+      //Upload to Firebase Storage
+      await referenceImageToUploaod.putFile(File(pickedFile.path));
+      // Get the download URL and update it in Firestore Database
+      String url = await referenceImageToUploaod.getDownloadURL();
+      user!.updateProfilePicUrl(url);
+      print(user!.profilePicUrl);
+      Map<String, dynamic> dataToUpload = {
+        'profilePicUrl': user!.profilePicUrl.toString(),
+      };
+      //Update User Data in Firestore
+      await _reference.doc(user!.documentId).update(dataToUpload);
+    } catch (e) {
+      print('error while uploading : $e');
+    }
+
+    setState(() {
+      _isUploading = false; // Hide loading indicator
+    });
   }
 
   Stack ProfilePic2() {

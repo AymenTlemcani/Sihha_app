@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sahha_app/CommonWidgets/MyCardWidget.dart';
 
 class CardPage extends StatefulWidget {
   @override
@@ -50,21 +51,23 @@ class _CardPageState extends State<CardPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (!_showCard)
-              ElevatedButton(
-                onPressed: () {
-                  _showTemporaryImage();
-                },
-                child: Text("DEMANDER VOTRE CARTE SIHHA"),
-              ),
-            SizedBox(height: 20),
-            if (_showCard) buildAnimatedCard(),
-          ],
-        ),
+        // child: Column(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     if (!_showCard)
+        //       ElevatedButton(
+        //         onPressed: () {
+        //           _showTemporaryImage();
+        //         },
+        //         child: Text("DEMANDER VOTRE CARTE SIHHA"),
+        //       ),
+        //     SizedBox(height: 20),
+        //     if (_showCard) buildAnimatedCard(),
+        //   ],
+        // ),
+        child: MyCardWidget(),
       ),
     );
   }

@@ -6,22 +6,24 @@ class MyTextForm extends StatefulWidget {
   final String hintText;
   final bool obscureText;
   final bool? readOnly;
-  final TextInputType keyboardType;
+  final TextInputType? keyboardType;
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final List<TextInputFormatter>? inputFormatters;
   final VoidCallback? onTapFunction;
+  final double? width;
 
   const MyTextForm({
     super.key,
     required this.hintText,
     required this.obscureText,
-    required this.keyboardType,
+    this.keyboardType,
     required this.controller,
     this.validator,
     this.inputFormatters,
     this.onTapFunction,
     this.readOnly,
+    this.width,
   });
 
   @override
@@ -36,9 +38,11 @@ class _MyTextFormState extends State<MyTextForm> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
       child: Container(
-        width: MediaQuery.of(context).size.width < 600
-            ? MediaQuery.of(context).size.width - 36
-            : 600 - 36,
+        width: widget.width != null
+            ? widget.width!
+            : MediaQuery.of(context).size.width < 600
+                ? MediaQuery.of(context).size.width - 36
+                : 600 - 36,
         child: Form(
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,

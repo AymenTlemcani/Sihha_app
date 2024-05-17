@@ -8,7 +8,7 @@ import 'package:sahha_app/Models/Actors/Patient.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/operations_page.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/ordonnacesPage.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnacesPage.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/vaccins_page.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/visites_medicales_page.dart';
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
@@ -157,6 +157,7 @@ class _PatientPageState extends State<PatientPage>
       onPopInvoked: (didPop) async {
         setState(() {
           isScanned = false;
+          isSuccessfullyScanned = false;
         });
       },
       child: Scaffold(
@@ -438,11 +439,11 @@ number of operations
               ),
               Container(
                 // color: Colors.amber,
-                width: 100,
+                width: 84,
                 child: DetailsLine(
                   // '${widget.patient!.bloodType ?? 'O+'}',
 
-                  'O+',
+                  'AB+',
                   Colors.black,
                   LineAwesomeIcons.tint,
                 ),

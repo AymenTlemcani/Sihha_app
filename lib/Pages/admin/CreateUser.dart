@@ -31,6 +31,12 @@ class _CreateUserState extends State<CreateUser> {
   final TextEditingController _telephoneController = TextEditingController();
   final TextEditingController _specialityController = TextEditingController();
   final TextEditingController _clinicNameController = TextEditingController();
+  final TextEditingController _clinicLocationController =
+      TextEditingController();
+  final TextEditingController _clinicPhoneNumberController =
+      TextEditingController();
+  final TextEditingController _doctorProfessionalPhoneNumberController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -75,6 +81,9 @@ class _CreateUserState extends State<CreateUser> {
     _telephoneController.dispose();
     _specialityController.dispose();
     _clinicNameController.dispose();
+    _doctorProfessionalPhoneNumberController.dispose();
+    _clinicLocationController.dispose();
+    _clinicPhoneNumberController.dispose();
     super.dispose();
   }
 
@@ -185,46 +194,6 @@ class _CreateUserState extends State<CreateUser> {
         ],
       ),
       SizedBox(height: 16.0),
-      MyTextForm(
-        hintText: 'Birth Place',
-        obscureText: false,
-        keyboardType: TextInputType.text,
-        controller: _birthPlaceController,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Please enter your birth place';
-          }
-          return null;
-        },
-      ),
-      SizedBox(height: 16.0),
-      _genderSelection(),
-      // MyTextForm(
-      //   hintText: 'gender',
-      //   obscureText: false,
-      //   keyboardType: TextInputType.text,
-      //   controller: _genderController,
-      //   validator: (value) {
-      //     if (value!.isEmpty) {
-      //       return 'Please enter your gender';
-      //     }
-      //     return null;
-      //   },
-      // ),
-      SizedBox(height: 16.0),
-      MyTextForm(
-        hintText: 'Address',
-        obscureText: false,
-        keyboardType: TextInputType.text,
-        controller: _adresseController,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Please enter your address';
-          }
-          return null;
-        },
-      ),
-      SizedBox(height: 16.0),
       Row(
         children: [
           Expanded(
@@ -299,6 +268,46 @@ class _CreateUserState extends State<CreateUser> {
       ),
       SizedBox(height: 16.0),
       MyTextForm(
+        hintText: 'Birth Place',
+        obscureText: false,
+        keyboardType: TextInputType.text,
+        controller: _birthPlaceController,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please enter your birth place';
+          }
+          return null;
+        },
+      ),
+      SizedBox(height: 16.0),
+      _genderSelection(),
+      // MyTextForm(
+      //   hintText: 'gender',
+      //   obscureText: false,
+      //   keyboardType: TextInputType.text,
+      //   controller: _genderController,
+      //   validator: (value) {
+      //     if (value!.isEmpty) {
+      //       return 'Please enter your gender';
+      //     }
+      //     return null;
+      //   },
+      // ),
+      SizedBox(height: 16.0),
+      MyTextForm(
+        hintText: 'Address',
+        obscureText: false,
+        keyboardType: TextInputType.text,
+        controller: _adresseController,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please enter your address';
+          }
+          return null;
+        },
+      ),
+      SizedBox(height: 16.0),
+      MyTextForm(
         hintText: 'Telephone',
         obscureText: false,
         keyboardType: TextInputType.phone,
@@ -330,16 +339,39 @@ class _CreateUserState extends State<CreateUser> {
         ),
         SizedBox(height: 16.0),
         MyTextForm(
+          hintText: 'Professional Phone Number',
+          obscureText: false,
+          keyboardType: TextInputType.phone,
+          controller: _doctorProfessionalPhoneNumberController,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(10),
+          ],
+        ),
+        SizedBox(height: 16.0),
+        MyTextForm(
           hintText: 'Clinic Name',
           obscureText: false,
           keyboardType: TextInputType.text,
           controller: _clinicNameController,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Please enter the clinic name';
-            }
-            return null;
-          },
+        ),
+        SizedBox(height: 16.0),
+        MyTextForm(
+          hintText: 'Clinic Location',
+          obscureText: false,
+          keyboardType: TextInputType.text,
+          controller: _clinicLocationController,
+        ),
+        SizedBox(height: 16.0),
+        MyTextForm(
+          hintText: 'Clinic Phone Number',
+          obscureText: false,
+          keyboardType: TextInputType.phone,
+          controller: _clinicPhoneNumberController,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(10),
+          ],
         ),
         SizedBox(height: 16.0),
       ],
@@ -386,24 +418,36 @@ class _CreateUserState extends State<CreateUser> {
                       }
 
                       // Convert input values to appropriate types
-                      // TODO: Check if the user already exists in database before
+                      //  Check if the user already exists in database before /*DONE*/
 
-                      String idNewUser = _idController.text;
-                      String passwordNewUser = _passwordUserController.text;
-                      String familyNameNewUser = _familyNameController.text;
-                      String nameNewUser = _nameController.text;
-                      String birthPlaceNewUser = _birthPlaceController.text;
-                      String genderNewUser = _genderController.text;
-                      String adresseNewUser = _adresseController.text;
+                      String idNewUser = _idController.text.trim();
+                      String passwordNewUser =
+                          _passwordUserController.text.trim();
+                      String familyNameNewUser =
+                          _familyNameController.text.trim();
+                      String nameNewUser = _nameController.text.trim();
+                      String birthPlaceNewUser =
+                          _birthPlaceController.text.trim();
+                      String genderNewUser = _genderController.text.trim();
+                      String adresseNewUser = _adresseController.text.trim();
                       int birthDayNewUser = int.parse(_birthDayController.text);
                       int birthMonthNewUser =
                           int.parse(_birthMonthController.text);
                       int birthYearNewUser =
                           int.parse(_birthYearController.text);
-                      String telephoneNewUser = _telephoneController.text;
+                      String telephoneNewUser =
+                          _telephoneController.text.trim();
 
-                      String specialityNewUser = _specialityController.text;
-                      String clinicNameNewUser = _clinicNameController.text;
+                      String specialityNewUser =
+                          _specialityController.text.trim();
+                      String clinicNameNewUser =
+                          _clinicNameController.text.trim();
+                      String clinicLocationNewUser =
+                          _clinicLocationController.text.trim();
+                      String clinicPhoneNumberNewUser =
+                          _clinicPhoneNumberController.text.trim();
+                      String doctorProfessionalPhoneNumberNewUser =
+                          _doctorProfessionalPhoneNumberController.text.trim();
 
                       // Upload data to Firestore
                       FirebaseFirestore.instance.collection('users').add({
@@ -434,8 +478,12 @@ class _CreateUserState extends State<CreateUser> {
                               .doc(value.id)
                               .update({
                             'speciality': specialityNewUser,
+                            'doctorProfessionalPhoneNumber':
+                                doctorProfessionalPhoneNumberNewUser,
                             'clinicName': clinicNameNewUser,
-                            'digitalSignature': null
+                            'clinicLocation': clinicLocationNewUser,
+                            'clinicPhoneNumber': clinicPhoneNumberNewUser,
+                            'digitalSignature': null,
                           }).then((_) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -471,6 +519,10 @@ class _CreateUserState extends State<CreateUser> {
                         _telephoneController.clear();
                         _specialityController.clear();
                         _clinicNameController.clear();
+                        _clinicLocationController.clear();
+                        _clinicPhoneNumberController.clear();
+                        _doctorProfessionalPhoneNumberController.clear();
+
                         setState(() {
                           _selectedUserType = null;
                           newIsAdmin = false;

@@ -39,7 +39,10 @@ class _AuthPageState extends State<AuthPage> {
         stream: _loginStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+                child: CircularProgressIndicator(
+              color: SihhaGreen2,
+            ));
           } else if (snapshot.hasData) {
             return snapshot.data! ? ActiveScreen() : LoginPage();
           } else {

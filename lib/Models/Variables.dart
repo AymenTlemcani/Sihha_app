@@ -55,7 +55,10 @@ TextStyle SihhaTextStyleH3 = GoogleFonts.sarabun(
     color: const Color.fromARGB(255, 12, 12, 12), fontWeight: FontWeight.w300);
 
 ///
-TextStyle SihhaFont = GoogleFonts.poppins(color: Colors.black);
+TextStyle SihhaFont = GoogleFonts.poppins(
+  color: Color.fromARGB(255, 29, 29, 29),
+  // color: Color(0xFFFFFFFF),
+);
 TextStyle SihhaPoppins1 = GoogleFonts.poppins(
     color: Colors.black, fontWeight: FontWeight.w500, fontSize: 28);
 TextStyle SihhaPoppins2 = GoogleFonts.poppins(
@@ -68,3 +71,5 @@ TextStyle SihhaPoppins4 = GoogleFonts.poppins(
     fontWeight: FontWeight.w500,
     fontSize: 17,
     letterSpacing: 2);
+bool isSuccessfullyScanned = false;
+int selectedIndex = 1;

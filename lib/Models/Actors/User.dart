@@ -6,9 +6,13 @@ class User extends Patient {
   bool isAdmin;
   bool isMedcin;
   bool isPharmacie;
+  String? adresse;
   String? speciality;
   String? clinicName;
   String? digitalSignature;
+  String? doctorProfessionalPhoneNumber;
+  String? clinicLocation;
+  String? clinicPhoneNumber;
 
   User({
     required String IDN,
@@ -16,6 +20,7 @@ class User extends Patient {
     required String familyName,
     required String name,
     required String gender,
+    this.adresse,
     required int birthDay,
     required int birthMonth,
     required int birthYear,
@@ -32,6 +37,9 @@ class User extends Patient {
     this.speciality,
     this.clinicName,
     this.digitalSignature,
+    this.clinicLocation,
+    this.clinicPhoneNumber,
+    this.doctorProfessionalPhoneNumber,
   }) : super(
           IDN: IDN,
           familyName: familyName,
@@ -137,12 +145,29 @@ class User extends Patient {
     speciality = newSpeciality;
   }
 
+  void updateAdresse(String newAdresse) {
+    adresse = newAdresse;
+  }
+
   void updateClinicName(String newClinicName) {
     clinicName = newClinicName;
   }
 
   void updateDigitalSignature(String? newDigitalSignature) {
     digitalSignature = newDigitalSignature;
+  }
+
+  void updateClinicLocation(String? newClinicLocation) {
+    clinicLocation = newClinicLocation;
+  }
+
+  void updateclinicPhoneNumber(String? newClinicPhoneNumber) {
+    clinicPhoneNumber = newClinicPhoneNumber;
+  }
+
+  void updateDoctorProfessionalPhoneNumber(
+      String? newDoctorProfessionalPhoneNumber) {
+    doctorProfessionalPhoneNumber = newDoctorProfessionalPhoneNumber;
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -156,6 +181,7 @@ class User extends Patient {
         birthMonth: json['birthMonth'],
         birthYear: json['birthYear'],
         birthPlace: json['birthPlace'],
+        adresse: json['adresse'],
         profilePicUrl: json['profilePicUrl'],
         bio: json['bio'],
         telephone: json['telephone'],
@@ -164,9 +190,12 @@ class User extends Patient {
         height: json['height'],
         isAdmin: json['isAdmin'] ?? false,
         isMedcin: json['isMedcin'] ?? false,
-        isPharmacie: json['isPharmacie'] ?? false,
+        isPharmacie: json['isPharmacien'] ?? false,
         speciality: json['speciality'],
+        digitalSignature: json['digitalSignature'],
         clinicName: json['clinicName'],
-        digitalSignature: json['digitalSignature']);
+        clinicLocation: json['clinicLocation'],
+        clinicPhoneNumber: json['clinicPhoneNumber'],
+        doctorProfessionalPhoneNumber: json['doctorProfessionalPhoneNumber']);
   }
 }

@@ -7,7 +7,12 @@ class Ordonnance {
   final String? patientName;
   final String? doctorIDN;
   final String? doctorName;
+  final String? doctorProfessionalPhoneNumber;
+  final String? doctorDigitalSignature;
+
   final String? clinicName;
+  final String? clinicLocation;
+  final String? clinicPhoneNumber;
   final String? doctorSpeciality;
   final Timestamp? dateOfFilling;
   final Timestamp? dateOfExpiry;
@@ -30,6 +35,10 @@ class Ordonnance {
     required this.medicaments,
     this.instructions,
     this.notes,
+    this.doctorProfessionalPhoneNumber,
+    this.doctorDigitalSignature,
+    this.clinicLocation,
+    this.clinicPhoneNumber,
   });
 
   // factory Ordonnance.fromFirestore(DocumentSnapshot doc) {
@@ -86,6 +95,10 @@ class Ordonnance {
         notes: (data['notes'] as List<dynamic>?)
             ?.map((note) => note as String?)
             .toList(),
+        clinicLocation: data['clinicLocation'],
+        clinicPhoneNumber: data['clinicPhoneNumber'],
+        doctorDigitalSignature: data['doctorDigitalSignature'],
+        doctorProfessionalPhoneNumber: data['doctorProfessionalPhoneNumber'],
       );
     } catch (e) {
       throw Exception('Error creating Ordonnance from Firestore data: $e');
@@ -108,6 +121,10 @@ class Ordonnance {
           .toList(), // Convert each Medicament to map
       'instructions': instructions,
       'notes': notes,
+      'doctorProfessionalPhoneNumber': doctorProfessionalPhoneNumber,
+      'clinicPhoneNumber': clinicPhoneNumber,
+      'clinicLocation': clinicLocation,
+      'doctorDigitalSignature': doctorDigitalSignature
     };
   }
 

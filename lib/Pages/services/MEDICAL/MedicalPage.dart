@@ -6,7 +6,7 @@ import 'package:sahha_app/CommonWidgets/MyTile.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/operations_page.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/ordonnacesPage.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnacesPage.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/vaccins_page.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/visites_medicales_page.dart';
 
@@ -55,7 +55,7 @@ List<Widget> MedicalTiles = [
   ),
   MyTile(
     icon: LineAwesomeIcons.stethoscope,
-    title: 'Visites medicales',
+    title: 'Visites',
     iconColor: SihhaGreen2,
     itemColor1: SihhaGreen1.withOpacity(0.18),
     smallCircleColor1: Colors.white,
