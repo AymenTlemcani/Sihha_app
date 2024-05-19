@@ -1,14 +1,19 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyProfilePicture.dart';
+import 'package:sahha_app/CommonWidgets/MyProfilePicture2.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
 import 'package:sahha_app/Models/Objects/Ordonnance.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedical.dart';
 import 'package:sahha_app/Pages/admin/CreateUser.dart';
+import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnacesPage.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnanceDetails.dart';
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
 import 'package:sahha_app/Pages/user/Profile.dart';
@@ -47,7 +52,7 @@ class _HomeBodyState extends State<HomeBody> {
     ),
     Visibility(
       visible:
-          user!.isAdmin || modeAdmin || user!.isMedcin || user!.isPharmacie,
+          user!.isAdmin || modeAdmin || user!.isMedcin || user!.isPharmacien,
       child: MyTile(
         icon: LineAwesomeIcons.qrcode,
         title: 'Scanner',
@@ -190,6 +195,8 @@ class _HomeBodyState extends State<HomeBody> {
     super.initState();
   }
 
+  Color ButtonColor = Colors.white;
+  Color TextColor = SihhaGreen2;
   // @override
   // void initState() {
   //   super.initState();
@@ -197,7 +204,7 @@ class _HomeBodyState extends State<HomeBody> {
   //   setState(() {});
   // }
 
-//TODO move this method to ordonnace model
+//TO DO  move this method to ordonnace model /* DONE */
   // Future<void> fetchOrdonnances() async {
   //   final ordonnancesRef = FirebaseFirestore.instance.collection('ordonnances');
   //   QuerySnapshot querySnapshot =
@@ -219,7 +226,7 @@ class _HomeBodyState extends State<HomeBody> {
           onPressed: () {
             print(user!.documentId);
             print(user!.adresse);
-            print(user!.isPharmacie);
+            print(user!.isPharmacien);
 
             // print(user!.ordonnances![0].medicaments![0].name);
             // print(user!.speciality);
@@ -231,6 +238,7 @@ class _HomeBodyState extends State<HomeBody> {
       ),
       body: RefreshIndicator(
         color: SihhaGreen1,
+        strokeWidth: 4,
         onRefresh: () async {
           await user!.fetchOrdonnances();
           setState(() {});
@@ -241,24 +249,223 @@ class _HomeBodyState extends State<HomeBody> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppBarHomePage(),
-                  SizedBox(height: 20),
+                  if (!Platform.isWindows) ...[
+                    AppBarHomePage(),
+                    SizedBox(height: 20),
+                  ],
+                  if (Platform.isWindows) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: TextButton(
+                              onHover: (value) {
+                                setState(() {
+                                  ButtonColor =
+                                      value ? SihhaGreen1 : Colors.white;
+                                  TextColor =
+                                      value ? Colors.white : SihhaGreen2;
+                                });
+                              },
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStatePropertyAll(ButtonColor),
+                                  shape: MaterialStatePropertyAll(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8)))),
+                              onPressed: () {
+                                if (mounted) {
+                                  user!.fetchOrdonnances();
+                                  setState(() {});
+                                }
+                              },
+                              child: IntrinsicWidth(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(0.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.refresh_bold,
+                                        color: TextColor,
+                                        size: 18,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        'Refresh',
+                                        style: SihhaFont.copyWith(
+                                            color: TextColor,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                   Titre('Accès rapide'),
                   _shouldUseWrap() ? WrapAccesRapide() : ListViewAccesRapide(),
                   SizedBox(height: 10),
-                  Titre('Les ordonnances'),
-                  FutureBuilder<void>(
-                    future: user!.fetchOrdonnances(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return OrdonnancesListView();
-                      }
-                    },
-                  ),
+
+                  if (!Platform.isWindows) ...[
+                    Row(
+                      children: [
+                        Titre('Les ordonnances'),
+                        Spacer(),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
+                          child: GestureDetector(
+                            onTap: () {
+                              print('user tapped Voir tout on ordonnaces');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      OrdonnancePage(patient: user!),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Voir tout',
+                              style: SihhaFont.copyWith(
+                                  fontSize: 12,
+                                  color: SihhaGreen2,
+                                  decoration: TextDecoration.underline,
+                                  decorationThickness: 0.2,
+                                  decorationColor: SihhaGreen2,
+                                  letterSpacing: 2,
+                                  decorationStyle: TextDecorationStyle.wavy),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    FutureBuilder<void>(
+                      future: user!.fetchOrdonnances(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            height: 300,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: SihhaGreen1,
+                                  strokeWidth: 5,
+                                  // strokeAlign: 5,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          return OrdonnancesListView();
+                        }
+                      },
+                    ),
+                  ],
+
+                  ///
+                  if (Platform.isWindows) ...[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 1000,
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Titre('Les ordonnances'),
+                                    Spacer(),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 0, 25, 0),
+                                      child: MouseRegion(
+                                        cursor: SystemMouseCursors.click,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            print(
+                                                'user tapped Voir tout on ordonnaces');
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OrdonnancePage(
+                                                        patient: user!),
+                                              ),
+                                            );
+                                          },
+                                          child: Text(
+                                            'Voir tout',
+                                            style: SihhaFont.copyWith(
+                                                fontSize: 12,
+                                                color: SihhaGreen2,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                decorationThickness: 0.2,
+                                                decorationColor: SihhaGreen2,
+                                                letterSpacing: 2,
+                                                decorationStyle:
+                                                    TextDecorationStyle.wavy),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                FutureBuilder<void>(
+                                  future: user!.fetchOrdonnances(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Container(
+                                        height: 300,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              color: SihhaGreen1,
+                                              strokeWidth: 5,
+                                              // strokeAlign: 5,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    } else if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    } else {
+                                      return OrdonnancesListView();
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            // color: Colors.teal,
+                            decoration: BoxDecoration(color: Colors.teal),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ]
                 ],
               ),
             ),
@@ -304,20 +511,29 @@ class _HomeBodyState extends State<HomeBody> {
       return NoDataContainer();
     }
 
-    // Sort ordonnances by date of creation in descending order
+    // // Sort ordonnances by date of creation in descending order
+    // user!.ordonnances!
+    //     .sort((a, b) => b.dateOfFilling!.compareTo(a.dateOfFilling!));
+
+    // // Take the last 5 ordonnances
+    // List<Ordonnance?> displayedOrdonnances =
+    //     user!.ordonnances!.take(5).toList();
+// Sort ordonnances by date of creation in descending order
     user!.ordonnances!
         .sort((a, b) => b.dateOfFilling!.compareTo(a.dateOfFilling!));
 
-    // Take the last 5 ordonnances
-    List<Ordonnance?> displayedOrdonnances =
-        user!.ordonnances!.take(5).toList();
+// Filter the sorted ordonnances to take only the active ones
+    List<Ordonnance?> displayedOrdonnances = user!.ordonnances!
+        .where((ordonnance) => ordonnance.status == 'active')
+        .take(5)
+        .toList();
 
     int totalOrdonnaces = displayedOrdonnances.length;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(20),
           color: SihhaGreen1.withOpacity(0.18),
         ),
         child: Center(
@@ -438,7 +654,7 @@ class _HomeBodyState extends State<HomeBody> {
         }
         List<String?> doctorProfilePicUrls = snapshot.data ?? [];
         return InkWell(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(20),
           splashColor: Colors.transparent,
           onTap: () {
             Navigator.push(
@@ -459,7 +675,15 @@ class _HomeBodyState extends State<HomeBody> {
                     children: doctorProfilePicUrls.map((url) {
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: MyProfilePicture(URL: url, radius: 20),
+                        // child: MyProfilePicture(URL: url, radius: 20),
+                        child: MyProfilePicture2(
+                          URL: url,
+                          frameRadius: 23,
+                          pictureRadius: 21,
+                          borderColor: ordonnance.status == 'active'
+                              ? SihhaGreen2
+                              : Colors.grey,
+                        ),
                       );
                     }).toList(),
                   ),
@@ -550,7 +774,8 @@ class _HomeBodyState extends State<HomeBody> {
     return Material(
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        // padding: EdgeInsets.fromLTRB(12, 0, 20, 12),
+        padding: EdgeInsets.all(12),
         child: Wrap(
           // alignment: WrapAlignment.center,
           alignment: WrapAlignment.start,
@@ -570,7 +795,7 @@ class _HomeBodyState extends State<HomeBody> {
       height: 180,
       color: Colors.white,
       child: ListView(
-          padding: EdgeInsets.all(12),
+          padding: EdgeInsets.fromLTRB(12, 0, 20, 12),
           physics: ClampingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           children: tiles),

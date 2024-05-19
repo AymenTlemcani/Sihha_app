@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
 import 'package:sahha_app/Models/Actors/Patient.dart';
@@ -37,8 +38,13 @@ class OrdonnanceDetails extends StatelessWidget {
           'Odonnance  ${ordonnance.dateOfFilling!.toDate().day} /${ordonnance.dateOfFilling!.toDate().month}',
           style: SihhaPoppins3,
         ),
-        shadowColor: Colors.black,
+        surfaceTintColor: Colors.white,
         elevation: 0.5,
+
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.black54,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       body: SingleChildScrollView(
         child: Padding(

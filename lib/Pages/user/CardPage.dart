@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sahha_app/CommonWidgets/MyCardWidget.dart';
+import 'package:sahha_app/Models/Variables.dart';
 
 class CardPage extends StatefulWidget {
   @override
@@ -10,7 +14,8 @@ class _CardPageState extends State<CardPage> with TickerProviderStateMixin {
   late AnimationController flipAnimationController;
   late Animation<double> flipAnimation;
   double horizontalDrag = 0;
-
+  Color ButtonColor = Colors.white;
+  Color TextColor = SihhaGreen2;
   bool isFront = true;
   bool _showCard = false;
 
@@ -51,6 +56,64 @@ class _CardPageState extends State<CardPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        // actions: [
+        //   TextButton(
+        //     onHover: (value) {
+        //       print(value);
+        //       setState(() {
+        //         ButtonColor = value ? SihhaGreen1 : Colors.white;
+        //         TextColor = value ? Colors.white : SihhaGreen2;
+        //       });
+        //     },
+        //     style: ButtonStyle(
+        //         backgroundColor: MaterialStatePropertyAll(ButtonColor),
+        //         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(8)))),
+        //     onPressed: () {},
+        //     child: IntrinsicWidth(
+        //       child: Padding(
+        //         padding:
+        //             const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        //         child: Row(
+        //           children: [
+        //             // Icon(
+        //             //   CupertinoIcons.refresh_bold,
+        //             //   color: TextColor,
+        //             //   size: 18,
+        //             // ),
+        //             // SizedBox(
+        //             //   width: 5,
+        //             // ),
+        //             Text(
+        //               'Demander une carte Physique',
+        //               style: SihhaFont.copyWith(
+        //                   color: TextColor,
+        //                   fontSize: 14,
+        //                   fontWeight: FontWeight.w500),
+        //             )
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ],
+
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            'Cards',
+            style: SihhaPoppins2,
+          ),
+        ),
+        surfaceTintColor: Colors.white,
+        elevation: 0.5,
+
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.black54,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
       backgroundColor: Colors.white,
       body: Center(
         // child: Column(

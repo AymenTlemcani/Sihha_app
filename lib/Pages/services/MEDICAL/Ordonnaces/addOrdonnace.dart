@@ -137,7 +137,6 @@ class _AddOrdonnancePageState extends State<AddOrdonnancePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        shadowColor: Colors.white,
         title: Text(
           'Créer une ordonnance',
           style: SihhaPoppins3,
@@ -147,6 +146,10 @@ class _AddOrdonnancePageState extends State<AddOrdonnancePage> {
             Navigator.pop(context);
           },
         ),
+        shadowColor: Colors.black54,
+        elevation: 0.5,
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       body: SingleChildScrollView(
         child: Padding(

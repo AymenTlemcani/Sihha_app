@@ -5,7 +5,7 @@ class User extends Patient {
   String password;
   bool isAdmin;
   bool isMedcin;
-  bool isPharmacie;
+  bool isPharmacien;
   String? adresse;
   String? speciality;
   String? clinicName;
@@ -33,7 +33,7 @@ class User extends Patient {
     required double? height,
     required this.isAdmin,
     required this.isMedcin,
-    required this.isPharmacie,
+    required this.isPharmacien,
     this.speciality,
     this.clinicName,
     this.digitalSignature,
@@ -137,8 +137,8 @@ class User extends Patient {
     isMedcin = newIsMedcin;
   }
 
-  void updateIsPharmacie(bool newIsPharmacie) {
-    isPharmacie = newIsPharmacie;
+  void updateIsPharmacie(bool newIsPharmacien) {
+    isPharmacien = newIsPharmacien;
   }
 
   void updateSpeciality(String newSpeciality) {
@@ -190,7 +190,7 @@ class User extends Patient {
         height: json['height'],
         isAdmin: json['isAdmin'] ?? false,
         isMedcin: json['isMedcin'] ?? false,
-        isPharmacie: json['isPharmacien'] ?? false,
+        isPharmacien: json['isPharmacien'] ?? false,
         speciality: json['speciality'],
         digitalSignature: json['digitalSignature'],
         clinicName: json['clinicName'],

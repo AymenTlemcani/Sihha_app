@@ -124,12 +124,12 @@ class _MedicalPageState extends State<MedicalPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        surfaceTintColor: SihhaGreen1,
-        elevation: 0,
-        scrolledUnderElevation: 1,
+        surfaceTintColor: Colors.white,
+        elevation: 0.5,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         backgroundColor: Colors.white,
-        shadowColor: Colors.white,
+        shadowColor: Colors.black54,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(

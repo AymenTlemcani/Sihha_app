@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/user/HomeBody.dart';
@@ -12,10 +13,17 @@ class DossierMedical extends StatefulWidget {
 }
 
 class _DossierMedicalState extends State<DossierMedical> {
+  bool _isLoading = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SihhaGreyBackgroundColor1,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: MyBackButton(
           onTapFunction: () {
@@ -27,8 +35,6 @@ class _DossierMedicalState extends State<DossierMedical> {
             );
           },
         ),
-        backgroundColor: Colors.white,
-        shadowColor: Colors.white,
         title: Text(
           'Dossier Medical',
           style: SihhaPoppins3,
@@ -49,7 +55,18 @@ class _DossierMedicalState extends State<DossierMedical> {
                 )),
           )
         ],
+        surfaceTintColor: Colors.white,
+        elevation: 0.5,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.black54,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : CustomScrollView(
+              slivers: [SliverToBoxAdapter()],
+            ),
     );
   }
 }

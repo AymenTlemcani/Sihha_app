@@ -8,14 +8,20 @@ class MyProfilePicture2 extends StatelessWidget {
   final double? iconSize;
   final double frameRadius;
   final double? pictureRadius;
+  final double? pictureWidth;
+  final double? pictureHeight;
   final Color? borderColor;
+  final bool? grayscale;
   const MyProfilePicture2(
       {super.key,
       required this.URL,
       required this.frameRadius,
       this.borderColor,
       this.iconSize,
-      this.pictureRadius});
+      this.pictureRadius,
+      this.pictureWidth,
+      this.pictureHeight,
+      this.grayscale});
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +56,14 @@ class MyProfilePicture2 extends StatelessWidget {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
                     child: CachedNetworkImage(
+                      color: (grayscale ?? false)
+                          ? Colors.black
+                          : Colors.transparent,
+                      colorBlendMode: (grayscale ?? false)
+                          ? BlendMode.saturation
+                          : BlendMode.dst,
+                      height: pictureHeight ?? 1000,
+                      width: pictureWidth ?? 1000,
                       imageUrl: URL!,
                       fit: BoxFit.cover,
                       progressIndicatorBuilder: (context, url, progress) {

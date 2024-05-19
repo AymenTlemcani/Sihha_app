@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -7,8 +8,8 @@ import 'package:sahha_app/Pages/admin/AdminDashboard.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/MedicalPage.dart';
 import 'package:sahha_app/Pages/user/CardPage.dart';
 import 'package:sahha_app/Pages/user/FamilyPage.dart';
+import 'package:sahha_app/Pages/user/HomeBody.dart';
 import 'package:sahha_app/Pages/user/Profile.dart';
-import 'package:sahha_app/Pages/user/Responsive/HomeBodyDesktop.dart';
 import 'package:sahha_app/Providers/DesktopNavigationProvider.dart';
 
 class DesktopView extends StatefulWidget {
@@ -20,7 +21,8 @@ class DesktopView extends StatefulWidget {
 
 final List<Widget> _screens = [
   Profile(),
-  HomeBodyDesktop(),
+  // HomeBodyDesktop(),
+  HomeBody(),
   CardPage(),
   MedicalPage(),
   FamilyPage(),
@@ -28,6 +30,11 @@ final List<Widget> _screens = [
 ];
 
 class _DesktopViewState extends State<DesktopView> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final navigatorKey = GlobalKey<NavigatorState>();
@@ -96,6 +103,7 @@ class _DesktopViewState extends State<DesktopView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        leadingWidth: 100,
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
