@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
+import 'package:sahha_app/Models/Actors/Medcin.dart';
 import 'package:sahha_app/Models/Actors/Patient.dart';
 import 'package:sahha_app/Models/Objects/Ordonnance.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/medicamentDetails.dart';
+import 'package:sahha_app/Services/UserService.dart';
 
 class OrdonnanceDetails extends StatelessWidget {
   final Ordonnance ordonnance;
   final Patient patient;
-  const OrdonnanceDetails(
-      {Key? key, required this.ordonnance, required this.patient})
-      : super(key: key);
+  final UserService userService = UserService(); // Declare userService here
+  final Medcin? medcin; // Declare Medcin instance variable
+
+  OrdonnanceDetails(
+      {Key? key, required this.ordonnance, required this.patient, this.medcin})
+      : super(key: key) {}
 
   @override
   Widget build(BuildContext context) {
@@ -201,6 +207,25 @@ class OrdonnanceDetails extends StatelessWidget {
                         ],
                       ),
                     ),
+                  // Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 50.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text('Signature :      ',
+                            style: SihhaFont.copyWith(color: Colors.black54)),
+                        Text(
+                          '${ordonnance.medcin![0].familyName} ${ordonnance.medcin![0].name}',
+                          style: GoogleFonts.caveat(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black54),
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -255,7 +280,7 @@ class OrdonnanceDetails extends StatelessWidget {
           style: SihhaFont.copyWith(),
         ),
         Text(
-          '${ordonnance.patientName}  ',
+          '${patient.familyName} ${patient.name}  ',
           style: SihhaFont.copyWith(fontWeight: FontWeight.w600),
         ),
         Text(
@@ -263,7 +288,7 @@ class OrdonnanceDetails extends StatelessWidget {
           style: SihhaFont.copyWith(),
         ),
         Text(
-          '${(ordonnance.dateOfFilling!.toDate().year - (patient.birthYear ?? 0))}',
+          '${(ordonnance.dateOfFilling!.toDate().year - (patient.birthDate!.toDate().year))}',
           style: SihhaFont.copyWith(fontWeight: FontWeight.w600),
         ),
         Text(
@@ -312,7 +337,7 @@ class OrdonnanceDetails extends StatelessWidget {
             padding: const EdgeInsets.only(top: 5.0, right: 5, left: 5),
             child: Text(
               // '${ordonnance.clinicName!.split(' ')[0]}',
-              '${ordonnance.clinicName}',
+              '${medcin!.workPlace!.name}',
               style: SihhaPoppins3.copyWith(fontSize: 16, letterSpacing: 1.2),
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
@@ -322,7 +347,7 @@ class OrdonnanceDetails extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
             child: Text(
-              '${ordonnance.clinicLocation}',
+              '${medcin!.workPlace!.address}',
               style: SihhaFont.copyWith(
                   fontSize: 14, letterSpacing: 1, color: Colors.black54),
               overflow: TextOverflow.ellipsis,
@@ -333,7 +358,7 @@ class OrdonnanceDetails extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
             child: Text(
-              '${ordonnance.clinicPhoneNumber}',
+              '${medcin!.workPlace!.phone}',
               style: SihhaFont.copyWith(
                   fontSize: 14, letterSpacing: 1, color: Colors.black54),
               overflow: TextOverflow.clip,
@@ -354,7 +379,7 @@ class OrdonnanceDetails extends StatelessWidget {
             padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
             child: Text(
               // 'Dr.${ordonnance.doctorName!.split(' ')[0]} ${ordonnance.doctorName!.split(' ')[1].substring(0, 1).toUpperCase()}',
-              'Dr.${ordonnance.doctorName!}',
+              'Dr.${medcin!.familyName} ${medcin!.name}',
               // 'Dr. Tlemcani Aymen Salaheddine',
               style: SihhaPoppins3.copyWith(fontSize: 16, letterSpacing: 1.2),
               overflow: TextOverflow.ellipsis,
@@ -365,7 +390,7 @@ class OrdonnanceDetails extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
             child: Text(
-              '${ordonnance.doctorSpeciality}',
+              '${medcin!.speciality}',
               style: SihhaFont.copyWith(
                   fontSize: 14, letterSpacing: 1, color: Colors.black54),
               overflow: TextOverflow.ellipsis,
@@ -376,7 +401,7 @@ class OrdonnanceDetails extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
             child: Text(
-              '${ordonnance.doctorProfessionalPhoneNumber}',
+              '${medcin!.professionalPhoneNumber}',
               style: SihhaFont.copyWith(
                   fontSize: 14, letterSpacing: 1, color: Colors.black54),
               overflow: TextOverflow.clip,

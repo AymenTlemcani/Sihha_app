@@ -1,16 +1,22 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sahha_app/Models/Actors/Medcin.dart';
 import 'package:sahha_app/Models/Actors/User.dart';
-import 'package:sahha_app/Models/Variables.dart'; // Import User model
+import 'package:sahha_app/Models/Variables.dart';
+import 'package:sahha_app/Services/UserService.dart';
 
 class LoginControllerProvider extends ChangeNotifier {
   final StreamController<bool> loginStreamController;
-
+  final UserService _userService = UserService();
+  User? _user;
+  Medcin? _medcin;
   LoginControllerProvider({
     required this.loginStreamController,
   });
-
+// Getter methods
+  User? get user => _user;
+  Medcin? get medcin => _medcin;
   Future<String?> login(
       String id, String password, BuildContext context) async {
     String inputPassword = password.trim();
@@ -19,7 +25,6 @@ class LoginControllerProvider extends ChangeNotifier {
       var allDocs = await FirebaseFirestore.instance
           .collection('users')
           .where('IDN', isEqualTo: id.trim())
-          // .where('password', isEqualTo: password.trim())
           .get();
 
       var userDoc = allDocs.docs.first;
@@ -28,24 +33,32 @@ class LoginControllerProvider extends ChangeNotifier {
         return 'User not found. Please check your ID and password.';
       }
       documentId = userDoc.id;
-
-      // Construct a User object from Firestore data
-      User loggedInUser = User.fromJson(userDoc.data());
-
+      print(documentId);
       // Verify password
-      if (inputPassword != loggedInUser.password) {
+      if (inputPassword != userDoc.data()['password']) {
         return 'Incorrect password. Please try again.';
       }
 
-      // Set the logged-in user
-      user = loggedInUser;
-      user?.updateDocumentId(documentId);
+      // Use the UserService to get the user data
+      User? loggedInUser = await _userService.getUserData(documentId!);
+
+      if (loggedInUser == null) {
+        return 'Error fetchinggg user data.';
+      }
+// Set the logged-in user
+      _user = loggedInUser;
+      // Set the global variables
+      globalUser = _user;
+      globalMedcin = _medcin;
+      // Check if the logged-in user is a Medcin
+      if (loggedInUser.isMedcin == true) {
+        _medcin = await _userService.getMedcinData(documentId!);
+        _user = _medcin;
+        globalMedcin = _medcin;
+      }
 
       // Notify listeners of the change in login status
       loginStreamController.add(true);
-      // Provider.of<LoginControllerProvider>(context, listen: false)
-      //     .loginStreamController
-      //     .add(true);
       notifyListeners();
 
       print('Login successful. User: ${loggedInUser.name}');
@@ -59,12 +72,23 @@ class LoginControllerProvider extends ChangeNotifier {
     }
   }
 
+  // ... (other methods)
+
   void logout() {
     // Reset the logged-in user
-    user = null;
+    _user = null;
+    _medcin = null;
     patients?.clear;
     print('Current number of patients : ${patients?.length}');
-
+    // Reset the global variables
+    globalUser = null;
+    globalMedcin = null;
+    modeAdmin = false;
+    modeMedcin = false;
+    modePharmacie = false;
+    // ModeProvider().offAdmin();
+    // ModeProvider().offMedcin();
+    // ModeProvider().offPharmacien();
     // Notify listeners to update UI
     loginStreamController.add(false);
     notifyListeners();

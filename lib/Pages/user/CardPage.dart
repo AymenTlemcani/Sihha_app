@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sahha_app/CommonWidgets/MyCardWidget.dart';
@@ -17,19 +15,19 @@ class _CardPageState extends State<CardPage> with TickerProviderStateMixin {
   Color ButtonColor = Colors.white;
   Color TextColor = SihhaGreen2;
   bool isFront = true;
-  bool _showCard = false;
+  // bool _showCard = false;
 
-  void _showTemporaryImage() {
-    setState(() {
-      _showCard = true;
-    });
+  // void _showTemporaryImage() {
+  //   setState(() {
+  //     _showCard = true;
+  //   });
 
-    Future.delayed(Duration(seconds: 30000), () {
-      setState(() {
-        _showCard = false;
-      });
-    });
-  }
+  //   Future.delayed(Duration(seconds: 30000), () {
+  //     setState(() {
+  //       _showCard = false;
+  //     });
+  //   });
+  // }
 
   @override
   void initState() {

@@ -1,9 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:sahha_app/CommonWidgets/MyTextForm.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/admin/CreateUserDesktop.dart';
 import 'package:sahha_app/Pages/admin/Statistique.dart';
@@ -19,7 +14,7 @@ class AdminDashboard extends StatefulWidget {
 
 class _HomeBodyDesktopState extends State<AdminDashboard>
     with SingleTickerProviderStateMixin {
-  final List<Widget> _Adminscreens = [];
+  // final List<Widget> _Adminscreens = [];
   late TabController _tabController;
 
   @override
@@ -40,15 +35,17 @@ class _HomeBodyDesktopState extends State<AdminDashboard>
 
   @override
   Widget build(BuildContext context) {
+    // final loginProvider = Provider.of<LoginControllerProvider>(context);
+    // User? user = loginProvider.user;
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: Visibility(
         visible: false,
         child: FloatingActionButton(
           onPressed: () async {
-            print(user!.documentId);
-            print(user!.adresse);
-            print(user!.isPharmacien);
+            print(globalUser!.documentId);
+            print(globalUser!.adresse);
+            print(globalUser!.isPharmacien);
             // Map<String, int> numbers = await fetchNumbers();
             // print(numbers);
 

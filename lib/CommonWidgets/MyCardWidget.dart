@@ -9,6 +9,14 @@ class MyCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final loginProvider = Provider.of<LoginControllerProvider>(context);
+    // User? user = loginProvider.user;
+    // Medcin? medcin = loginProvider.medcin;
+    int Bday = globalUser!.birthDate!.toDate().day;
+    int BMonth = globalUser!.birthDate!.toDate().month;
+    int BYear = globalUser!.birthDate!.toDate().year;
+    String? BPlace = globalUser!.birthPlace;
+
     return Container(
       height: 500,
       width: 300,
@@ -52,7 +60,7 @@ class MyCardWidget extends StatelessWidget {
                 //TODO APP NAME
                 SizedBox(height: 20),
                 MyProfilePicture(
-                  URL: user!.profilePicUrl,
+                  URL: globalUser!.profilePicUrl,
                   radius: 70,
                   ImageHeight: 132,
                   ImageWidth: 132,
@@ -61,7 +69,7 @@ class MyCardWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  '${user!.familyName} ${user!.name}',
+                  '${globalUser!.familyName} ${globalUser!.name}',
                   style: SihhaPoppins3.copyWith(fontSize: 20),
                   maxLines: 2,
                   textAlign: TextAlign.center,
@@ -69,7 +77,7 @@ class MyCardWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  '#${user!.IDN}',
+                  '#${globalUser!.IDN}',
                   style: SihhaPoppins3.copyWith(
                       fontSize: 15, color: Colors.black54),
                   maxLines: 1,
@@ -78,7 +86,7 @@ class MyCardWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  '${user!.birthDay} . ${user!.birthMonth! < 10 ? '0' : ''}${user!.birthMonth} . ${user!.birthYear}  |  ${user!.birthPlace}',
+                  '${Bday} . ${BMonth < 10 ? '0' : ''}${BMonth} . ${BYear}  |  ${BPlace}',
                   style: SihhaPoppins3.copyWith(
                       fontSize: 15, color: Colors.black54),
                   maxLines: 1,
@@ -92,7 +100,7 @@ class MyCardWidget extends StatelessWidget {
                       ),
                   height: 90,
                   child: PrettyQrView.data(
-                    data: user!.documentId ?? '',
+                    data: globalUser!.documentId ?? '',
                     decoration: PrettyQrDecoration(
                         shape: PrettyQrSmoothSymbol(
                           color: SihhaGreen2,

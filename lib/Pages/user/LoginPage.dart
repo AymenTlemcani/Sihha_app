@@ -137,7 +137,10 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: [
                     //TODO:we need to make the back button disspears when the user enter the app for 2nd time
-                    BackButtonRow(),
+                    // BackButtonRow(),
+                    SizedBox(
+                      height: 60,
+                    ),
                     //TODO: we need to add language  selection here
                     LogoAndLanguageSelectorRow(),
                     SizedBox(height: 20),
@@ -167,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     // Forgot password link
-                    forgotPassord(),
+                    // forgotPassord(),
                     SizedBox(height: 30),
 
                     // Login button with loading indicator

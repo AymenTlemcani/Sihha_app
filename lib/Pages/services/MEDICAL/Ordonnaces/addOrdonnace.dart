@@ -2,18 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
 import 'package:sahha_app/CommonWidgets/MyButton.dart';
+import 'package:sahha_app/CommonWidgets/MySearchTextField.dart';
 import 'package:sahha_app/CommonWidgets/MyTextForm.dart';
+import 'package:sahha_app/Models/Actors/Medcin.dart';
 import 'package:sahha_app/Models/Objects/Ordonnance.dart';
 import 'package:sahha_app/Models/Objects/Medicament.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sahha_app/Models/Actors/Patient.dart';
-import 'package:sahha_app/Models/Actors/User.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class AddOrdonnancePage extends StatefulWidget {
   final Patient patient;
-  final User medcin;
+  final Medcin medcin;
   const AddOrdonnancePage(
       {Key? key, required this.patient, required this.medcin})
       : super(key: key);
@@ -408,16 +409,12 @@ class _AddOrdonnancePageState extends State<AddOrdonnancePage> {
 
                             // Create Ordonnance object with entered data
                             Ordonnance ordonnance = Ordonnance(
-                              doctorIDN: widget.medcin.IDN,
-                              patientIDN: widget.patient.IDN,
-                              patientName: widget.patient.familyName! +
-                                  ' ' +
-                                  widget.patient.name!,
-                              doctorName: widget.medcin.familyName! +
-                                  ' ' +
-                                  widget.medcin.name!,
-                              clinicName: widget.medcin.clinicName,
-                              doctorSpeciality: widget.medcin.speciality,
+                              id: widget.patient.documentId,
+                              medcin: [widget.medcin],
+                              medcinId: widget.medcin.documentId,
+                              patientId: widget.patient.documentId,
+                              patient: widget.patient,
+
                               dateOfFilling:
                                   Timestamp.fromDate(_dateOfFilling!),
                               dateOfExpiry: Timestamp.fromDate(_dateOfExpiry!),
@@ -425,24 +422,17 @@ class _AddOrdonnancePageState extends State<AddOrdonnancePage> {
                                   medicaments, // Add collected medicaments
                               instructions: instructions,
                               notes: notes,
-                              clinicLocation: widget.medcin.clinicLocation,
-                              clinicPhoneNumber:
-                                  widget.medcin.clinicPhoneNumber,
-                              doctorDigitalSignature:
-                                  widget.medcin.digitalSignature,
-                              doctorProfessionalPhoneNumber:
-                                  widget.medcin.doctorProfessionalPhoneNumber,
                             );
 
                             // Upload ordonnance data to Firestore
                             FirebaseFirestore.instance
                                 .collection('ordonnances')
-                                .add(ordonnance.toFirestore())
+                                .add(ordonnance.toMap())
                                 .then((value) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content:
-                                      Text('Ordonnance added successfully.'),
+                                      Text('Ordonnance ajoutée avec succès.'),
                                 ),
                               );
 
@@ -737,19 +727,32 @@ class MedicamentWidget extends StatelessWidget {
               width: 5,
             ),
             Expanded(
-              child: MyTextForm(
-                hintText: 'Nom du médicament *',
-                obscureText: false,
-                keyboardType: TextInputType.text,
-                controller: _nameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez saisir le nom du médicament';
-                  }
-                  return null;
-                },
-              ),
-            ),
+                child: MySearchTextField(
+              width: double.infinity,
+              hintText: 'Nom du médicament *',
+              controller: _nameController,
+              suggestions: medicaments,
+              onSuggestionSelected: (suggestion) {
+                if (suggestion is Map<String, String>) {
+                  _nameController.text = suggestion['name']!;
+                  _typeController.text = suggestion['type']!;
+                  _dosageController.text = suggestion['dosage']!;
+                }
+              },
+            )
+                // MyTextForm(
+                //   hintText: 'Nom du médicament *',
+                //   obscureText: false,
+                //   keyboardType: TextInputType.text,
+                //   controller: _nameController,
+                //   validator: (value) {
+                //     if (value == null || value.isEmpty) {
+                //       return 'Veuillez saisir le nom du médicament';
+                //     }
+                //     return null;
+                //   },
+                // ),
+                ),
           ],
         ),
         Row(

@@ -1,130 +1,77 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sahha_app/Models/Actors/Patient.dart';
+import 'package:sahha_app/Models/Actors/Medcin.dart';
 import 'package:sahha_app/Models/Objects/Medicament.dart';
 
 class Ordonnance {
-  final String? id;
-  final String? patientIDN;
-  final String? patientName;
-  final String? doctorIDN;
-  final String? doctorName;
-  final String? doctorProfessionalPhoneNumber;
-  final String? doctorDigitalSignature;
-
-  final String? clinicName;
-  final String? clinicLocation;
-  final String? clinicPhoneNumber;
-  final String? doctorSpeciality;
-  final Timestamp? dateOfFilling;
-  final Timestamp? dateOfExpiry;
+  String? id;
+  Patient? patient;
+  List<Medcin>? medcin;
+  String? patientId;
+  String? medcinId;
+  Timestamp? dateOfFilling;
+  Timestamp? dateOfExpiry;
   String? status;
-  final List<Medicament>? medicaments; // Adjusted type here
-  final List<String?>? instructions;
-  final List<String?>? notes;
+  List<Medicament>? medicaments;
+  List<String?>? instructions;
+  List<String?>? notes;
 
   Ordonnance({
     this.id,
-    required this.patientIDN,
-    required this.patientName,
-    required this.doctorIDN,
-    required this.doctorName,
-    required this.clinicName,
-    required this.doctorSpeciality,
-    required this.dateOfFilling,
-    required this.dateOfExpiry,
+    this.patient,
+    this.medcin,
+    this.patientId,
+    this.medcinId,
+    this.dateOfFilling,
+    this.dateOfExpiry,
     this.status,
-    required this.medicaments,
+    this.medicaments,
     this.instructions,
     this.notes,
-    this.doctorProfessionalPhoneNumber,
-    this.doctorDigitalSignature,
-    this.clinicLocation,
-    this.clinicPhoneNumber,
   });
 
-  // factory Ordonnance.fromFirestore(DocumentSnapshot doc) {
-  //   Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
-
-  //   if (data == null) {
-  //     throw ArgumentError('Document data is null.');
-  //   }
-
-  //   return Ordonnance(
-  //     id: doc.id,
-  //     patientIDN: data['patientIDN'],
-  //     doctorIDN: data['doctorIDN'],
-  //     doctorName: data['doctorName'],
-  //     patientName: data['patientName'],
-  //     clinicName: data['clinicName'],
-  //     doctorSpeciality: data['doctorSpeciality'],
-  //     dateOfFilling: data['dateOfFilling'] as Timestamp?,
-  //     dateOfExpiry: data['dateOfExpiry'] as Timestamp?,
-  //     status: data['status'],
-  //     medicaments: (data['medicaments'] as List<Medicament>?)
-  //         ?.map((med) => Medicament.fromMap(med))
-  //         .toList(), // Convert each map to Medicament
-  //     instructions: data['instructions'] as List<String?>?,
-  //     notes: data['notes'] as List<String?>?,
-  //   );
-  // }
-  factory Ordonnance.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
-
-    if (data == null) {
-      throw ArgumentError('Document data is null.');
-    }
-
+  factory Ordonnance.fromMap(Map<String, dynamic> map) {
     try {
       return Ordonnance(
-        id: doc.id,
-        patientIDN: data['patientIDN'],
-        doctorIDN: data['doctorIDN'],
-        doctorName: data['doctorName'],
-        patientName: data['patientName'],
-        clinicName: data['clinicName'],
-        doctorSpeciality: data['doctorSpeciality'],
-        dateOfFilling: data['dateOfFilling'] as Timestamp?,
-        dateOfExpiry: data['dateOfExpiry'] as Timestamp?,
-        status: data['status'],
-        // Ensure that the cast is to List<String?>? for instructions and notes
-        medicaments: (data['medicaments'] as List<dynamic>?)
-            ?.map((med) => Medicament.fromMap(med as Map<String, dynamic>))
-            .toList(),
-        instructions: (data['instructions'] as List<dynamic>?)
-            ?.map((instr) => instr as String?)
-            .toList(),
-        notes: (data['notes'] as List<dynamic>?)
-            ?.map((note) => note as String?)
-            .toList(),
-        clinicLocation: data['clinicLocation'],
-        clinicPhoneNumber: data['clinicPhoneNumber'],
-        doctorDigitalSignature: data['doctorDigitalSignature'],
-        doctorProfessionalPhoneNumber: data['doctorProfessionalPhoneNumber'],
+        id: map['id'],
+        // patient:
+        //     map['patient'] != null ? Patient.fromMap(map['patient']) : null,
+        medcin: map['medcin'] != null
+            ? List<Medcin>.from(map['medcin'].map((x) => Medcin.fromMap(x)))
+            : [],
+        patientId: map['patientId'],
+        medcinId: map['medcinId'],
+        dateOfFilling: map['dateOfFilling'],
+        dateOfExpiry: map['dateOfExpiry'],
+        status: map['status'],
+        medicaments: map['medicaments'] != null
+            ? List<Medicament>.from(
+                map['medicaments'].map((x) => Medicament.fromMap(x)))
+            : [],
+        instructions: map['instructions'] != null
+            ? List<String?>.from(map['instructions'])
+            : [],
+        notes: map['notes'] != null ? List<String?>.from(map['notes']) : [],
       );
     } catch (e) {
-      throw Exception('Error creating Ordonnance from Firestore data: $e');
+      print('Error creating Ordonnance from map: $e');
+      return Ordonnance();
     }
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
-      'patientIDN': patientIDN,
-      'doctorIDN': doctorIDN,
-      'doctorName': doctorName,
-      'patientName': patientName,
-      'clinicName': clinicName,
-      'doctorSpeciality': doctorSpeciality,
+      'id': id,
+      'patient': patient?.toMap(),
+      'medcin': medcin?.map((x) => x.toMap()).toList(),
+      'patientId': patientId,
+      'medcinId': medcinId,
       'dateOfFilling': dateOfFilling,
       'dateOfExpiry': dateOfExpiry,
       'status': status,
-      'medicaments': medicaments
-          ?.map((med) => med.toMap())
-          .toList(), // Convert each Medicament to map
+      'medicaments': medicaments?.map((x) => x.toMap()).toList(),
       'instructions': instructions,
       'notes': notes,
-      'doctorProfessionalPhoneNumber': doctorProfessionalPhoneNumber,
-      'clinicPhoneNumber': clinicPhoneNumber,
-      'clinicLocation': clinicLocation,
-      'doctorDigitalSignature': doctorDigitalSignature
     };
   }
 

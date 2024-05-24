@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
-import 'package:sahha_app/Models/Actors/Patient.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/user/PatientPage.dart';
+import 'package:sahha_app/Services/UserService.dart';
 
 class UsbScannerPage extends StatefulWidget {
   @override
@@ -51,11 +51,13 @@ class _UsbScannerPageState extends State<UsbScannerPage> {
   }
 
   void _processReceivedData(String code) {
+    // final loginProvider = Provider.of<LoginControllerProvider>(context);
+    // final user = loginProvider.user;
     // Process the received data here
     if (code.isNotEmpty && code.length == 20) {
       // Replace the following code with your logic
       // For example, if the scanned code is the user's own code
-      if (code == user!.documentId && user!.isMedcin) {
+      if (code == globalUser!.documentId && globalUser!.isMedcin) {
         _showCannotScanOwnCodeDialog();
       } else {
         setState(() {
@@ -108,7 +110,8 @@ class _UsbScannerPageState extends State<UsbScannerPage> {
 
   void _fetchUserData(String scannedCode) {
     print('fetching user data for code: $scannedCode');
-    Patient.fetchPatientData(scannedCode).then(
+    UserService _userService = UserService();
+    _userService.getUserData(scannedCode).then(
       (patient) {
         //and that nigga's code is valid
         if (patient != null) {

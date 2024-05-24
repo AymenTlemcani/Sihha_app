@@ -6,7 +6,7 @@ import 'package:sahha_app/CommonWidgets/MyProfilePicture.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
 import 'package:sahha_app/Models/Actors/Patient.dart';
 import 'package:sahha_app/Models/Variables.dart';
-import 'package:sahha_app/Pages/services/DossierMedical.dart';
+import 'package:sahha_app/Pages/services/DossierMedicalPage.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/operations_page.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnacesPage.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/vaccins_page.dart';
@@ -26,7 +26,9 @@ class _PatientPageState extends State<PatientPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late List<Widget> _medicalTiles;
-
+  // late LoginControllerProvider loginProvider;
+  // late User currentUser; // Updated variable name
+  // late Medcin currentMedcin;
   bool _shouldUseWrap() {
     return !(defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.android);
@@ -36,15 +38,17 @@ class _PatientPageState extends State<PatientPage>
   @override
   void initState() {
     super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   loginProvider =
+    //       Provider.of<LoginControllerProvider>(context, listen: false);
+    //   currentUser =
+    //       loginProvider.user!; // Accessing the user from loginProvider
+    //   // Accessing the medcin from user
+    // });
     _tabController = TabController(
       length: 3,
       vsync: this,
     );
-    // cameraController.dispose();
-    // print('camera controller disposed from patient page');
-    // isControllerStarted = false;
-    // isScanned = false;
-    //
     _medicalTiles = [
       MyTile(
         icon: LineAwesomeIcons.folder_open,
@@ -57,7 +61,7 @@ class _PatientPageState extends State<PatientPage>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DossierMedical(),
+              builder: (context) => DossierMedicalPage(),
             ),
           );
         },
@@ -69,12 +73,12 @@ class _PatientPageState extends State<PatientPage>
         itemColor1: SihhaGreen1.withOpacity(0.18),
         smallCircleColor1: Colors.white,
         onTapFunction: (BuildContext context) {
-          print('user tapped Dossier Medical');
+          print('user tapped Ordonnaces');
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  OrdonnancePage(medcin: user, patient: widget.patient!),
+              builder: (context) => OrdonnancePage(
+                  medcin: globalMedcin, patient: widget.patient!),
             ),
           );
         },
@@ -89,7 +93,7 @@ class _PatientPageState extends State<PatientPage>
         itemColor1: SihhaGreen1.withOpacity(0.18),
         smallCircleColor1: Colors.white,
         onTapFunction: (BuildContext context) {
-          print('user tapped Dossier Medical');
+          print('user tapped Visites medicales');
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -106,7 +110,7 @@ class _PatientPageState extends State<PatientPage>
         itemColor1: SihhaGreen1.withOpacity(0.18),
         smallCircleColor1: Colors.white,
         onTapFunction: (BuildContext context) {
-          print('user tapped Dossier Medical');
+          print('user tapped Vaccins');
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -130,7 +134,7 @@ class _PatientPageState extends State<PatientPage>
         itemColor1: SihhaGreen1.withOpacity(0.18),
         smallCircleColor1: Colors.white,
         onTapFunction: (BuildContext context) {
-          print('user tapped Dossier Medical');
+          print('user tapped Operations');
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -142,7 +146,7 @@ class _PatientPageState extends State<PatientPage>
 
       // Add other MyTile widgets as needed
     ];
-    //
+    widget.patient!.fetchOrdonnances();
   }
 
   @override
@@ -161,12 +165,15 @@ class _PatientPageState extends State<PatientPage>
         });
       },
       child: Scaffold(
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     print(patients?.length);
-        //     print(patients?[0].familyName);
-        //   },
-        // ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // print(patients?.length);
+            // print(patients?[0].familyName);
+            print(globalMedcin);
+            print(widget.patient!.ordonnances);
+            // print(widget.patient!.);
+          },
+        ),
         backgroundColor: Colors.white,
         body: widget.patient == null
             ? Center(child: Text('No patient data'))
@@ -299,9 +306,6 @@ class _PatientPageState extends State<PatientPage>
                           "User Pressed on Back Button to go back to the QR scan Page");
                       Navigator.pop(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => QRCodeScannerPage(),
-                        ),
                       );
                     },
                   ),
@@ -395,7 +399,7 @@ number of operations
           ),
           SizedBox(height: 16),
           DetailsLine(
-            '${widget.patient!.birthDay ?? 'N/A'} . ${widget.patient!.birthMonth ?? 'N/A'} . ${widget.patient!.birthYear ?? 'N/A'}     |     ${(DateTime.now().year - (widget.patient!.birthYear ?? 0))} ans',
+            '${widget.patient!.birthDate!.toDate().day} . ${widget.patient!.birthDate!.toDate().month} . ${widget.patient!.birthDate!.toDate().year}    |     ${(DateTime.now().year - (widget.patient!.birthDate!.toDate().year))} ans',
             Colors.black,
             LineAwesomeIcons.birthday_cake,
           ),
@@ -423,7 +427,7 @@ number of operations
                 // color: Colors.amber,
                 width: 120,
                 child: DetailsLine(
-                  '${widget.patient!.weight ?? 'null' + '  Kg'}',
+                  '${widget.patient!.weights?.last ?? 'null' + '  Kg'}',
                   Colors.black,
                   LineAwesomeIcons.hanging_weight,
                 ),
@@ -432,7 +436,7 @@ number of operations
                 // color: Colors.amber,
                 width: 120,
                 child: DetailsLine(
-                  '${widget.patient!.height ?? 'null' + '  cm'}',
+                  '${widget.patient!.heights?.last ?? 'null' + '  cm'}',
                   Colors.black,
                   LineAwesomeIcons.ruler,
                 ),
@@ -443,7 +447,7 @@ number of operations
                 child: DetailsLine(
                   // '${widget.patient!.bloodType ?? 'O+'}',
 
-                  'AB+',
+                  '${widget.patient!.bloodGroup}',
                   Colors.black,
                   LineAwesomeIcons.tint,
                 ),
@@ -593,8 +597,9 @@ number of operations
       },
     );
   }
-
-  // void _showBottomSheet(BuildContext context) {
+}
+    
+     // void _showBottomSheet(BuildContext context) {
   //   showModalBottomSheet(
   //     backgroundColor: Colors.transparent,
   //     isDismissible: true,
@@ -888,4 +893,3 @@ number of operations
   //     },
   //   );
   // }
-}

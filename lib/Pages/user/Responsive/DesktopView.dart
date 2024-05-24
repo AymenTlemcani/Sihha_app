@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sahha_app/CommonWidgets/MyDrawer.dart';
-import 'package:sahha_app/Models/Variables.dart';
-import 'package:sahha_app/Pages/admin/AdminDashboard.dart';
+import 'package:sahha_app/Pages/admin/CreateUser.dart';
+import 'package:sahha_app/Pages/admin/Statistique.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/MedicalPage.dart';
 import 'package:sahha_app/Pages/user/CardPage.dart';
 import 'package:sahha_app/Pages/user/FamilyPage.dart';
@@ -19,15 +19,33 @@ class DesktopView extends StatefulWidget {
   State<DesktopView> createState() => _DesktopViewState();
 }
 
-final List<Widget> _screens = [
+List<Widget> _screens = [
   Profile(),
-  // HomeBodyDesktop(),
   HomeBody(),
   CardPage(),
   MedicalPage(),
   FamilyPage(),
-  if (user!.isAdmin) AdminDashboard(),
+  // AdminDashboard(),//TODO REMOVE IT
+  Statistique(),
+  // CreateUser(),
 ];
+
+// if (modeProvider.modeAdmin) {
+//   // Show only Profile and AdminDashboard when modeAdmin is on
+//   return [
+//     Profile(),
+//     AdminDashboard(),
+//   ];
+// } else {
+//   // Show other screens when modeAdmin is off
+//   return [
+//     Profile(),
+//     HomeBody(),
+//     CardPage(),
+//     MedicalPage(),
+//     FamilyPage(),
+//   ];
+// }
 
 class _DesktopViewState extends State<DesktopView> {
   @override

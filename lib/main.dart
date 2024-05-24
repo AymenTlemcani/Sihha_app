@@ -9,6 +9,7 @@ import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/user/AuthPage.dart';
 import 'package:sahha_app/Providers/DesktopNavigationProvider.dart';
 import 'package:sahha_app/Providers/LoginControllerProvider.dart';
+import 'package:sahha_app/Providers/ModeProvider.dart';
 import 'package:sahha_app/firebase_options.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -76,6 +77,10 @@ void main() async {
           create: (_) => DesktopNavigationProvider(),
         ),
         // Add other providers here
+        ChangeNotifierProvider<ModeProvider>(
+          // Add ModeProvider provider
+          create: (_) => ModeProvider(),
+        ),
       ],
       child: MyApp(),
     ),
