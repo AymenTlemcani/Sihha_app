@@ -69,7 +69,7 @@ class _MyDetailCardState extends State<MyDetailCard> {
                           Text(
                             widget.title,
                             style: SihhaFont.copyWith(
-                              fontSize: 20,
+                              fontSize: 18,
                               letterSpacing: 1.5,
                               fontWeight: FontWeight.bold,
                               color: Colors.black.withOpacity(0.7),

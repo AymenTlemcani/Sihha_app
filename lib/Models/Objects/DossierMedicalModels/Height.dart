@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Height {
+  String? patientId;
   double? height;
   Timestamp? date;
 
   Height({
     this.height,
     this.date,
+    this.patientId,
   });
 
   // Method to update the height value
@@ -16,6 +18,7 @@ class Height {
 
   Map<String, dynamic> toMap() {
     return {
+      'patientId': patientId,
       'height': height,
       'date': date,
     };
@@ -24,6 +27,7 @@ class Height {
   static Height fromMap(Map<String, dynamic> map) {
     try {
       return Height(
+        patientId: map['patientId'],
         height: map['height']?.toDouble(),
         date: map['date'] as Timestamp?,
       );

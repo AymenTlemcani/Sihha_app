@@ -286,12 +286,12 @@ class Patient {
 
   Future<void> fetchDiseases() async {
     try {
-      final ordonnancesRef = FirebaseFirestore.instance.collection('diseases');
+      final ordonnancesRef = FirebaseFirestore.instance.collection('maladies');
       QuerySnapshot querySnapshot =
           await ordonnancesRef.where('patientId', isEqualTo: documentId).get();
 
-      // Get the current date
-      DateTime currentDate = DateTime.now();
+      // // Get the current date
+      // DateTime currentDate = DateTime.now();
 
       // List to store updated ordonnances
       List<Disease> fetchedDiseases = [];
@@ -326,10 +326,184 @@ class Patient {
       // Sort ordonnances by date of filling in descending order
       fetchedDiseases.sort((a, b) => b.dateOfStart!.compareTo(a.dateOfStart!));
 
-      print('done fetching orddonaces');
       this.diseases = fetchedDiseases;
     } catch (e) {
       print('Error fetching Diseases: $e');
+    }
+  }
+
+  Future<void> fetchAllergies() async {
+    try {
+      final ordonnancesRef = FirebaseFirestore.instance.collection('allergies');
+      QuerySnapshot querySnapshot =
+          await ordonnancesRef.where('patientId', isEqualTo: documentId).get();
+
+      // // Get the current date
+      // DateTime currentDate = DateTime.now();
+
+      // List to store updated ordonnances
+      List<Allergie> fetchedAllergies = [];
+
+      querySnapshot.docs.forEach((doc) {
+        try {
+          // Access the actual data using data()
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Allergie allergie = Allergie.fromMap(data);
+
+          // // Check if the ordonnance is expired
+          // if (disease.dateOfExpiry!.toDate().isBefore(currentDate)) {
+          //   // Update the status to 'expired'
+          //   ordonnance.status = 'expired';
+          // } else {
+          //   // Update the status to the opposite of 'expired'
+          //   ordonnance.status =
+          //       'active'; // or whatever the opposite status should be
+          // }
+
+          // // Update Firestore document
+          // ordonnancesRef.doc(doc.id).update({'status': ordonnance.status});
+
+          // Add the updated ordonnance to the list
+          fetchedAllergies.add(allergie);
+        } catch (e) {
+          print('Error processing Allergies: $e');
+        }
+      });
+
+      // Sort ordonnances by date of filling in descending order
+      fetchedAllergies.sort((a, b) => b.dateOfStart!.compareTo(a.dateOfStart!));
+
+      this.allergies = fetchedAllergies;
+    } catch (e) {
+      print('Error fetching Allergies: $e');
+    }
+  }
+
+  Future<void> fetchDisabilities() async {
+    try {
+      final ordonnancesRef =
+          FirebaseFirestore.instance.collection('disabilities');
+      QuerySnapshot querySnapshot =
+          await ordonnancesRef.where('patientId', isEqualTo: documentId).get();
+
+      List<Disability> fetched = [];
+
+      querySnapshot.docs.forEach((doc) {
+        try {
+          // Access the actual data using data()
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Disability disability = Disability.fromMap(data);
+
+          fetched.add(disability);
+        } catch (e) {
+          print('Error processing Disabilities: $e');
+        }
+      });
+
+      // Sort ordonnances by date of filling in descending order
+      fetched.sort((a, b) => b.dateOfStart!.compareTo(a.dateOfStart!));
+
+      this.disabilities = fetched;
+    } catch (e) {
+      print('Error fetching Disabilities: $e');
+    }
+  }
+
+  Future<void> fetchHabits() async {
+    try {
+      final ordonnancesRef = FirebaseFirestore.instance.collection('habits');
+      QuerySnapshot querySnapshot =
+          await ordonnancesRef.where('patientId', isEqualTo: documentId).get();
+
+      List<Habit> fetched = [];
+
+      querySnapshot.docs.forEach((doc) {
+        try {
+          // Access the actual data using data()
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Habit habit = Habit.fromMap(data);
+
+          fetched.add(habit);
+        } catch (e) {
+          print('Error processing Habits: $e');
+        }
+      });
+
+      // // Sort ordonnances by date of filling in descending order
+      // fetched.sort((a, b) => b.dateOfStart!.compareTo(a.dateOfStart!));
+
+      // print('done fetching orddonaces');
+      this.habits = fetched;
+    } catch (e) {
+      print('Error fetching Habits: $e');
+    }
+  }
+
+  Future<void> fetchHeights() async {
+    try {
+      final ordonnancesRef = FirebaseFirestore.instance.collection('heights');
+      QuerySnapshot querySnapshot =
+          await ordonnancesRef.where('patientId', isEqualTo: documentId).get();
+
+      List<Height> fetched = [];
+
+      querySnapshot.docs.forEach((doc) {
+        try {
+          // Access the actual data using data()
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Height height = Height.fromMap(data);
+
+          fetched.add(height);
+        } catch (e) {
+          print('Error processing heights: $e');
+        }
+      });
+      this.heights = fetched;
+    } catch (e) {
+      print('Error fetching height: $e');
+    }
+  }
+
+  Future<void> fetchWeights() async {
+    try {
+      final ordonnancesRef = FirebaseFirestore.instance.collection('weights');
+      QuerySnapshot querySnapshot =
+          await ordonnancesRef.where('patientId', isEqualTo: documentId).get();
+
+      List<Weight> fetched = [];
+
+      querySnapshot.docs.forEach((doc) {
+        try {
+          // Access the actual data using data()
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Weight weight = Weight.fromMap(data);
+
+          fetched.add(weight);
+        } catch (e) {
+          print('Error processing weights: $e');
+        }
+      });
+      this.weights = fetched;
+    } catch (e) {
+      print('Error fetching weights: $e');
+    }
+  }
+
+  Future<void> fetchBloodTypes() async {
+    try {
+      final ordonnancesRef =
+          FirebaseFirestore.instance.collection('bloodTypes');
+      QuerySnapshot querySnapshot =
+          await ordonnancesRef.where('patientId', isEqualTo: documentId).get();
+
+      this.bloodGroup = querySnapshot.docs.first['bloodType'];
+    } catch (e) {
+      print('Error fetching blood: $e');
     }
   }
 

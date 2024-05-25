@@ -89,6 +89,7 @@ class Ordonnance {
         if (doctorSnapshot.docs.isNotEmpty) {
           urls.add(doctorSnapshot.docs.first['profilePicUrl'] as String?);
         }
+        print('done fetc pro pic');
       } catch (e) {
         print('Error fetching doctor profile pic: $e');
       }

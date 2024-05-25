@@ -3,24 +3,21 @@ import 'package:sahha_app/Models/Variables.dart';
 
 class MyDetailListView extends StatefulWidget {
   final String title;
-  final String? subtitle;
   final double? height;
   final double? width;
   final IconData leadingIcon;
   final String lastUpdated;
-  final String data;
-  final String? unity;
+  final Widget child;
 
-  const MyDetailListView(
-      {super.key,
-      required this.title,
-      this.subtitle,
-      this.height,
-      this.width,
-      required this.leadingIcon,
-      required this.lastUpdated,
-      required this.data,
-      this.unity});
+  const MyDetailListView({
+    super.key,
+    required this.title,
+    this.height,
+    this.width,
+    required this.leadingIcon,
+    required this.lastUpdated,
+    required this.child,
+  });
 
   @override
   State<MyDetailListView> createState() => _MyDetailListViewState();
@@ -53,9 +50,11 @@ class _MyDetailListViewState extends State<MyDetailListView> {
             color: Colors.white,
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 35,
+              SizedBox(
+                height: 48,
                 child: Row(
                   children: [
                     Expanded(
@@ -69,7 +68,7 @@ class _MyDetailListViewState extends State<MyDetailListView> {
                           Text(
                             widget.title,
                             style: SihhaFont.copyWith(
-                              fontSize: 20,
+                              fontSize: 18,
                               letterSpacing: 1.5,
                               fontWeight: FontWeight.bold,
                               color: Colors.black.withOpacity(0.7),
@@ -101,49 +100,7 @@ class _MyDetailListViewState extends State<MyDetailListView> {
                   color: Colors.black.withOpacity(0.1),
                   height: 5,
                   endIndent: 10),
-              Expanded(
-                flex: 65,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: widget.data,
-                                  style: SihhaFont.copyWith(
-                                    color: Colors.black.withOpacity(0.7),
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: ' ${widget.unity}',
-                                  style: SihhaFont.copyWith(
-                                    color: Colors.black.withOpacity(0.6),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Spacer()
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              Expanded(child: widget.child),
             ],
           ),
         ),

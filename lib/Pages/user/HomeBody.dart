@@ -18,8 +18,6 @@ import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnanceDetails.da
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
 import 'package:sahha_app/Pages/user/Profile.dart';
 import 'package:sahha_app/Providers/ModeProvider.dart';
-import 'package:sahha_app/Services/OrdonnancesService.dart';
-import 'package:sahha_app/Services/UserService.dart';
 
 class HomeBody extends StatefulWidget {
   HomeBody({
@@ -43,8 +41,9 @@ class _HomeBodyState extends State<HomeBody> {
   @override
   void initState() {
     super.initState();
-    globalUser!.fetchOrdonnances();
-    setState(() {});
+    // globalUser!.fetchOrdonnances();
+    // globalUser!.fetchDiseases();
+    // setState(() {});
     // _fetchOrdonnances().then((_) {
     //   setState(() {
     //     _currentUserOrdonnances = _ordonnancesService.ordonnances ?? [];
@@ -85,9 +84,10 @@ class _HomeBodyState extends State<HomeBody> {
   //   } finally {}
   // }
 
-  // Future<void> _refreshOrdonnances() async {
-  //   await _fetchOrdonnances();
-  // }
+  Future<void> _refreshOrdonnances() async {
+    await globalUser!.fetchOrdonnances();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +129,7 @@ class _HomeBodyState extends State<HomeBody> {
           // await _OrdonnancesService.fetchAndProcessOrdonnances(
           //     globalUser!.documentId!);
           await globalUser!.fetchOrdonnances();
+          await globalUser!.fetchDiseases();
           setState(() {});
         },
         child: CustomScrollView(
@@ -149,53 +150,59 @@ class _HomeBodyState extends State<HomeBody> {
                           padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
                           child: MouseRegion(
                             cursor: SystemMouseCursors.click,
-                            child: TextButton(
-                              onHover: (value) {
-                                setState(() {
-                                  ButtonColor =
-                                      value ? SihhaGreen1 : Colors.white;
-                                  TextColor =
-                                      value ? Colors.white : SihhaGreen2;
-                                });
-                              },
-                              style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStatePropertyAll(ButtonColor),
-                                  shape: MaterialStatePropertyAll(
+                            child: StatefulBuilder(
+                              builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return TextButton(
+                                  onHover: (value) {
+                                    setState(() {
+                                      ButtonColor =
+                                          value ? SihhaGreen1 : Colors.white;
+                                      TextColor =
+                                          value ? Colors.white : SihhaGreen2;
+                                    });
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all(ButtonColor),
+                                    shape: MaterialStateProperty.all(
                                       RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)))),
-                              onPressed: () {
-                                if (mounted) {
-                                  // user!.fetchOrdonnances();
-                                  globalUser!.fetchOrdonnances();
-                                  setState(() {});
-                                }
-                              },
-                              child: IntrinsicWidth(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(0.0),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        CupertinoIcons.refresh_bold,
-                                        color: TextColor,
-                                        size: 18,
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        'Refresh',
-                                        style: SihhaFont.copyWith(
-                                            color: TextColor,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500),
-                                      )
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
+                                  onPressed: () {
+                                    if (mounted) {
+                                      _refreshOrdonnances();
+                                    }
+                                  },
+                                  child: IntrinsicWidth(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(0.0),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            CupertinoIcons.refresh_bold,
+                                            color: TextColor,
+                                            size: 18,
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            'Refresh',
+                                            style: SihhaFont.copyWith(
+                                              color: TextColor,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -386,7 +393,9 @@ class _HomeBodyState extends State<HomeBody> {
                 Ordonnance ordonnance = entry.value!;
                 return Column(
                   children: [
-                    OrdonnanceTile(ordonnance: ordonnance),
+                    OrdonnanceTile(
+                      ordonnance: ordonnance,
+                    ),
                     if (index <
                         totalOrdonnaces - 1) // Check if it's not the last item
                       Divider(
@@ -559,6 +568,85 @@ class _HomeBodyState extends State<HomeBody> {
       },
     );
   }
+
+  // Widget OrdonnanceTile(
+  //     {required Ordonnance ordonnance, required String profilePicUrl}) {
+  //   return InkWell(
+  //     borderRadius: BorderRadius.circular(30),
+  //     splashColor: Colors.transparent,
+  //     onTap: () {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => OrdonnanceDetails(
+  //             ordonnance: ordonnance,
+  //             patient: globalUser!,
+  //             medcin: ordonnance.medcin![0],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //     child: Container(
+  //       height: 70,
+  //       child: Row(
+  //         children: [
+  //           Padding(
+  //             padding: const EdgeInsets.symmetric(horizontal: 15),
+  //             child: Padding(
+  //               padding: const EdgeInsets.only(right: 8.0),
+  //               child: MyProfilePicture2(
+  //                 URL: profilePicUrl,
+  //                 frameRadius: 23,
+  //                 pictureRadius: 21,
+  //                 borderColor:
+  //                     ordonnance.status == 'active' ? SihhaGreen2 : Colors.grey,
+  //               ),
+  //             ),
+  //           ),
+  //           Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               Padding(
+  //                 padding: const EdgeInsets.only(top: 10.0),
+  //                 child: Text(
+  //                   '${ordonnance.medcin![0].familyName} ${ordonnance.medcin![0].name}',
+  //                   style: SihhaPoppins3.copyWith(
+  //                     fontSize: 16,
+  //                     letterSpacing: 1.2,
+  //                   ),
+  //                   overflow: TextOverflow.ellipsis,
+  //                 ),
+  //               ),
+  //               SizedBox(height: 5),
+  //               Text(
+  //                 '${ordonnance.medcin![0].speciality}',
+  //                 overflow: TextOverflow.ellipsis,
+  //                 style: GoogleFonts.poppins(
+  //                   color: Colors.grey,
+  //                   fontWeight: FontWeight.w400,
+  //                   fontSize: 14,
+  //                   letterSpacing: 1.3,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           Spacer(),
+  //           Text(
+  //             '${ordonnance.dateOfFilling!.toDate().day}/${(ordonnance.dateOfFilling!.toDate().month) < 10 ? '0' : ''}${ordonnance.dateOfFilling!.toDate().month}/${ordonnance.dateOfFilling!.toDate().year}\n     ${ordonnance.dateOfFilling!.toDate().hour}:${(ordonnance.dateOfFilling!.toDate().minute) < 10 ? '0' : ''}${ordonnance.dateOfFilling!.toDate().minute}',
+  //             style: GoogleFonts.poppins(
+  //               color: Colors.grey,
+  //               fontWeight: FontWeight.w400,
+  //               fontSize: 14,
+  //               letterSpacing: 1.3,
+  //             ),
+  //             overflow: TextOverflow.ellipsis,
+  //           ),
+  //           SizedBox(width: 10),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // FloatingActionButton AddOrdonnance() {
   //   return FloatingActionButton(

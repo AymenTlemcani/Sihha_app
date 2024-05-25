@@ -4,19 +4,21 @@ import 'package:sahha_app/Models/Actors/User.dart';
 
 class Disability {
   String? id;
-  Patient? patient;
+  String? patientId;
   String? name;
   String? description;
-  List<User>? medcins;
   Timestamp? dateOfStart;
   Timestamp? dateOfEnd;
   String? type;
   String? status;
   String? level;
+  List<User>? medcins;
+  Patient? patient;
 
   /// Constructor for the Disability class.
   Disability({
     this.id,
+    this.patientId,
     this.patient,
     this.name,
     this.description,
@@ -77,6 +79,7 @@ class Disability {
     if (map == null) return Disability();
     return Disability(
       id: map['id'],
+      patientId: map['patientId'],
       // patient: map['patient'] != null ? Patient.fromMap(map['patient']) : null,
       name: map['name'],
       description: map['description'],
@@ -95,6 +98,7 @@ class Disability {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'patientId': patientId,
       'patient': patient?.toMap(),
       'name': name,
       'description': description,

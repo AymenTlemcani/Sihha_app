@@ -4,8 +4,6 @@ import 'package:sahha_app/Models/Actors/User.dart';
 
 class Disease {
   String? id;
-  Patient? patient;
-  List<User>? medcins;
   String? patientId;
   String? name;
   Timestamp? dateOfStart;
@@ -16,6 +14,8 @@ class Disease {
   String? type;
   String? status;
   String? level;
+  Patient? patient;
+  List<User>? medcins;
 
   Disease({
     this.id,

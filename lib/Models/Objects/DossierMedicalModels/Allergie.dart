@@ -3,9 +3,8 @@ import 'package:sahha_app/Models/Actors/Medcin.dart';
 import 'package:sahha_app/Models/Actors/Patient.dart';
 
 class Allergie {
-  Patient? patient;
   String? id;
-  List<Medcin>? medcin;
+  String? patientId; // New property
   String? name;
   Timestamp? dateOfStart;
   Timestamp? dateOfEnd;
@@ -15,7 +14,8 @@ class Allergie {
   String? type;
   String? status;
   List<String>? reactions;
-  String? patientId; // New property
+  Patient? patient;
+  List<Medcin>? medcin;
   List<String>? medcinIds; // New property
 
   Allergie({

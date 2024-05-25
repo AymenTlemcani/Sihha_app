@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sahha_app/Models/Actors/Medcin.dart';
 import 'package:sahha_app/Models/Actors/User.dart';
+import 'package:sahha_app/Models/Objects/Ordonnance.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Services/UserService.dart';
 
@@ -56,6 +57,28 @@ class LoginControllerProvider extends ChangeNotifier {
         _user = _medcin;
         globalMedcin = _medcin;
       }
+
+      //Fetch data
+      await globalUser!.fetchOrdonnances();
+      // Extract doctorProfilePicUrls
+      List<String> doctorIDNS = [];
+
+      if (globalUser!.ordonnances != null) {
+        for (Ordonnance ordonnance in globalUser!.ordonnances!) {
+          if (ordonnance.medcin![0].IDN != null) {
+            doctorIDNS.add(ordonnance.medcin![0].IDN!);
+          }
+        }
+      }
+      Ordonnance ord = Ordonnance();
+      doctorProfilePicUrls = await ord.fetchDoctorProfilePicUrls(doctorIDNS);
+      // doctorProfilePicUrls
+      await globalUser!.fetchDiseases();
+      await globalUser!.fetchAllergies();
+      await globalUser!.fetchDisabilities();
+      await globalUser!.fetchHeights();
+      await globalUser!.fetchWeights();
+      await globalUser!.fetchBloodTypes();
 
       // Notify listeners of the change in login status
       loginStreamController.add(true);

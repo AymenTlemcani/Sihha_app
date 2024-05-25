@@ -240,5 +240,6 @@ List<Map<String, String>> medicaments = [
     'name': 'Lisinopril',
     'type': 'Inhibiteur de l\'enzyme de conversion',
     'dosage': '10 mg'
-  }
+  },
 ];
+List<String?> doctorProfilePicUrls = [];

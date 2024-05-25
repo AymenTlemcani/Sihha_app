@@ -1,20 +1,23 @@
 class Habit {
-  String name; // Current, former, never.
-  String frequency; // Daily, weekly, monthly, yearly, never.
-  String duration; // Short, medium, long.
-  String intensity; // Low, medium, high.
+  String? name; // Current, former, never.
+  String? frequency; // Daily, weekly, monthly, yearly, never.
+  String? duration; // Short, medium, long.
+  String? intensity; // Low, medium, high.
+  String? patientId;
 
   Habit({
-    required this.name,
-    required this.frequency,
-    required this.duration,
-    required this.intensity,
+    this.name,
+    this.patientId,
+    this.frequency,
+    this.duration,
+    this.intensity,
   });
 
-  factory Habit.fromMap(Map<String, dynamic> map) {
+  factory Habit.fromMap(Map<String, dynamic>? map) {
     try {
       return Habit(
-        name: map['name'],
+        name: map!['name'],
+        patientId: map['patientId'],
         frequency: map['frequency'],
         duration: map['duration'],
         intensity: map['intensity'],
@@ -28,6 +31,7 @@ class Habit {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'patientId': patientId,
       'frequency': frequency,
       'duration': duration,
       'intensity': intensity,
