@@ -92,39 +92,71 @@ class _OrdonnancePageState extends State<OrdonnancePage> {
     // final loginProvider = Provider.of<LoginControllerProvider>(context);
     // User? user = loginProvider.user;
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
+      floatingActionButton: Visibility(
+        visible: false,
+        child: FloatingActionButton(
           onPressed: () {
             print(widget.patient.ordonnances);
           },
         ),
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: PopupMenuButton<Function>(
-                color: Colors.white,
-                offset: Offset(-10, 40),
-                icon: Icon(CupertinoIcons.ellipsis_vertical),
-                iconColor: Colors.black87,
-                elevation: 2,
-                itemBuilder: (BuildContext context) =>
-                    <PopupMenuEntry<Function>>[
+      ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: PopupMenuButton<Function>(
+              color: Colors.white,
+              offset: Offset(-10, 40),
+              icon: Icon(CupertinoIcons.ellipsis_vertical),
+              iconColor: Colors.black87,
+              elevation: 2,
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<Function>>[
+                PopupMenuItem<Function>(
+                  value: _refreshOrdonnances,
+                  child: Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(width: 10),
+                        Icon(CupertinoIcons.refresh_bold,
+                            color: Colors.black87),
+                        SizedBox(width: 10),
+                        Text(
+                          'Actualiser',
+                          style: SihhaFont.copyWith(
+                              color: Colors.black87,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if ((globalUser!.isMedcin) && (widget.medcin != null))
                   PopupMenuItem<Function>(
-                    value: _refreshOrdonnances,
+                    value: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddOrdonnancePage(
+                              patient: widget.patient, medcin: widget.medcin!),
+                        ),
+                      );
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(0.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(width: 10),
-                          Icon(CupertinoIcons.refresh_bold,
-                              color: Colors.black87),
+                          Icon(CupertinoIcons.add, color: SihhaGreen2),
                           SizedBox(width: 10),
                           Text(
-                            'Actualiser',
+                            'Ajouter',
                             style: SihhaFont.copyWith(
-                                color: Colors.black87,
+                                color: SihhaGreen2,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500),
                           ),
@@ -132,159 +164,128 @@ class _OrdonnancePageState extends State<OrdonnancePage> {
                       ),
                     ),
                   ),
-                  if ((globalUser!.isMedcin) && (widget.medcin != null))
-                    PopupMenuItem<Function>(
-                      value: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddOrdonnancePage(
-                                patient: widget.patient,
-                                medcin: widget.medcin!),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(width: 10),
-                            Icon(CupertinoIcons.add, color: SihhaGreen2),
-                            SizedBox(width: 10),
-                            Text(
-                              'Ajouter',
-                              style: SihhaFont.copyWith(
-                                  color: SihhaGreen2,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
+              ],
+              onSelected: (Function value) {
+                value();
+              },
+            ),
+          ),
+        ],
+        leading: MyBackButton(
+          onTapFunction: () {
+            print("User Pressed on Back Button to go back");
+            Navigator.pop(context);
+          },
+        ),
+        title: Text('Ordonnances', style: SihhaPoppins3),
+        surfaceTintColor: Colors.white,
+        elevation: 0.5,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.black54,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      body:
+          // _isLoading
+          //     ? Center(child: CircularProgressIndicator())
+          //     :
+          RefreshIndicator.adaptive(
+        color: SihhaGreen1,
+        strokeWidth: 4,
+        onRefresh: _refreshOrdonnances,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.patient.ordonnances == null ||
+                      widget.patient.ordonnances!.isEmpty)
+                    NoDataContainer()
+                  else
+                    SizedBox(height: 10),
+                  //TODO Learn about ... operators
+                  ...(widget.patient.ordonnances!)
+                      .map((ordonnance) => Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Column(
+                              children: [
+                                OrdonnanceTile(
+                                  patient: widget.patient,
+                                  ordonnance: ordonnance,
+                                ),
+                                SizedBox(height: 10),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ))
+                      .toList(),
+                  SizedBox(height: 10),
+                  //************************************************************************* */
+                  // ********************  List View Vesion It has errors with shrink wrap if true = not scrollable if no excpetion error ************************************
+                  // CustomScrollView(
+                  //     slivers: [
+                  //       SliverToBoxAdapter(
+                  //         child: Column(
+                  //           children: [
+                  //             if (widget.patient.ordonnances == null ||
+                  //                 widget.patient.ordonnances!.isEmpty)
+                  //               Center(child: Text('Aucune ordonnance trouvée'))
+                  //             else
+                  //               ListView.builder(
+                  //                 // shrinkWrap: true,
+                  //                 itemCount: widget.patient.ordonnances!.length,
+                  //                 itemBuilder: (context, index) {
+                  //                   List<Ordonnance> displayedOrdonnances = [];
+                  //                   // Sort ordonnances by date of filling in descending order
+                  //                   widget.patient.ordonnances!.sort((a, b) =>
+                  //                       b.dateOfFilling!.compareTo(a.dateOfFilling!));
+                  //                   displayedOrdonnances = widget.patient.ordonnances!;
+                  //                   final ordonnance = displayedOrdonnances[index];
+                  //                   // widget.patient.ordonnances![index];
+                  //                   // int totalOrdonnaces =
+                  //                   //     widget.patient.ordonnances!.length;
+                  //                   return Padding(
+                  //                     padding:
+                  //                         const EdgeInsets.symmetric(horizontal: 8.0),
+                  //                     child: Column(
+                  //                       children: [
+                  //                         OrdonnanceTile(
+                  //                             ordonnance: ordonnance,
+                  //                             patient: widget.patient),
+                  //                         SizedBox(
+                  //                           height: 10,
+                  //                         )
+                  //                         // if (index <
+                  //                         //     totalOrdonnaces -
+                  //                         //         1) // Check if it's not the last item
+                  //                         //   Divider(
+
+                  //                         //     endIndent: 10,
+                  //                         //     indent: 60,
+                  //                         //     thickness: 0.4,
+                  //                         //   )
+                  //                         // else
+                  //                         //   SizedBox(
+                  //                         //       height:
+                  //                         //           0), // Use SizedBox instead of Divider for the last item
+                  //                       ],
+                  //                     ),
+                  //                   );
+                  //                 },
+                  //               ),
+                  //           ],
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
                 ],
-                onSelected: (Function value) {
-                  value();
-                },
               ),
             ),
           ],
-          leading: MyBackButton(
-            onTapFunction: () {
-              print("User Pressed on Back Button to go back");
-              Navigator.pop(context);
-            },
-          ),
-          title: Text('Ordonnances', style: SihhaPoppins3),
-          surfaceTintColor: Colors.white,
-          elevation: 0.5,
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
-          backgroundColor: Colors.white,
-          shadowColor: Colors.black54,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        body:
-            // _isLoading
-            //     ? Center(child: CircularProgressIndicator())
-            //     :
-            RefreshIndicator.adaptive(
-          color: SihhaGreen1,
-          strokeWidth: 4,
-          onRefresh: _refreshOrdonnances,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (widget.patient.ordonnances == null ||
-                        widget.patient.ordonnances!.isEmpty)
-                      NoDataContainer()
-                    else
-                      SizedBox(height: 10),
-                    //TODO Learn about ... operators
-                    ...(widget.patient.ordonnances!)
-                        .map((ordonnance) => Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Column(
-                                children: [
-                                  OrdonnanceTile(
-                                    patient: widget.patient,
-                                    ordonnance: ordonnance,
-                                  ),
-                                  SizedBox(height: 10),
-                                ],
-                              ),
-                            ))
-                        .toList(),
-                    SizedBox(height: 10),
-                    //************************************************************************* */
-                    // ********************  List View Vesion It has errors with shrink wrap if true = not scrollable if no excpetion error ************************************
-                    // CustomScrollView(
-                    //     slivers: [
-                    //       SliverToBoxAdapter(
-                    //         child: Column(
-                    //           children: [
-                    //             if (widget.patient.ordonnances == null ||
-                    //                 widget.patient.ordonnances!.isEmpty)
-                    //               Center(child: Text('Aucune ordonnance trouvée'))
-                    //             else
-                    //               ListView.builder(
-                    //                 // shrinkWrap: true,
-                    //                 itemCount: widget.patient.ordonnances!.length,
-                    //                 itemBuilder: (context, index) {
-                    //                   List<Ordonnance> displayedOrdonnances = [];
-                    //                   // Sort ordonnances by date of filling in descending order
-                    //                   widget.patient.ordonnances!.sort((a, b) =>
-                    //                       b.dateOfFilling!.compareTo(a.dateOfFilling!));
-                    //                   displayedOrdonnances = widget.patient.ordonnances!;
-                    //                   final ordonnance = displayedOrdonnances[index];
-                    //                   // widget.patient.ordonnances![index];
-                    //                   // int totalOrdonnaces =
-                    //                   //     widget.patient.ordonnances!.length;
-                    //                   return Padding(
-                    //                     padding:
-                    //                         const EdgeInsets.symmetric(horizontal: 8.0),
-                    //                     child: Column(
-                    //                       children: [
-                    //                         OrdonnanceTile(
-                    //                             ordonnance: ordonnance,
-                    //                             patient: widget.patient),
-                    //                         SizedBox(
-                    //                           height: 10,
-                    //                         )
-                    //                         // if (index <
-                    //                         //     totalOrdonnaces -
-                    //                         //         1) // Check if it's not the last item
-                    //                         //   Divider(
-
-                    //                         //     endIndent: 10,
-                    //                         //     indent: 60,
-                    //                         //     thickness: 0.4,
-                    //                         //   )
-                    //                         // else
-                    //                         //   SizedBox(
-                    //                         //       height:
-                    //                         //           0), // Use SizedBox instead of Divider for the last item
-                    //                       ],
-                    //                     ),
-                    //                   );
-                    //                 },
-                    //               ),
-                    //           ],
-                    //         ),
-                    //       )
-                    //     ],
-                    //   ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ));
+      ),
+    );
   }
 }
 

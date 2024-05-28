@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
-import 'package:sahha_app/CommonWidgets/MyProfilePicture2.dart';
+import 'package:sahha_app/CommonWidgets/MyProfilePicture3.dart';
 import 'package:sahha_app/CommonWidgets/MySearchTextField.dart';
 import 'package:sahha_app/Models/Actors/Child.dart';
 import 'package:sahha_app/Models/Actors/Medcin.dart';
@@ -29,8 +29,6 @@ class CreateUser extends StatefulWidget {
 
 //TODO new create logic
 class _CreateUserState extends State<CreateUser> {
-  CollectionReference<Map<String, dynamic>> _reference =
-      FirebaseFirestore.instance.collection('users');
   HealthPlace? selectedHealthPlace;
   final TextEditingController _idController = TextEditingController();
   final DateRangePickerController _dateRangePickerController =
@@ -56,6 +54,7 @@ class _CreateUserState extends State<CreateUser> {
   final _formKey = GlobalKey<FormState>();
 
   String? _selectedUserType;
+  File? _imageFile;
   DateTime? _birthDate;
   bool newIsAdmin = false;
   bool newIsMedcin = false;
@@ -116,7 +115,7 @@ class _CreateUserState extends State<CreateUser> {
           .collection('users')
           .where('IDN', isEqualTo: _idController.text)
           .get()
-          .then((QuerySnapshot querySnapshot) {
+          .then((QuerySnapshot querySnapshot) async {
         if (querySnapshot.docs.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -147,6 +146,7 @@ class _CreateUserState extends State<CreateUser> {
             );
             return;
           }
+
           User newUser = User(
             isAdmin: newIsAdmin,
             isMedcin: newIsMedcin,
@@ -155,7 +155,6 @@ class _CreateUserState extends State<CreateUser> {
             familyName: _familyNameController.text,
             name: _nameController.text,
             password: _passwordUserController.text,
-            // birthDate: Timestamp.fromDate(_birthDate!),
             birthDate: Timestamp.fromDate(_birthDate!),
             birthPlace: _birthPlaceController.text,
             adresse: _adresseController.text,
@@ -171,52 +170,60 @@ class _CreateUserState extends State<CreateUser> {
           Map<String, dynamic> userMap = newUser.toMap();
 
           // Upload data to Firestore
-          FirebaseFirestore.instance
-              .collection('users')
-              .add(userMap)
-              .then((value) {
-            print(value.id);
+          DocumentReference userDocRef =
+              await FirebaseFirestore.instance.collection('users').add(userMap);
 
-            FirebaseFirestore.instance
-                .collection('users')
-                .doc(value.id)
-                .update({'documentId': value.id});
-            if (newIsMedcin) {
-              Medcin newMedcin = Medcin(
-                IDN: _idController.text,
-                documentId: value.id,
-                workPlace: selectedHealthPlace,
-                isAdmin: false,
-                isMedcin: true,
-                isPharmacien: false,
-                name: _nameController.text,
-                familyName: _familyNameController.text,
-                professionalPhoneNumber:
-                    _doctorProfessionalPhoneNumberController.text,
-                speciality: _specialityController.text,
-              );
-              Map<String, dynamic> medcinMap = newMedcin.toMap();
-              FirebaseFirestore.instance
-                  .collection('medcins')
-                  .doc(value.id)
-                  .set(medcinMap);
-            }
+          await userDocRef.update({'documentId': userDocRef.id});
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('User created successfully.'),
-              ),
+          if (newIsMedcin) {
+            Medcin newMedcin = Medcin(
+              IDN: _idController.text,
+              documentId: userDocRef.id,
+              workPlace: selectedHealthPlace,
+              isAdmin: false,
+              isMedcin: true,
+              isPharmacien: false,
+              name: _nameController.text,
+              familyName: _familyNameController.text,
+              professionalPhoneNumber:
+                  _doctorProfessionalPhoneNumberController.text,
+              speciality: _specialityController.text,
             );
+            Map<String, dynamic> medcinMap = newMedcin.toMap();
+            await FirebaseFirestore.instance
+                .collection('medcins')
+                .doc(userDocRef.id)
+                .set(medcinMap);
+          }
 
-            clearInputFields();
-          }).catchError((error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error creating user: $error'),
-              ),
-            );
-          });
+          // Upload the profile picture if available
+          if (_imageFile != null) {
+            Reference referenceRoot = FirebaseStorage.instance.ref();
+            Reference referenceDirProfilePics =
+                referenceRoot.child("ProfilePics");
+            Reference referenceImageToUpload = referenceDirProfilePics
+                .child("${newUser.familyName}_${newUser.name}.jpeg");
+
+            await referenceImageToUpload.putFile(_imageFile!);
+            String url = await referenceImageToUpload.getDownloadURL();
+
+            await userDocRef.update({'profilePicUrl': url});
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('User created successfully.'),
+            ),
+          );
+
+          clearInputFields();
         }
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error creating user: $error'),
+          ),
+        );
       });
     }
   }
@@ -228,7 +235,7 @@ class _CreateUserState extends State<CreateUser> {
           .collection('users')
           .where('IDN', isEqualTo: _responsableIDNController.text)
           .get()
-          .then((QuerySnapshot querySnapshot) {
+          .then((QuerySnapshot querySnapshot) async {
         // if Empty tell em
         if (querySnapshot.docs.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -237,7 +244,6 @@ class _CreateUserState extends State<CreateUser> {
             ),
           );
         } else {
-          // Create the child
           // Validate inputs
           if (_selectedUserType == null ||
               _responsableIDNController.text.isEmpty ||
@@ -256,7 +262,7 @@ class _CreateUserState extends State<CreateUser> {
 
           // Create a Child instance
           Child newChild = Child(
-            id: '',
+            documentId: '',
             responsableId: querySnapshot.docs.first.id,
             responsableIDN: _responsableIDNController.text,
             name: _nameController.text,
@@ -264,49 +270,260 @@ class _CreateUserState extends State<CreateUser> {
             birthDate: Timestamp.fromDate(_birthDate!),
             gender: _genderController.text,
             birthPlace: _birthPlaceController.text,
-            // address: querySnapshot.docs.first['address'],
-            profilePicUrl:
-                '', // You need to provide the URL for the profile picture here
+            profilePicUrl: '',
           );
 
           // Convert the Child instance to a map
           Map<String, dynamic> childMap = newChild.toMap();
 
           // Upload the data to Firestore
-
-          FirebaseFirestore.instance
+          DocumentReference childDocRef = await FirebaseFirestore.instance
               .collection('mineurs')
-              .add(childMap)
-              .then((value) {
-            //update id
-            FirebaseFirestore.instance
-                .collection('mineurs')
-                .doc(value.id)
-                .update({'id': value.id}).then(
-              (_) {
-                // Show a snackbar
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Mineur créé avec succès.')));
-              },
-            );
-            //TODO upload profile picture
-          }
-                  //
+              .add(childMap);
 
-                  ).catchError((error) {
-            // Error occurred while uploading data
-            print("Failed to add child: $error");
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Échec de la création de Mineur."),
-              ),
-            );
-          });
+          await childDocRef.update({'documentId': childDocRef.id});
+
+          // Upload the profile picture if available
+          if (_imageFile != null) {
+            Reference referenceRoot = FirebaseStorage.instance.ref();
+            Reference referenceDirProfilePics =
+                referenceRoot.child("ProfilePics");
+            Reference referenceImageToUpload = referenceDirProfilePics
+                .child("${newChild.familyName}_${newChild.name}.jpeg");
+
+            await referenceImageToUpload.putFile(_imageFile!);
+            String url = await referenceImageToUpload.getDownloadURL();
+
+            await childDocRef.update({'profilePicUrl': url});
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Mineur créé avec succès.'),
+            ),
+          );
         }
+      }).catchError((error) {
+        // Error occurred while uploading data
+        print("Failed to add child: $error");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Échec de la création de Mineur."),
+          ),
+        );
       });
     }
   }
+/*********************** MY VERSION BEFORE ADDING IMAGE UPLOADING ********************************** */
+//   void _createAdult() {
+//     if (_formKey.currentState!.validate()) {
+//       // Check if the user already exists in the database
+//       FirebaseFirestore.instance
+//           .collection('users')
+//           .where('IDN', isEqualTo: _idController.text)
+//           .get()
+//           .then((QuerySnapshot querySnapshot) {
+//         if (querySnapshot.docs.isNotEmpty) {
+//           ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(
+//               content: Text('Un utilisateur avec cet IDN existe déjà.'),
+//             ),
+//           );
+//         } else {
+//           // Validate inputs
+//           if (_selectedUserType == null ||
+//               _idController.text.isEmpty ||
+//               _passwordUserController.text.isEmpty ||
+//               _confirmPasswordController.text.isEmpty ||
+//               _familyNameController.text.isEmpty ||
+//               _nameController.text.isEmpty ||
+//               _birthDate == null ||
+//               _birthPlaceController.text.isEmpty ||
+//               _genderController.text.isEmpty ||
+//               _adresseController.text.isEmpty ||
+//               _telephoneController.text.isEmpty ||
+//               (_selectedUserType == 'Medcin' &&
+//                   (_specialityController.text.isEmpty ||
+//                       _workPlaceController.text.isEmpty ||
+//                       _doctorProfessionalPhoneNumberController.text.isEmpty))) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text("S'il vous plaît remplir tous les champs."),
+//               ),
+//             );
+//             return;
+//           }
+//           User newUser = User(
+//             isAdmin: newIsAdmin,
+//             isMedcin: newIsMedcin,
+//             isPharmacien: newIsPharmacie,
+//             IDN: _idController.text,
+//             familyName: _familyNameController.text,
+//             name: _nameController.text,
+//             password: _passwordUserController.text,
+//             // birthDate: Timestamp.fromDate(_birthDate!),
+//             birthDate: Timestamp.fromDate(_birthDate!),
+//             birthPlace: _birthPlaceController.text,
+//             adresse: _adresseController.text,
+//             bio: '',
+//             email: '',
+//             documentId: '',
+//             gender: _genderController.text,
+//             profilePicUrl: '',
+//             telephone: _telephoneController.text,
+//             userName: '',
+//           );
 
+//           Map<String, dynamic> userMap = newUser.toMap();
+
+//           // Upload data to Firestore
+//           FirebaseFirestore.instance
+//               .collection('users')
+//               .add(userMap)
+//               .then((value) {
+//             print(value.id);
+
+//             FirebaseFirestore.instance
+//                 .collection('users')
+//                 .doc(value.id)
+//                 .update({'documentId': value.id});
+//             if (newIsMedcin) {
+//               Medcin newMedcin = Medcin(
+//                 IDN: _idController.text,
+//                 documentId: value.id,
+//                 workPlace: selectedHealthPlace,
+//                 isAdmin: false,
+//                 isMedcin: true,
+//                 isPharmacien: false,
+//                 name: _nameController.text,
+//                 familyName: _familyNameController.text,
+//                 professionalPhoneNumber:
+//                     _doctorProfessionalPhoneNumberController.text,
+//                 speciality: _specialityController.text,
+//               );
+//               Map<String, dynamic> medcinMap = newMedcin.toMap();
+//               FirebaseFirestore.instance
+//                   .collection('medcins')
+//                   .doc(value.id)
+//                   .set(medcinMap);
+//             }
+//  // Upload the profile picture if available
+//         if (_imageFile != null) {
+//           Reference referenceRoot = FirebaseStorage.instance.ref();
+//           Reference referenceDirProfilePics = referenceRoot.child("ProfilePics");
+//           Reference referenceImageToUpload = referenceDirProfilePics
+//               .child("${newUser.familyName}_${newUser.name}.jpeg");
+
+//           await referenceImageToUpload.putFile(_imageFile!);
+//           String url = await referenceImageToUpload.getDownloadURL();
+
+//           await userDocRef.update({'profilePicUrl': url});
+//         }
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text('User created successfully.'),
+//               ),
+//             );
+
+//             clearInputFields();
+//           }).catchError((error) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text('Error creating user: $error'),
+//               ),
+//             );
+//           });
+//         }
+//       });
+//     }
+//   }
+
+//   void _createChild() {
+//     if (_formKey.currentState!.validate()) {
+//       // Check if the responsable exists in the database
+//       FirebaseFirestore.instance
+//           .collection('users')
+//           .where('IDN', isEqualTo: _responsableIDNController.text)
+//           .get()
+//           .then((QuerySnapshot querySnapshot) {
+//         // if Empty tell em
+//         if (querySnapshot.docs.isEmpty) {
+//           ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(
+//               content: Text('Le Responsable ne existe pas.'),
+//             ),
+//           );
+//         } else {
+//           // Create the child
+//           // Validate inputs
+//           if (_selectedUserType == null ||
+//               _responsableIDNController.text.isEmpty ||
+//               _familyNameController.text.isEmpty ||
+//               _nameController.text.isEmpty ||
+//               _birthDate == null ||
+//               _birthPlaceController.text.isEmpty ||
+//               _genderController.text.isEmpty) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text("S'il vous plaît remplir tous les champs."),
+//               ),
+//             );
+//             return;
+//           }
+
+//           // Create a Child instance
+//           Child newChild = Child(
+//             documentId: '',
+//             responsableId: querySnapshot.docs.first.id,
+//             responsableIDN: _responsableIDNController.text,
+//             name: _nameController.text,
+//             familyName: _familyNameController.text,
+//             birthDate: Timestamp.fromDate(_birthDate!),
+//             gender: _genderController.text,
+//             birthPlace: _birthPlaceController.text,
+//             // address: querySnapshot.docs.first['address'],
+//             profilePicUrl:
+//                 '', // You need to provide the URL for the profile picture here
+//           );
+
+//           // Convert the Child instance to a map
+//           Map<String, dynamic> childMap = newChild.toMap();
+
+//           // Upload the data to Firestore
+
+//           FirebaseFirestore.instance
+//               .collection('mineurs')
+//               .add(childMap)
+//               .then((value) {
+//             //update id
+//             FirebaseFirestore.instance
+//                 .collection('mineurs')
+//                 .doc(value.id)
+//                 .update({'documentId': value.id}).then(
+//               (_) {
+//                 // Show a snackbar
+//                 ScaffoldMessenger.of(context).showSnackBar(
+//                     SnackBar(content: Text('Mineur créé avec succès.')));
+//               },
+//             );
+//             //TODO upload profile picture
+//           }
+//                   //
+
+//                   ).catchError((error) {
+//             // Error occurred while uploading data
+//             print("Failed to add child: $error");
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text("Échec de la création de Mineur."),
+//               ),
+//             );
+//           });
+//         }
+//       });
+//     }
+//   }
+/******************************************************************************** */
   // Widget _buildFormFields() {
   //   return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
   //     MyButton(
@@ -507,6 +724,9 @@ class _CreateUserState extends State<CreateUser> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             ProfilePicWithEditButton(),
+            // _selectedUserType == 'Mineur'
+            //     ? ProfilePicWithEditButton()
+            //     : ProfilePicWithEditButtonChild(),
             // MyProfilePicture2(
             //   URL: null,
             //   frameRadius: 75,
@@ -965,8 +1185,9 @@ class _CreateUserState extends State<CreateUser> {
   Stack ProfilePicWithEditButton() {
     return Stack(
       children: [
-        MyProfilePicture2(
-          URL: null,
+        MyProfilePicture3(
+          // URL: _imageFile.path,
+          imageFile: _imageFile,
           frameRadius: 75,
           pictureRadius: 72,
           iconSize: 80,
@@ -984,9 +1205,8 @@ class _CreateUserState extends State<CreateUser> {
             ),
             child: IconButton(
               alignment: Alignment.center,
-              onPressed: PickAndUpload,
+              onPressed: _pickImage,
               icon: Icon(
-                // CupertinoIcons.pencil_outline,
                 CupertinoIcons.photo_camera_solid,
                 color: Colors.white,
                 size: 20,
@@ -997,6 +1217,41 @@ class _CreateUserState extends State<CreateUser> {
       ],
     );
   }
+
+  // Stack ProfilePicWithEditButtonChild(Child child) {
+  //   return Stack(
+  //     children: [
+  //       MyProfilePicture2(
+  //         URL: child.profilePicUrl,
+  //         frameRadius: 75,
+  //         pictureRadius: 72,
+  //         iconSize: 80,
+  //         borderColor: SihhaGreen2,
+  //       ),
+  //       Positioned(
+  //         bottom: 0,
+  //         right: 0,
+  //         child: Container(
+  //           width: 35,
+  //           height: 35,
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(50),
+  //             color: SihhaGreen2.withOpacity(1),
+  //           ),
+  //           child: IconButton(
+  //             alignment: Alignment.center,
+  //             onPressed: _pickImage,
+  //             icon: Icon(
+  //               CupertinoIcons.photo_camera_solid,
+  //               color: Colors.white,
+  //               size: 20,
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   void clearInputFields() {
     _idController.clear();
@@ -1022,19 +1277,16 @@ class _CreateUserState extends State<CreateUser> {
     });
   }
 
-  // File? _imageFile;
-
-  // PickAndUpload() async {
-  //   //Pick the image
-  //   ImagePicker imagePicker = ImagePicker();
-  //   XFile? pickedFile =
-  //       await imagePicker.pickImage(source: ImageSource.gallery);
-  //   print('PICKED FILE PATH : ${pickedFile?.path}');
-  //   if (pickedFile != null) {
-  //     setState(() {
-  //       _imageFile = File(pickedFile.path);
-  //     });
-  //   }
+  Future<void> _pickImage() async {
+    ImagePicker imagePicker = ImagePicker();
+    XFile? pickedFile =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
 
   //   // When you click on the submit button, you can upload the image to Firebase Storage, get the URL, and add it to the user's profile picture URL field.
   //   if (_enableCreateButton && _imageFile != null) {
@@ -1050,46 +1302,79 @@ class _CreateUserState extends State<CreateUser> {
   //   // Implement your Firebase Storage upload logic here
   //   // and return the download URL of the uploaded image
   // }
-  PickAndUpload() async {
-    //Pick the image
-    ImagePicker imagePicker = ImagePicker();
-    XFile? pickedFile =
-        await imagePicker.pickImage(source: ImageSource.gallery);
-    print('PICKED FILE PATH : ${pickedFile?.path}');
-    if (pickedFile == null) {
-      // setState(() {
-      //   _isUploading = false; // Hide loading indicator
-      // });
-      return;
-    }
+  /**************************************************************************************************** */
+  // PickAndUpload(Patient patient) async {
+  //   //Pick the image
+  //   ImagePicker imagePicker = ImagePicker();
+  //   XFile? pickedFile =
+  //       await imagePicker.pickImage(source: ImageSource.gallery);
+  //   print('PICKED FILE PATH : ${pickedFile?.path}');
+  //   if (pickedFile == null) {
+  //     return;
+  //   }
 
-    // //Get the ref
-    // Reference referenceRoot = FirebaseStorage.instance.ref();
-    // Reference referenceDirProfilePics = referenceRoot.child("ProfilePics");
-    // Reference referenceImageToUploaod = referenceDirProfilePics
-    //     .child("${globalUser!.familyName}_${globalUser!.name}.jpeg");
+  //   //Get the ref
+  //   Reference referenceRoot = FirebaseStorage.instance.ref();
+  //   Reference referenceDirProfilePics = referenceRoot.child("ProfilePics");
+  //   Reference referenceImageToUploaod = referenceDirProfilePics
+  //       .child("${patient.familyName}_${patient.name}.jpeg");
 
-    // print(globalUser!.documentId.toString());
+  //   // print(globalUser!.documentId.toString());
 
-    // try {
-    //   //Upload to Firebase Storage
-    //   await referenceImageToUploaod.putFile(File(pickedFile.path));
-    //   // Get the download URL and update it in Firestore Database
-    //   String url = await referenceImageToUploaod.getDownloadURL();
-    //   globalUser!.profilePicUrl = url;
-    //   // user!.updateProfilePicUrl(url);
-    //   print(globalUser!.profilePicUrl);
-    //   Map<String, dynamic> dataToUpload = {
-    //     'profilePicUrl': globalUser!.profilePicUrl.toString(),
-    //   };
-    //   //Update User Data in Firestore
-    //   await _reference.doc(globalUser!.documentId).update(dataToUpload);
-    // } catch (e) {
-    //   print('error while uploading : $e');
-    // }
+  //   try {
+  //     //Upload to Firebase Storage
+  //     await referenceImageToUploaod.putFile(File(pickedFile.path));
+  //     // Get the download URL and update it in Firestore Database
+  //     String url = await referenceImageToUploaod.getDownloadURL();
+  //     patient.profilePicUrl = url;
+  //     // user!.updateProfilePicUrl(url);
+  //     print(patient.profilePicUrl);
+  //     Map<String, dynamic> dataToUpload = {
+  //       'profilePicUrl': patient.profilePicUrl.toString(),
+  //     };
+  //     //Update User Data in Firestore
+  //     await _referenceAdultes.doc(patient.documentId).update(dataToUpload);
+  //   } catch (e) {
+  //     print('error while uploading : $e');
+  //   }
+  // }
 
-    // setState(() {
-    //   _isUploading = false; // Hide loading indicator
-    // });
-  }
+  // PickAndUploadChild(Child child) async {
+  //   // final loginProvider = Provider.of<LoginControllerProvider>(context);
+  //   // User? user = loginProvider.user;
+
+  //   //Pick the image
+  //   ImagePicker imagePicker = ImagePicker();
+  //   XFile? pickedFile =
+  //       await imagePicker.pickImage(source: ImageSource.gallery);
+  //   print('PICKED FILE PATH : ${pickedFile?.path}');
+  //   if (pickedFile == null) {
+  //     return;
+  //   }
+
+  //   //Get the ref
+  //   Reference referenceRoot = FirebaseStorage.instance.ref();
+  //   Reference referenceDirProfilePics = referenceRoot.child("ProfilePics");
+  //   Reference referenceImageToUploaod =
+  //       referenceDirProfilePics.child("${child.familyName}_${child.name}.jpeg");
+
+  //   print(child.documentId.toString());
+
+  //   try {
+  //     //Upload to Firebase Storage
+  //     await referenceImageToUploaod.putFile(File(pickedFile.path));
+  //     // Get the download URL and update it in Firestore Database
+  //     String url = await referenceImageToUploaod.getDownloadURL();
+  //     child.profilePicUrl = url;
+  //     // user!.updateProfilePicUrl(url);
+  //     print(child.profilePicUrl);
+  //     Map<String, dynamic> dataToUpload = {
+  //       'profilePicUrl': child.profilePicUrl.toString(),
+  //     };
+  //     //Update User Data in Firestore
+  //     await _referenceMineurs.doc(child.documentId).update(dataToUpload);
+  //   } catch (e) {
+  //     print('error while uploading : $e');
+  //   }
+  // }
 }

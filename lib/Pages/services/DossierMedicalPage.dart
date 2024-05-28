@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +12,8 @@ import 'package:sahha_app/CommonWidgets/MyDetailCard.dart';
 import 'package:sahha_app/CommonWidgets/MyDetailListView.dart';
 import 'package:sahha_app/CommonWidgets/MySearchTextField.dart';
 import 'package:sahha_app/CommonWidgets/MyTextForm.dart';
+import 'package:sahha_app/Models/Actors/Medcin.dart';
+import 'package:sahha_app/Models/Actors/Patient.dart';
 import 'package:sahha_app/Models/Objects/DossierMedicalModels/Allergie.dart';
 import 'package:sahha_app/Models/Objects/DossierMedicalModels/Disability.dart';
 import 'package:sahha_app/Models/Objects/DossierMedicalModels/Disease.dart';
@@ -19,7 +23,10 @@ import 'package:sahha_app/Models/examples.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class DossierMedicalPage extends StatefulWidget {
-  const DossierMedicalPage({super.key});
+  final Medcin?
+      medcin; // null if patient is viewing own ordonnances (not required)
+  final Patient patient;
+  const DossierMedicalPage({super.key, this.medcin, required this.patient});
 
   @override
   State<DossierMedicalPage> createState() => _DossierMedicalPageState();
@@ -57,12 +64,12 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
   }
 
   void onSave2(Map<String, dynamic> selectedData, String collection) async {
-    selectedData['patientId'] = globalUser!.documentId;
+    selectedData['patientId'] = widget.patient.documentId;
     selectedData['date'] = Timestamp.fromDate(DateTime.now());
     try {
       await FirebaseFirestore.instance
           .collection(collection)
-          .doc(globalUser!.documentId)
+          .doc(widget.patient.documentId)
           .set(selectedData, SetOptions(merge: true));
       print('$collection uploaded successfully');
     } catch (e) {
@@ -77,7 +84,7 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
 
     // Add dateOfStart and patientId to the selectedDisease
     selectedDisease.dateOfStart = Timestamp.fromDate(_dateOfStart!);
-    selectedDisease.patientId = globalUser!.documentId;
+    selectedDisease.patientId = widget.patient.documentId;
 
     // Convert the Disease object to a map
     Map<String, dynamic> diseaseData = selectedDisease.toMap();
@@ -98,7 +105,7 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
 
     // Add dateOfStart and patientId to the selectedDisease
     selectedAllegrie.dateOfStart = Timestamp.fromDate(_dateOfStart!);
-    selectedAllegrie.patientId = globalUser!.documentId;
+    selectedAllegrie.patientId = widget.patient.documentId;
 
     // Convert the allergies object to a map
     Map<String, dynamic> allergieData = selectedAllegrie.toMap();
@@ -121,7 +128,7 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
 
     // Add dateOfStart and patientId to the selectedDisease
     selectedDisability.dateOfStart = Timestamp.fromDate(_dateOfStart!);
-    selectedDisability.patientId = globalUser!.documentId;
+    selectedDisability.patientId = widget.patient.documentId;
 
     // Convert the allergies object to a map
     Map<String, dynamic> allergieData = selectedDisability.toMap();
@@ -142,7 +149,7 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
 
     // Add dateOfStart and patientId to the selectedDisease
     // selectedHabit.dateOfStart = Timestamp.fromDate(_dateOfStart!);
-    selectedHabit.patientId = globalUser!.documentId;
+    selectedHabit.patientId = widget.patient.documentId;
 
     // Convert the allergies object to a map
     Map<String, dynamic> habitData = selectedHabit.toMap();
@@ -160,41 +167,44 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          // print(globalUser!.diseases);
-          // Disease newDisease = Disease(
-          //   dateOfStart: Timestamp.fromDate(DateTime.now()),
-          //   name: 'Maladie 1',
-          //   description: 'Test bach nchof UI ta3 Les maladie Chronique',
-          //   level: 'Niveau 2',
-          //   type: 'chronique',
-          //   patientId: globalUser!.documentId,
-          // );
-          // Habit habit = Habit(
-          //     name: 'Smoking',
-          //     duration: 'Longue',
-          //     intensity: 'moyen',
-          //     frequency: 'Toujours',
-          //     patientId: globalUser!.documentId);
-          // Height height = Height(
-          //     height: 198,
-          //     date: Timestamp.fromDate(DateTime.now()),
-          //     patientId: globalUser!.documentId);
-          // Weight weight = Weight(
-          //     weight: 68,
-          //     date: Timestamp.fromDate(DateTime.now()),
-          //     patientId: globalUser!.documentId);
-          // Map<String, dynamic> disMap = weight.toMap();
-          // await FirebaseFirestore.instance
-          //     .collection('weights')
-          //     .doc(globalUser!.documentId)
-          //     .set(disMap, SetOptions(merge: true));
-          // print(globalUser!.weights!.last.weight);
+      floatingActionButton: Visibility(
+        visible: false,
+        child: FloatingActionButton(
+          onPressed: () async {
+            // print(widget.patient.diseases);
+            // Disease newDisease = Disease(
+            //   dateOfStart: Timestamp.fromDate(DateTime.now()),
+            //   name: 'Maladie 1',
+            //   description: 'Test bach nchof UI ta3 Les maladie Chronique',
+            //   level: 'Niveau 2',
+            //   type: 'chronique',
+            //   patientId: widget.patient.documentId,
+            // );
+            // Habit habit = Habit(
+            //     name: 'Smoking',
+            //     duration: 'Longue',
+            //     intensity: 'moyen',
+            //     frequency: 'Toujours',
+            //     patientId: widget.patient.documentId);
+            // Height height = Height(
+            //     height: 198,
+            //     date: Timestamp.fromDate(DateTime.now()),
+            //     patientId: widget.patient.documentId);
+            // Weight weight = Weight(
+            //     weight: 68,
+            //     date: Timestamp.fromDate(DateTime.now()),
+            //     patientId: widget.patient.documentId);
+            // Map<String, dynamic> disMap = weight.toMap();
+            // await FirebaseFirestore.instance
+            //     .collection('weights')
+            //     .doc(widget.patient.documentId)
+            //     .set(disMap, SetOptions(merge: true));
+            // print(widget.patient.weights!.last.weight);
 
-          // print(_selectedSuggestion);
-          print('done');
-        },
+            // print(_selectedSuggestion);
+            print('done');
+          },
+        ),
       ),
       appBar: AppBar(
         leading: MyBackButton(
@@ -228,13 +238,13 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
               onTap: () async {
-                await globalUser!.fetchAllergies();
-                await globalUser!.fetchDisabilities();
-                await globalUser!.fetchDiseases();
-                await globalUser!.fetchHabits();
-                await globalUser!.fetchHeights();
-                await globalUser!.fetchWeights();
-                await globalUser!.fetchBloodTypes();
+                await widget.patient.fetchAllergies();
+                await widget.patient.fetchDisabilities();
+                await widget.patient.fetchDiseases();
+                await widget.patient.fetchHabits();
+                await widget.patient.fetchHeights();
+                await widget.patient.fetchWeights();
+                await widget.patient.fetchBloodTypes();
 
                 setState(() {});
               },
@@ -248,15 +258,29 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
               ),
             ),
           ),
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              // Activate edit mode
-              setState(() {
-                _isEditMode = true;
-              });
-            },
-          ),
+          if ((globalUser!.isMedcin) && (widget.medcin != null))
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 18, 8),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () {
+                  // Activate edit mode
+                  setState(() {
+                    _isEditMode = !_isEditMode;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: Icon(
+                    _isEditMode
+                        ? CupertinoIcons.pencil_circle_fill
+                        : CupertinoIcons.pencil_circle,
+                    color: SihhaGreen2,
+                    size: 27,
+                  ),
+                ),
+              ),
+            ),
         ],
         surfaceTintColor: Colors.white,
         elevation: 0.5,
@@ -274,754 +298,2275 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
           : CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 130,
-                        child: Row(
-                          children: [
-                            //Height
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _heightController.text =
-                                      globalUser!.heights!.isEmpty
-                                          ? ''
-                                          : globalUser!.heights!.last.height!
-                                              .toString();
-                                  showSmallEditPopup(
-                                    MyTextForm(
-                                      hintText: 'Taille (cm)',
-                                      controller: _heightController,
-                                      keyboardType: TextInputType.number,
+                  child: Platform.isWindows ? WindowsView() : PhoneView(),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Column PhoneView() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // height: 130,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 130,
+                child: GestureDetector(
+                  onTap: () {
+                    if (_isEditMode) {
+                      _heightController.text = widget.patient.heights!.isEmpty
+                          ? ''
+                          : widget.patient.heights!.last.height!.toString();
+                      showSmallEditPopup(
+                        MyTextForm(
+                          hintText: 'Taille (cm)',
+                          controller: _heightController,
+                          keyboardType: TextInputType.number,
+                        ),
+                        // TextField(
+                        //   controller: _heightController,
+                        //   decoration: InputDecoration(
+                        //       labelText: 'Taille (cm)'),
+                        //   keyboardType: TextInputType.number,
+                        // ),
+                        (selectedData) => onSave2(selectedData, 'heights'),
+                      );
+                    }
+                  },
+                  child: MyDetailCard(
+                    title: 'Taille',
+                    leadingIcon: LineAwesomeIcons.ruler,
+                    lastUpdated: widget.patient.heights!.isEmpty ||
+                            widget.patient.heights != null
+                        ? ''
+                        : formatDate(
+                            widget.patient.heights!.last.date!.toDate().day,
+                            widget.patient.heights!.last.date!.toDate().month,
+                            widget.patient.heights!.last.date!.toDate().year),
+                    data: widget.patient.heights!.isEmpty
+                        ? ''
+                        : widget.patient.heights!.last.height!
+                            .round()
+                            .toString(),
+                    unity: 'cm',
+                  ),
+                ),
+              ),
+              //Blood
+              SizedBox(
+                height: 130,
+                child: GestureDetector(
+                  onTap: () {
+                    if (_isEditMode) {
+                      _selectedRh = widget.patient.bloodGroup ?? 'O+';
+                      showSmallEditPopup(
+                        StatefulBuilder(
+                          builder:
+                              (BuildContext context, StateSetter setState) {
+                            return DropdownButton<String>(
+                              elevation: 0,
+                              autofocus: true,
+                              dropdownColor: Colors.white,
+                              focusColor: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                              style: SihhaFont.copyWith(
+                                color: Colors.black.withOpacity(0.7),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              value: _selectedRh,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedRh = newValue!;
+                                });
+                              },
+                              items: <String>[
+                                'O+',
+                                'O-',
+                                'A+',
+                                'A-',
+                                'B+',
+                                'B-',
+                                'AB+',
+                                'AB-'
+                              ].map<DropdownMenuItem<String>>(
+                                (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: SihhaFont.copyWith(
+                                        color: Colors.black.withOpacity(0.7),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
-                                    // TextField(
-                                    //   controller: _heightController,
-                                    //   decoration: InputDecoration(
-                                    //       labelText: 'Taille (cm)'),
-                                    //   keyboardType: TextInputType.number,
-                                    // ),
-                                    (selectedData) =>
-                                        onSave2(selectedData, 'heights'),
                                   );
                                 },
-                                child: MyDetailCard(
-                                  title: 'Taille',
-                                  leadingIcon: LineAwesomeIcons.ruler,
-                                  lastUpdated: globalUser!.heights!.isEmpty ||
-                                          globalUser!.heights != null
-                                      ? ''
-                                      : formatDate(
-                                          globalUser!.heights!.last.date!
-                                              .toDate()
-                                              .day,
-                                          globalUser!.heights!.last.date!
-                                              .toDate()
-                                              .month,
-                                          globalUser!.heights!.last.date!
-                                              .toDate()
-                                              .year),
-                                  data: globalUser!.heights!.isEmpty
-                                      ? ''
-                                      : globalUser!.heights!.last.height!
-                                          .round()
-                                          .toString(),
-                                  unity: 'cm',
-                                ),
-                              ),
-                            ),
-                            //Blood
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _selectedRh = globalUser!.bloodGroup ?? 'O+';
-                                  showSmallEditPopup(
-                                    StatefulBuilder(
-                                      builder: (BuildContext context,
-                                          StateSetter setState) {
-                                        return DropdownButton<String>(
-                                          elevation: 0,
-                                          autofocus: true,
-                                          dropdownColor: Colors.white,
-                                          focusColor: Colors.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          style: SihhaFont.copyWith(
-                                            color:
-                                                Colors.black.withOpacity(0.7),
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                          value: _selectedRh,
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              _selectedRh = newValue!;
-                                            });
-                                          },
-                                          items: <String>[
-                                            'O+',
-                                            'O-',
-                                            'A+',
-                                            'A-',
-                                            'B+',
-                                            'B-',
-                                            'AB+',
-                                            'AB-'
-                                          ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(
-                                                  value,
-                                                  style: SihhaFont.copyWith(
-                                                    color: Colors.black
-                                                        .withOpacity(0.7),
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ).toList(),
-                                        );
-                                      },
-                                    ),
-                                    (selectedData) =>
-                                        onSave2(selectedData, 'bloodTypes'),
-                                  );
-                                },
-                                child: MyDetailCard(
-                                  title: 'Rh',
-                                  leadingIcon: LineAwesomeIcons.tint,
-                                  lastUpdated: '',
-                                  data: globalUser!.bloodGroup ?? '',
-                                  unity: '',
-                                ),
-                              ),
-                            ),
-                            //weight
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _weightController.text =
-                                      globalUser!.weights!.isEmpty
-                                          ? ''
-                                          : globalUser!.weights!.last.weight!
-                                              .toString();
-                                  showSmallEditPopup(
-                                    MyTextForm(
-                                      hintText: 'Poids (kg)',
-                                      controller: _weightController,
-                                      keyboardType: TextInputType.number,
-                                    ),
-                                    // TextField(
-                                    //   controller: _weightController,
-                                    //   decoration: InputDecoration(
-                                    //       labelText: 'Poids (kg)'),
-                                    //   keyboardType: TextInputType.number,
-                                    // ),
-                                    (selectedData) =>
-                                        onSave2(selectedData, 'weights'),
-                                  );
-                                },
-                                child: MyDetailCard(
-                                  title: 'Poids',
-                                  leadingIcon: LineAwesomeIcons.hanging_weight,
-                                  lastUpdated: globalUser!.weights!.isEmpty ||
-                                          globalUser!.weights != null
-                                      ? ''
-                                      : formatDate(
-                                          globalUser!.weights!.last.date!
-                                              .toDate()
-                                              .day,
-                                          globalUser!.weights!.last.date!
-                                              .toDate()
-                                              .month,
-                                          globalUser!.weights!.last.date!
-                                              .toDate()
-                                              .year),
-                                  data: globalUser!.weights!.isEmpty
-                                      ? ''
-                                      : globalUser!.weights!.last.weight!
-                                          .round()
-                                          .toString(),
-                                  unity: 'kg',
-                                ),
-                              ),
-                            ),
-                          ],
+                              ).toList(),
+                            );
+                          },
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      SizedBox(
-                        // height: 100,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                'Les maladies',
-                                style: SihhaFont.copyWith(
-                                  fontSize: 28,
-                                  letterSpacing: 1.5,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black.withOpacity(0.7),
-                                ),
-                              ),
-                              Spacer(),
-                              MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    print(
-                                        'user tapped Voir tout on Les Maladies');
-                                  },
-                                  child: Text(
-                                    'Voir tout',
-                                    style: SihhaFont.copyWith(
-                                      fontSize: 15,
-                                      color: SihhaGreen2,
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                      decorationThickness: 0.2,
-                                      decorationColor: SihhaGreen2,
-                                      letterSpacing: 1.5,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        (selectedData) => onSave2(selectedData, 'bloodTypes'),
+                      );
+                    }
+                  },
+                  child: MyDetailCard(
+                    title: 'Rh',
+                    leadingIcon: LineAwesomeIcons.tint,
+                    lastUpdated: '',
+                    data: widget.patient.bloodGroup ?? '',
+                    unity: '',
+                  ),
+                ),
+              ),
+              //weight
+              SizedBox(
+                height: 130,
+                child: GestureDetector(
+                  onTap: () {
+                    if (_isEditMode) {
+                      _weightController.text = widget.patient.weights!.isEmpty
+                          ? ''
+                          : widget.patient.weights!.last.weight!.toString();
+                      showSmallEditPopup(
+                        MyTextForm(
+                          hintText: 'Poids (kg)',
+                          controller: _weightController,
+                          keyboardType: TextInputType.number,
                         ),
-                      ),
-                      //Les maladies precedent et chronic
-                      ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: 250),
-                        child: IntrinsicHeight(
-                          // height: 300,
+                        // TextField(
+                        //   controller: _weightController,
+                        //   decoration: InputDecoration(
+                        //       labelText: 'Poids (kg)'),
+                        //   keyboardType: TextInputType.number,
+                        // ),
+                        (selectedData) => onSave2(selectedData, 'weights'),
+                      );
+                    }
+                  },
+                  child: MyDetailCard(
+                    title: 'Poids',
+                    leadingIcon: LineAwesomeIcons.hanging_weight,
+                    lastUpdated: widget.patient.weights!.isEmpty ||
+                            widget.patient.weights != null
+                        ? ''
+                        : formatDate(
+                            widget.patient.weights!.last.date!.toDate().day,
+                            widget.patient.weights!.last.date!.toDate().month,
+                            widget.patient.weights!.last.date!.toDate().year),
+                    data: widget.patient.weights!.isEmpty
+                        ? ''
+                        : widget.patient.weights!.last.weight!
+                            .round()
+                            .toString(),
+                    unity: 'kg',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
 
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: _isEditMode
-                                      ? () {
-                                          // Clear any previous text in the controllers
-
-                                          _nameController.clear();
-                                          _dateController.clear();
-                                          showEditPopup(
-                                            StatefulBuilder(
-                                              builder: (BuildContext context,
-                                                  StateSetter setState) {
-                                                return Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    MySearchTextField(
-                                                      hintText:
-                                                          'Nom de maladie',
-                                                      controller:
-                                                          _nameController,
-                                                      suggestions:
-                                                          exemplesMaladiesGenerales,
-                                                      onSuggestionSelected:
-                                                          (sug) {
-                                                        if (sug is Map<String,
-                                                            dynamic>) {
-                                                          _selectedSuggestion =
-                                                              sug;
-                                                          _nameController.text =
-                                                              sug['name']!;
-                                                        }
-                                                      },
-                                                    ),
-                                                    MyTextForm(
-                                                      hintText: "Date",
-                                                      obscureText: false,
-                                                      keyboardType:
-                                                          TextInputType
-                                                              .datetime,
-                                                      readOnly: true,
-                                                      controller:
-                                                          _dateController,
-                                                      validator: (value) {
-                                                        if (value == null ||
-                                                            value.isEmpty) {
-                                                          return 'Please select a date';
-                                                        }
-                                                        return null;
-                                                      },
-                                                      onTapFunction: () {
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext
-                                                              context) {
-                                                            return SimpleDialog(
-                                                              title: Text(
-                                                                  'Sélectionner la date'),
-                                                              titleTextStyle:
-                                                                  SihhaPoppins3,
-                                                              contentPadding:
-                                                                  EdgeInsets
-                                                                      .all(16),
-                                                              children: [
-                                                                SizedBox(
-                                                                  height:
-                                                                      400, // Set a fixed height
-                                                                  width:
-                                                                      400, // Set a fixed width
-                                                                  child:
-                                                                      SfDateRangePicker(
-                                                                    selectionMode:
-                                                                        DateRangePickerSelectionMode
-                                                                            .single,
-                                                                    maxDate:
-                                                                        DateTime
-                                                                            .now(),
-                                                                    showActionButtons:
-                                                                        true,
-                                                                    cancelText:
-                                                                        'Annuler',
-                                                                    confirmText:
-                                                                        'Confirmer',
-                                                                    onCancel:
-                                                                        () {
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                    },
-                                                                    onSubmit:
-                                                                        (p0) {
-                                                                      setState(
-                                                                          () {
-                                                                        _dateOfStart =
-                                                                            _dateRangePickerController.selectedDate;
-                                                                        if (_dateOfStart !=
-                                                                            null) {
-                                                                          _dateController.text = _dateOfStart!
-                                                                              .toString()
-                                                                              .split(' ')[0];
-                                                                        }
-                                                                      });
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                    },
-                                                                    controller:
-                                                                        _dateRangePickerController,
-                                                                    selectionColor:
-                                                                        SihhaGreen2,
-                                                                    selectionTextStyle: SihhaFont.copyWith(
-                                                                        color:
-                                                                            SihhaWhite,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500,
-                                                                        fontSize:
-                                                                            22),
-                                                                    selectionShape:
-                                                                        DateRangePickerSelectionShape
-                                                                            .rectangle,
-                                                                    todayHighlightColor:
-                                                                        Color(
-                                                                            0xFF2C3E50),
-                                                                    showNavigationArrow:
-                                                                        true,
-                                                                    allowViewNavigation:
-                                                                        true,
-                                                                    monthCellStyle:
-                                                                        DateRangePickerMonthCellStyle(
-                                                                      disabledDatesTextStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFFCCCCCC),
-                                                                          fontSize:
-                                                                              18),
-                                                                      todayTextStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF2C3E50),
-                                                                          fontWeight: FontWeight
-                                                                              .w500,
-                                                                          fontSize:
-                                                                              22),
-                                                                      todayCellDecoration: BoxDecoration(
-                                                                          border: Border.all(
-                                                                            width:
-                                                                                2,
-                                                                            color:
-                                                                                SihhaGreen2,
-                                                                          ),
-                                                                          borderRadius: BorderRadius.circular(10),
-                                                                          shape: BoxShape.rectangle),
-                                                                      textStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF6C7A89),
-                                                                          fontWeight: FontWeight
-                                                                              .w400,
-                                                                          fontSize:
-                                                                              18),
-                                                                    ),
-                                                                    headerStyle:
-                                                                        DateRangePickerHeaderStyle(
-                                                                      textStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF2C3E50),
-                                                                          fontWeight: FontWeight
-                                                                              .w400,
-                                                                          fontSize:
-                                                                              18),
-                                                                    ),
-                                                                    yearCellStyle:
-                                                                        DateRangePickerYearCellStyle(
-                                                                      textStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF2C3E50),
-                                                                          fontWeight: FontWeight
-                                                                              .w400,
-                                                                          fontSize:
-                                                                              18),
-                                                                      disabledDatesTextStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFFCCCCCC),
-                                                                          fontSize:
-                                                                              18),
-                                                                      todayTextStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF2C3E50),
-                                                                          fontWeight: FontWeight
-                                                                              .w500,
-                                                                          fontSize:
-                                                                              22),
-                                                                      todayCellDecoration:
-                                                                          BoxDecoration(
-                                                                        border:
-                                                                            Border.all(
-                                                                          width:
-                                                                              2,
-                                                                          color:
-                                                                              SihhaGreen2,
-                                                                        ),
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(10),
-                                                                        shape: BoxShape
-                                                                            .rectangle,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            ),
-                                            onSave:
-                                                onSave, // Pass the callback function
-                                          );
-                                        }
-                                      : null,
-                                  child: MyDetailListView(
-                                    title: 'Précédente',
-                                    lastUpdated:
-                                        globalUser!.diseases!.isEmpty ||
-                                                globalUser!.diseases != null
-                                            ? ''
-                                            : formatDate(
-                                                globalUser!
-                                                    .diseases!.last.dateOfStart!
-                                                    .toDate()
-                                                    .day,
-                                                globalUser!
-                                                    .diseases!.last.dateOfStart!
-                                                    .toDate()
-                                                    .month,
-                                                globalUser!
-                                                    .diseases!.last.dateOfStart!
-                                                    .toDate()
-                                                    .year,
-                                              ),
-                                    leadingIcon: LineAwesomeIcons.history,
-                                    child: MaladiesListView(''),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: _isEditMode
-                                      ? () {
-                                          // Clear any previous text in the controllers
-
-                                          _nameController.clear();
-                                          _dateController.clear();
-                                          showEditPopup(
-                                            StatefulBuilder(
-                                              builder: (BuildContext context,
-                                                  StateSetter setState) {
-                                                return Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    MySearchTextField(
-                                                      hintText:
-                                                          'Nom de maladie',
-                                                      controller:
-                                                          _nameController,
-                                                      suggestions:
-                                                          exemplesMaladiesChroniques,
-                                                      onSuggestionSelected:
-                                                          (sug) {
-                                                        if (sug is Map<String,
-                                                            dynamic>) {
-                                                          _selectedSuggestion =
-                                                              sug;
-                                                          _nameController.text =
-                                                              sug['name']!;
-                                                        }
-                                                      },
-                                                    ),
-                                                    MyTextForm(
-                                                      hintText: "Date",
-                                                      obscureText: false,
-                                                      keyboardType:
-                                                          TextInputType
-                                                              .datetime,
-                                                      readOnly: true,
-                                                      controller:
-                                                          _dateController,
-                                                      validator: (value) {
-                                                        if (value == null ||
-                                                            value.isEmpty) {
-                                                          return 'Please select a date';
-                                                        }
-                                                        return null;
-                                                      },
-                                                      onTapFunction: () {
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext
-                                                              context) {
-                                                            return SimpleDialog(
-                                                              title: Text(
-                                                                  'Sélectionner la date'),
-                                                              titleTextStyle:
-                                                                  SihhaPoppins3,
-                                                              contentPadding:
-                                                                  EdgeInsets
-                                                                      .all(16),
-                                                              children: [
-                                                                SizedBox(
-                                                                  height:
-                                                                      400, // Set a fixed height
-                                                                  width:
-                                                                      400, // Set a fixed width
-                                                                  child:
-                                                                      SfDateRangePicker(
-                                                                    selectionMode:
-                                                                        DateRangePickerSelectionMode
-                                                                            .single,
-                                                                    maxDate:
-                                                                        DateTime
-                                                                            .now(),
-                                                                    showActionButtons:
-                                                                        true,
-                                                                    cancelText:
-                                                                        'Annuler',
-                                                                    confirmText:
-                                                                        'Confirmer',
-                                                                    onCancel:
-                                                                        () {
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                    },
-                                                                    onSubmit:
-                                                                        (p0) {
-                                                                      setState(
-                                                                          () {
-                                                                        _dateOfStart =
-                                                                            _dateRangePickerController.selectedDate;
-                                                                        if (_dateOfStart !=
-                                                                            null) {
-                                                                          _dateController.text = _dateOfStart!
-                                                                              .toString()
-                                                                              .split(' ')[0];
-                                                                        }
-                                                                      });
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                    },
-                                                                    controller:
-                                                                        _dateRangePickerController,
-                                                                    selectionColor:
-                                                                        SihhaGreen2,
-                                                                    selectionTextStyle: SihhaFont.copyWith(
-                                                                        color:
-                                                                            SihhaWhite,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500,
-                                                                        fontSize:
-                                                                            22),
-                                                                    selectionShape:
-                                                                        DateRangePickerSelectionShape
-                                                                            .rectangle,
-                                                                    todayHighlightColor:
-                                                                        Color(
-                                                                            0xFF2C3E50),
-                                                                    showNavigationArrow:
-                                                                        true,
-                                                                    allowViewNavigation:
-                                                                        true,
-                                                                    monthCellStyle:
-                                                                        DateRangePickerMonthCellStyle(
-                                                                      disabledDatesTextStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFFCCCCCC),
-                                                                          fontSize:
-                                                                              18),
-                                                                      todayTextStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF2C3E50),
-                                                                          fontWeight: FontWeight
-                                                                              .w500,
-                                                                          fontSize:
-                                                                              22),
-                                                                      todayCellDecoration: BoxDecoration(
-                                                                          border: Border.all(
-                                                                            width:
-                                                                                2,
-                                                                            color:
-                                                                                SihhaGreen2,
-                                                                          ),
-                                                                          borderRadius: BorderRadius.circular(10),
-                                                                          shape: BoxShape.rectangle),
-                                                                      textStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF6C7A89),
-                                                                          fontWeight: FontWeight
-                                                                              .w400,
-                                                                          fontSize:
-                                                                              18),
-                                                                    ),
-                                                                    headerStyle:
-                                                                        DateRangePickerHeaderStyle(
-                                                                      textStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF2C3E50),
-                                                                          fontWeight: FontWeight
-                                                                              .w400,
-                                                                          fontSize:
-                                                                              18),
-                                                                    ),
-                                                                    yearCellStyle:
-                                                                        DateRangePickerYearCellStyle(
-                                                                      textStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF2C3E50),
-                                                                          fontWeight: FontWeight
-                                                                              .w400,
-                                                                          fontSize:
-                                                                              18),
-                                                                      disabledDatesTextStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFFCCCCCC),
-                                                                          fontSize:
-                                                                              18),
-                                                                      todayTextStyle: SihhaFont.copyWith(
-                                                                          color: Color(
-                                                                              0xFF2C3E50),
-                                                                          fontWeight: FontWeight
-                                                                              .w500,
-                                                                          fontSize:
-                                                                              22),
-                                                                      todayCellDecoration:
-                                                                          BoxDecoration(
-                                                                        border:
-                                                                            Border.all(
-                                                                          width:
-                                                                              2,
-                                                                          color:
-                                                                              SihhaGreen2,
-                                                                        ),
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(10),
-                                                                        shape: BoxShape
-                                                                            .rectangle,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            ),
-                                            onSave:
-                                                onSave, // Pass the callback function
-                                          );
-                                        }
-                                      : null,
-                                  child: MyDetailListView(
-                                    title: 'Chroniques',
-                                    lastUpdated:
-                                        globalUser!.diseases!.isEmpty ||
-                                                globalUser!.diseases != null
-                                            ? ''
-                                            : formatDate(
-                                                globalUser!
-                                                    .diseases!.last.dateOfStart!
-                                                    .toDate()
-                                                    .day,
-                                                globalUser!
-                                                    .diseases!.last.dateOfStart!
-                                                    .toDate()
-                                                    .month,
-                                                globalUser!
-                                                    .diseases!.last.dateOfStart!
-                                                    .toDate()
-                                                    .year,
-                                              ),
-                                    leadingIcon: LineAwesomeIcons.hourglass,
-                                    child: MaladiesListView('Chronique'),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+        SizedBox(height: 10),
+        SizedBox(
+          // height: 100,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'Les maladies',
+                  style: SihhaFont.copyWith(
+                    fontSize: 28,
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black.withOpacity(0.7),
+                  ),
+                ),
+                Spacer(),
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      print('user tapped Voir tout on Les Maladies');
+                    },
+                    child: Text(
+                      'Voir tout',
+                      style: SihhaFont.copyWith(
+                        fontSize: 15,
+                        color: SihhaGreen2,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        decorationThickness: 0.2,
+                        decorationColor: SihhaGreen2,
+                        letterSpacing: 1.5,
                       ),
-                      SizedBox(height: 10),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: IntrinsicHeight(
-                              // height: 500,
-                              child: LeftCol(),
-                            ),
-                          ),
-                          Expanded(
-                            child: IntrinsicHeight(
-                              // height: 500,
-                              child: RightCol(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ],
             ),
+          ),
+        ),
+        //Les maladies precedent et chronic
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 500),
+          child: IntrinsicHeight(
+            // height: 300,
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: GestureDetector(
+                      onTap: _isEditMode
+                          ? () {
+                              // Clear any previous text in the controllers
+
+                              _nameController.clear();
+                              _dateController.clear();
+                              showEditPopup(
+                                StatefulBuilder(
+                                  builder: (BuildContext context,
+                                      StateSetter setState) {
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        MySearchTextField(
+                                          hintText: 'Nom de maladie',
+                                          controller: _nameController,
+                                          suggestions:
+                                              exemplesMaladiesGenerales,
+                                          onSuggestionSelected: (sug) {
+                                            if (sug is Map<String, dynamic>) {
+                                              _selectedSuggestion = sug;
+                                              _nameController.text =
+                                                  sug['name']!;
+                                            }
+                                          },
+                                        ),
+                                        MyTextForm(
+                                          hintText: "Date",
+                                          obscureText: false,
+                                          keyboardType: TextInputType.datetime,
+                                          readOnly: true,
+                                          controller: _dateController,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select a date';
+                                            }
+                                            return null;
+                                          },
+                                          onTapFunction: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return SimpleDialog(
+                                                  title: Text(
+                                                      'Sélectionner la date'),
+                                                  titleTextStyle: SihhaPoppins3,
+                                                  contentPadding:
+                                                      EdgeInsets.all(16),
+                                                  children: [
+                                                    SizedBox(
+                                                      height:
+                                                          400, // Set a fixed height
+                                                      width:
+                                                          400, // Set a fixed width
+                                                      child: SfDateRangePicker(
+                                                        selectionMode:
+                                                            DateRangePickerSelectionMode
+                                                                .single,
+                                                        maxDate: DateTime.now(),
+                                                        showActionButtons: true,
+                                                        cancelText: 'Annuler',
+                                                        confirmText:
+                                                            'Confirmer',
+                                                        onCancel: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        onSubmit: (p0) {
+                                                          setState(() {
+                                                            _dateOfStart =
+                                                                _dateRangePickerController
+                                                                    .selectedDate;
+                                                            if (_dateOfStart !=
+                                                                null) {
+                                                              _dateController
+                                                                      .text =
+                                                                  _dateOfStart!
+                                                                      .toString()
+                                                                      .split(
+                                                                          ' ')[0];
+                                                            }
+                                                          });
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        controller:
+                                                            _dateRangePickerController,
+                                                        selectionColor:
+                                                            SihhaGreen2,
+                                                        selectionTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color:
+                                                                    SihhaWhite,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 22),
+                                                        selectionShape:
+                                                            DateRangePickerSelectionShape
+                                                                .rectangle,
+                                                        todayHighlightColor:
+                                                            Color(0xFF2C3E50),
+                                                        showNavigationArrow:
+                                                            true,
+                                                        allowViewNavigation:
+                                                            true,
+                                                        monthCellStyle:
+                                                            DateRangePickerMonthCellStyle(
+                                                          disabledDatesTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color: Color(
+                                                                      0xFFCCCCCC),
+                                                                  fontSize: 18),
+                                                          todayTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color: Color(
+                                                                      0xFF2C3E50),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 22),
+                                                          todayCellDecoration:
+                                                              BoxDecoration(
+                                                                  border: Border
+                                                                      .all(
+                                                                    width: 2,
+                                                                    color:
+                                                                        SihhaGreen2,
+                                                                  ),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                  shape: BoxShape
+                                                                      .rectangle),
+                                                          textStyle: SihhaFont
+                                                              .copyWith(
+                                                                  color: Color(
+                                                                      0xFF6C7A89),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 18),
+                                                        ),
+                                                        headerStyle:
+                                                            DateRangePickerHeaderStyle(
+                                                          textStyle: SihhaFont
+                                                              .copyWith(
+                                                                  color: Color(
+                                                                      0xFF2C3E50),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 18),
+                                                        ),
+                                                        yearCellStyle:
+                                                            DateRangePickerYearCellStyle(
+                                                          textStyle: SihhaFont
+                                                              .copyWith(
+                                                                  color: Color(
+                                                                      0xFF2C3E50),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 18),
+                                                          disabledDatesTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color: Color(
+                                                                      0xFFCCCCCC),
+                                                                  fontSize: 18),
+                                                          todayTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color: Color(
+                                                                      0xFF2C3E50),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 22),
+                                                          todayCellDecoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                              width: 2,
+                                                              color:
+                                                                  SihhaGreen2,
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                            shape: BoxShape
+                                                                .rectangle,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                onSave: onSave, // Pass the callback function
+                              );
+                            }
+                          : null,
+                      child: MyDetailListView(
+                        title: 'Précédente',
+                        lastUpdated: widget.patient.diseases!.isEmpty ||
+                                widget.patient.diseases != null
+                            ? ''
+                            : formatDate(
+                                widget.patient.diseases!.last.dateOfStart!
+                                    .toDate()
+                                    .day,
+                                widget.patient.diseases!.last.dateOfStart!
+                                    .toDate()
+                                    .month,
+                                widget.patient.diseases!.last.dateOfStart!
+                                    .toDate()
+                                    .year,
+                              ),
+                        leadingIcon: LineAwesomeIcons.history,
+                        child: MaladiesListView(''),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 500),
+          child: IntrinsicHeight(
+            // height: 300,
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: GestureDetector(
+                      onTap: _isEditMode
+                          ? () {
+                              // Clear any previous text in the controllers
+
+                              _nameController.clear();
+                              _dateController.clear();
+                              showEditPopup(
+                                StatefulBuilder(
+                                  builder: (BuildContext context,
+                                      StateSetter setState) {
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        MySearchTextField(
+                                          hintText: 'Nom de maladie',
+                                          controller: _nameController,
+                                          suggestions:
+                                              exemplesMaladiesChroniques,
+                                          onSuggestionSelected: (sug) {
+                                            if (sug is Map<String, dynamic>) {
+                                              _selectedSuggestion = sug;
+                                              _nameController.text =
+                                                  sug['name']!;
+                                            }
+                                          },
+                                        ),
+                                        MyTextForm(
+                                          hintText: "Date",
+                                          obscureText: false,
+                                          keyboardType: TextInputType.datetime,
+                                          readOnly: true,
+                                          controller: _dateController,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select a date';
+                                            }
+                                            return null;
+                                          },
+                                          onTapFunction: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return SimpleDialog(
+                                                  title: Text(
+                                                      'Sélectionner la date'),
+                                                  titleTextStyle: SihhaPoppins3,
+                                                  contentPadding:
+                                                      EdgeInsets.all(16),
+                                                  children: [
+                                                    SizedBox(
+                                                      height:
+                                                          400, // Set a fixed height
+                                                      width:
+                                                          400, // Set a fixed width
+                                                      child: SfDateRangePicker(
+                                                        selectionMode:
+                                                            DateRangePickerSelectionMode
+                                                                .single,
+                                                        maxDate: DateTime.now(),
+                                                        showActionButtons: true,
+                                                        cancelText: 'Annuler',
+                                                        confirmText:
+                                                            'Confirmer',
+                                                        onCancel: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        onSubmit: (p0) {
+                                                          setState(() {
+                                                            _dateOfStart =
+                                                                _dateRangePickerController
+                                                                    .selectedDate;
+                                                            if (_dateOfStart !=
+                                                                null) {
+                                                              _dateController
+                                                                      .text =
+                                                                  _dateOfStart!
+                                                                      .toString()
+                                                                      .split(
+                                                                          ' ')[0];
+                                                            }
+                                                          });
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        controller:
+                                                            _dateRangePickerController,
+                                                        selectionColor:
+                                                            SihhaGreen2,
+                                                        selectionTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color:
+                                                                    SihhaWhite,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 22),
+                                                        selectionShape:
+                                                            DateRangePickerSelectionShape
+                                                                .rectangle,
+                                                        todayHighlightColor:
+                                                            Color(0xFF2C3E50),
+                                                        showNavigationArrow:
+                                                            true,
+                                                        allowViewNavigation:
+                                                            true,
+                                                        monthCellStyle:
+                                                            DateRangePickerMonthCellStyle(
+                                                          disabledDatesTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color: Color(
+                                                                      0xFFCCCCCC),
+                                                                  fontSize: 18),
+                                                          todayTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color: Color(
+                                                                      0xFF2C3E50),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 22),
+                                                          todayCellDecoration:
+                                                              BoxDecoration(
+                                                                  border: Border
+                                                                      .all(
+                                                                    width: 2,
+                                                                    color:
+                                                                        SihhaGreen2,
+                                                                  ),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                  shape: BoxShape
+                                                                      .rectangle),
+                                                          textStyle: SihhaFont
+                                                              .copyWith(
+                                                                  color: Color(
+                                                                      0xFF6C7A89),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 18),
+                                                        ),
+                                                        headerStyle:
+                                                            DateRangePickerHeaderStyle(
+                                                          textStyle: SihhaFont
+                                                              .copyWith(
+                                                                  color: Color(
+                                                                      0xFF2C3E50),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 18),
+                                                        ),
+                                                        yearCellStyle:
+                                                            DateRangePickerYearCellStyle(
+                                                          textStyle: SihhaFont
+                                                              .copyWith(
+                                                                  color: Color(
+                                                                      0xFF2C3E50),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 18),
+                                                          disabledDatesTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color: Color(
+                                                                      0xFFCCCCCC),
+                                                                  fontSize: 18),
+                                                          todayTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color: Color(
+                                                                      0xFF2C3E50),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 22),
+                                                          todayCellDecoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                              width: 2,
+                                                              color:
+                                                                  SihhaGreen2,
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                            shape: BoxShape
+                                                                .rectangle,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                onSave: onSave, // Pass the callback function
+                              );
+                            }
+                          : null,
+                      child: MyDetailListView(
+                        title: 'Chroniques',
+                        lastUpdated: widget.patient.diseases!.isEmpty ||
+                                widget.patient.diseases != null
+                            ? ''
+                            : formatDate(
+                                widget.patient.diseases!.last.dateOfStart!
+                                    .toDate()
+                                    .day,
+                                widget.patient.diseases!.last.dateOfStart!
+                                    .toDate()
+                                    .month,
+                                widget.patient.diseases!.last.dateOfStart!
+                                    .toDate()
+                                    .year,
+                              ),
+                        leadingIcon: LineAwesomeIcons.hourglass,
+                        child: MaladiesListView('Chronique'),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          // height: 100,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'Les handicapées',
+                  style: SihhaFont.copyWith(
+                    fontSize: 25,
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black.withOpacity(0.7),
+                  ),
+                ),
+                Spacer(),
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      print('user tapped Voir tout on Les handicapées');
+                    },
+                    child: Text(
+                      'Voir tout',
+                      style: SihhaFont.copyWith(
+                        fontSize: 13,
+                        color: SihhaGreen2,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        decorationThickness: 0.2,
+                        decorationColor: SihhaGreen2,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 500),
+          child: IntrinsicHeight(
+            // height: 300,
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: IntrinsicHeight(
+                    // height: 300,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: GestureDetector(
+                        onTap: _isEditMode
+                            ? () {
+                                // Clear any previous text in the controllers
+
+                                _nameController.clear();
+                                _dateController.clear();
+                                showEditPopupDisability(
+                                  StatefulBuilder(
+                                    builder: (BuildContext context,
+                                        StateSetter setState) {
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          MySearchTextField(
+                                            hintText: 'Nom de handicap',
+                                            controller: _nameController,
+                                            suggestions: exemplesHandicaps,
+                                            onSuggestionSelected: (sug) {
+                                              if (sug is Map<String, dynamic>) {
+                                                _selectedSuggestion = sug;
+                                                _nameController.text =
+                                                    sug['name']!;
+                                              }
+                                            },
+                                          ),
+                                          MyTextForm(
+                                            hintText: "Date",
+                                            obscureText: false,
+                                            keyboardType:
+                                                TextInputType.datetime,
+                                            readOnly: true,
+                                            controller: _dateController,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please select a date';
+                                              }
+                                              return null;
+                                            },
+                                            onTapFunction: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return SimpleDialog(
+                                                    title: Text(
+                                                        'Sélectionner la date'),
+                                                    titleTextStyle:
+                                                        SihhaPoppins3,
+                                                    contentPadding:
+                                                        EdgeInsets.all(16),
+                                                    children: [
+                                                      SizedBox(
+                                                        height:
+                                                            400, // Set a fixed height
+                                                        width:
+                                                            400, // Set a fixed width
+                                                        child:
+                                                            SfDateRangePicker(
+                                                          selectionMode:
+                                                              DateRangePickerSelectionMode
+                                                                  .single,
+                                                          maxDate:
+                                                              DateTime.now(),
+                                                          showActionButtons:
+                                                              true,
+                                                          cancelText: 'Annuler',
+                                                          confirmText:
+                                                              'Confirmer',
+                                                          onCancel: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          onSubmit: (p0) {
+                                                            setState(() {
+                                                              _dateOfStart =
+                                                                  _dateRangePickerController
+                                                                      .selectedDate;
+                                                              if (_dateOfStart !=
+                                                                  null) {
+                                                                _dateController
+                                                                        .text =
+                                                                    _dateOfStart!
+                                                                        .toString()
+                                                                        .split(
+                                                                            ' ')[0];
+                                                              }
+                                                            });
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          controller:
+                                                              _dateRangePickerController,
+                                                          selectionColor:
+                                                              SihhaGreen2,
+                                                          selectionTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color:
+                                                                      SihhaWhite,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 22),
+                                                          selectionShape:
+                                                              DateRangePickerSelectionShape
+                                                                  .rectangle,
+                                                          todayHighlightColor:
+                                                              Color(0xFF2C3E50),
+                                                          showNavigationArrow:
+                                                              true,
+                                                          allowViewNavigation:
+                                                              true,
+                                                          monthCellStyle:
+                                                              DateRangePickerMonthCellStyle(
+                                                            disabledDatesTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFFCCCCCC),
+                                                                    fontSize:
+                                                                        18),
+                                                            todayTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        22),
+                                                            todayCellDecoration:
+                                                                BoxDecoration(
+                                                                    border:
+                                                                        Border
+                                                                            .all(
+                                                                      width: 2,
+                                                                      color:
+                                                                          SihhaGreen2,
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                    shape: BoxShape
+                                                                        .rectangle),
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF6C7A89),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                          ),
+                                                          headerStyle:
+                                                              DateRangePickerHeaderStyle(
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                          ),
+                                                          yearCellStyle:
+                                                              DateRangePickerYearCellStyle(
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                            disabledDatesTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFFCCCCCC),
+                                                                    fontSize:
+                                                                        18),
+                                                            todayTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        22),
+                                                            todayCellDecoration:
+                                                                BoxDecoration(
+                                                              border:
+                                                                  Border.all(
+                                                                width: 2,
+                                                                color:
+                                                                    SihhaGreen2,
+                                                              ),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              shape: BoxShape
+                                                                  .rectangle,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                  onSave:
+                                      onSaveDisability, // Pass the callback function
+                                );
+                              }
+                            : null,
+                        child: MyDetailListView(
+                          title: 'Générales',
+                          lastUpdated: widget.patient.disabilities!.isEmpty ||
+                                  widget.patient.disabilities != null
+                              ? ''
+                              : formatDate(
+                                  widget.patient.disabilities!.last.dateOfStart!
+                                      .toDate()
+                                      .day,
+                                  widget.patient.disabilities!.last.dateOfStart!
+                                      .toDate()
+                                      .month,
+                                  widget.patient.disabilities!.last.dateOfStart!
+                                      .toDate()
+                                      .year,
+                                ),
+                          leadingIcon: LineAwesomeIcons.wheelchair,
+                          child: DisabilitiesListView(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          // height: 100,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'Les allergies',
+                  style: SihhaFont.copyWith(
+                    fontSize: 25,
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black.withOpacity(0.7),
+                  ),
+                ),
+                Spacer(),
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      print('user tapped Voir tout on Les Allergies');
+                    },
+                    child: Text(
+                      'Voir tout',
+                      style: SihhaFont.copyWith(
+                        fontSize: 13,
+                        color: SihhaGreen2,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        decorationThickness: 0.2,
+                        decorationColor: SihhaGreen2,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 500),
+          child: IntrinsicHeight(
+            // height: 300,
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: IntrinsicHeight(
+                    // height: 300,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: GestureDetector(
+                        onTap: _isEditMode
+                            ? () {
+                                // Clear any previous text in the controllers
+
+                                _nameController.clear();
+                                _dateController.clear();
+                                showEditPopupAllergie(
+                                  StatefulBuilder(
+                                    builder: (BuildContext context,
+                                        StateSetter setState) {
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          MySearchTextField(
+                                            hintText: 'Nom de Allergie',
+                                            controller: _nameController,
+                                            suggestions: exemplesAllergies,
+                                            onSuggestionSelected: (sug) {
+                                              if (sug is Map<String, dynamic>) {
+                                                _selectedSuggestion = sug;
+                                                _nameController.text =
+                                                    sug['name']!;
+                                              }
+                                            },
+                                          ),
+                                          MyTextForm(
+                                            hintText: "Date",
+                                            obscureText: false,
+                                            keyboardType:
+                                                TextInputType.datetime,
+                                            readOnly: true,
+                                            controller: _dateController,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please select a date';
+                                              }
+                                              return null;
+                                            },
+                                            onTapFunction: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return SimpleDialog(
+                                                    title: Text(
+                                                        'Sélectionner la date'),
+                                                    titleTextStyle:
+                                                        SihhaPoppins3,
+                                                    contentPadding:
+                                                        EdgeInsets.all(16),
+                                                    children: [
+                                                      SizedBox(
+                                                        height:
+                                                            400, // Set a fixed height
+                                                        width:
+                                                            400, // Set a fixed width
+                                                        child:
+                                                            SfDateRangePicker(
+                                                          selectionMode:
+                                                              DateRangePickerSelectionMode
+                                                                  .single,
+                                                          maxDate:
+                                                              DateTime.now(),
+                                                          showActionButtons:
+                                                              true,
+                                                          cancelText: 'Annuler',
+                                                          confirmText:
+                                                              'Confirmer',
+                                                          onCancel: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          onSubmit: (p0) {
+                                                            setState(() {
+                                                              _dateOfStart =
+                                                                  _dateRangePickerController
+                                                                      .selectedDate;
+                                                              if (_dateOfStart !=
+                                                                  null) {
+                                                                _dateController
+                                                                        .text =
+                                                                    _dateOfStart!
+                                                                        .toString()
+                                                                        .split(
+                                                                            ' ')[0];
+                                                              }
+                                                            });
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          controller:
+                                                              _dateRangePickerController,
+                                                          selectionColor:
+                                                              SihhaGreen2,
+                                                          selectionTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color:
+                                                                      SihhaWhite,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 22),
+                                                          selectionShape:
+                                                              DateRangePickerSelectionShape
+                                                                  .rectangle,
+                                                          todayHighlightColor:
+                                                              Color(0xFF2C3E50),
+                                                          showNavigationArrow:
+                                                              true,
+                                                          allowViewNavigation:
+                                                              true,
+                                                          monthCellStyle:
+                                                              DateRangePickerMonthCellStyle(
+                                                            disabledDatesTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFFCCCCCC),
+                                                                    fontSize:
+                                                                        18),
+                                                            todayTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        22),
+                                                            todayCellDecoration:
+                                                                BoxDecoration(
+                                                                    border:
+                                                                        Border
+                                                                            .all(
+                                                                      width: 2,
+                                                                      color:
+                                                                          SihhaGreen2,
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                    shape: BoxShape
+                                                                        .rectangle),
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF6C7A89),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                          ),
+                                                          headerStyle:
+                                                              DateRangePickerHeaderStyle(
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                          ),
+                                                          yearCellStyle:
+                                                              DateRangePickerYearCellStyle(
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                            disabledDatesTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFFCCCCCC),
+                                                                    fontSize:
+                                                                        18),
+                                                            todayTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        22),
+                                                            todayCellDecoration:
+                                                                BoxDecoration(
+                                                              border:
+                                                                  Border.all(
+                                                                width: 2,
+                                                                color:
+                                                                    SihhaGreen2,
+                                                              ),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              shape: BoxShape
+                                                                  .rectangle,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                  onSave:
+                                      onSaveAllergie, // Pass the callback function
+                                );
+                              }
+                            : null,
+                        child: MyDetailListView(
+                          title: 'Générales',
+                          lastUpdated: widget.patient.allergies!.isEmpty ||
+                                  widget.patient.allergies != null
+                              ? ''
+                              : formatDate(
+                                  widget.patient.allergies!.last.dateOfStart!
+                                      .toDate()
+                                      .day,
+                                  widget.patient.allergies!.last.dateOfStart!
+                                      .toDate()
+                                      .month,
+                                  widget.patient.allergies!.last.dateOfStart!
+                                      .toDate()
+                                      .year,
+                                ),
+                          leadingIcon: LineAwesomeIcons.allergies,
+                          child: AllergiesListView(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 500),
+          child: IntrinsicHeight(
+            // height: 300,
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: IntrinsicHeight(
+                    // height: 300,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: GestureDetector(
+                        onTap: _isEditMode
+                            ? () {
+                                // Clear any previous text in the controllers
+
+                                _nameController.clear();
+                                _dateController.clear();
+                                showEditPopupHabit(
+                                  StatefulBuilder(
+                                    builder: (BuildContext context,
+                                        StateSetter setState) {
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          MySearchTextField(
+                                            hintText: "Nom d 'habitudes",
+                                            controller: _nameController,
+                                            suggestions: exemplesHabitudes,
+                                            onSuggestionSelected: (sug) {
+                                              if (sug is Map<String, dynamic>) {
+                                                _selectedSuggestion = sug;
+                                                _nameController.text =
+                                                    sug['name']!;
+                                              }
+                                            },
+                                          ),
+                                          MyTextForm(
+                                            hintText: "Date",
+                                            obscureText: false,
+                                            keyboardType:
+                                                TextInputType.datetime,
+                                            readOnly: true,
+                                            controller: _dateController,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please select a date';
+                                              }
+                                              return null;
+                                            },
+                                            onTapFunction: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return SimpleDialog(
+                                                    title: Text(
+                                                        'Sélectionner la date'),
+                                                    titleTextStyle:
+                                                        SihhaPoppins3,
+                                                    contentPadding:
+                                                        EdgeInsets.all(16),
+                                                    children: [
+                                                      SizedBox(
+                                                        height:
+                                                            400, // Set a fixed height
+                                                        width:
+                                                            400, // Set a fixed width
+                                                        child:
+                                                            SfDateRangePicker(
+                                                          selectionMode:
+                                                              DateRangePickerSelectionMode
+                                                                  .single,
+                                                          maxDate:
+                                                              DateTime.now(),
+                                                          showActionButtons:
+                                                              true,
+                                                          cancelText: 'Annuler',
+                                                          confirmText:
+                                                              'Confirmer',
+                                                          onCancel: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          onSubmit: (p0) {
+                                                            setState(() {
+                                                              _dateOfStart =
+                                                                  _dateRangePickerController
+                                                                      .selectedDate;
+                                                              if (_dateOfStart !=
+                                                                  null) {
+                                                                _dateController
+                                                                        .text =
+                                                                    _dateOfStart!
+                                                                        .toString()
+                                                                        .split(
+                                                                            ' ')[0];
+                                                              }
+                                                            });
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          controller:
+                                                              _dateRangePickerController,
+                                                          selectionColor:
+                                                              SihhaGreen2,
+                                                          selectionTextStyle:
+                                                              SihhaFont.copyWith(
+                                                                  color:
+                                                                      SihhaWhite,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 22),
+                                                          selectionShape:
+                                                              DateRangePickerSelectionShape
+                                                                  .rectangle,
+                                                          todayHighlightColor:
+                                                              Color(0xFF2C3E50),
+                                                          showNavigationArrow:
+                                                              true,
+                                                          allowViewNavigation:
+                                                              true,
+                                                          monthCellStyle:
+                                                              DateRangePickerMonthCellStyle(
+                                                            disabledDatesTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFFCCCCCC),
+                                                                    fontSize:
+                                                                        18),
+                                                            todayTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        22),
+                                                            todayCellDecoration:
+                                                                BoxDecoration(
+                                                                    border:
+                                                                        Border
+                                                                            .all(
+                                                                      width: 2,
+                                                                      color:
+                                                                          SihhaGreen2,
+                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                    shape: BoxShape
+                                                                        .rectangle),
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF6C7A89),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                          ),
+                                                          headerStyle:
+                                                              DateRangePickerHeaderStyle(
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                          ),
+                                                          yearCellStyle:
+                                                              DateRangePickerYearCellStyle(
+                                                            textStyle: SihhaFont
+                                                                .copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        18),
+                                                            disabledDatesTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFFCCCCCC),
+                                                                    fontSize:
+                                                                        18),
+                                                            todayTextStyle:
+                                                                SihhaFont.copyWith(
+                                                                    color: Color(
+                                                                        0xFF2C3E50),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        22),
+                                                            todayCellDecoration:
+                                                                BoxDecoration(
+                                                              border:
+                                                                  Border.all(
+                                                                width: 2,
+                                                                color:
+                                                                    SihhaGreen2,
+                                                              ),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              shape: BoxShape
+                                                                  .rectangle,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                  onSave:
+                                      onSaveHabit, // Pass the callback function
+                                );
+                              }
+                            : null,
+                        child: MyDetailListView(
+                          title: 'Des habitudes',
+                          lastUpdated: '',
+                          leadingIcon: LineAwesomeIcons.infinity,
+                          child: HabitsListView(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Column WindowsView() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 130,
+          child: Row(
+            children: [
+              //Height
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (_isEditMode) {
+                      _heightController.text = widget.patient.heights!.isEmpty
+                          ? ''
+                          : widget.patient.heights!.last.height!.toString();
+                      showSmallEditPopup(
+                        MyTextForm(
+                          hintText: 'Taille (cm)',
+                          controller: _heightController,
+                          keyboardType: TextInputType.number,
+                        ),
+                        // TextField(
+                        //   controller: _heightController,
+                        //   decoration: InputDecoration(
+                        //       labelText: 'Taille (cm)'),
+                        //   keyboardType: TextInputType.number,
+                        // ),
+                        (selectedData) => onSave2(selectedData, 'heights'),
+                      );
+                    }
+                  },
+                  child: MyDetailCard(
+                    title: 'Taille',
+                    leadingIcon: LineAwesomeIcons.ruler,
+                    lastUpdated: widget.patient.heights!.isEmpty ||
+                            widget.patient.heights != null
+                        ? ''
+                        : formatDate(
+                            widget.patient.heights!.last.date!.toDate().day,
+                            widget.patient.heights!.last.date!.toDate().month,
+                            widget.patient.heights!.last.date!.toDate().year),
+                    data: widget.patient.heights!.isEmpty
+                        ? ''
+                        : widget.patient.heights!.last.height!
+                            .round()
+                            .toString(),
+                    unity: 'cm',
+                  ),
+                ),
+              ),
+              //Blood
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (_isEditMode) {
+                      _selectedRh = widget.patient.bloodGroup ?? 'O+';
+                      showSmallEditPopup(
+                        StatefulBuilder(
+                          builder:
+                              (BuildContext context, StateSetter setState) {
+                            return DropdownButton<String>(
+                              elevation: 0,
+                              autofocus: true,
+                              dropdownColor: Colors.white,
+                              focusColor: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                              style: SihhaFont.copyWith(
+                                color: Colors.black.withOpacity(0.7),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              value: _selectedRh,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedRh = newValue!;
+                                });
+                              },
+                              items: <String>[
+                                'O+',
+                                'O-',
+                                'A+',
+                                'A-',
+                                'B+',
+                                'B-',
+                                'AB+',
+                                'AB-'
+                              ].map<DropdownMenuItem<String>>(
+                                (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                      style: SihhaFont.copyWith(
+                                        color: Colors.black.withOpacity(0.7),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ).toList(),
+                            );
+                          },
+                        ),
+                        (selectedData) => onSave2(selectedData, 'bloodTypes'),
+                      );
+                    }
+                  },
+                  child: MyDetailCard(
+                    title: 'Rh',
+                    leadingIcon: LineAwesomeIcons.tint,
+                    lastUpdated: '',
+                    data: widget.patient.bloodGroup ?? '',
+                    unity: '',
+                  ),
+                ),
+              ),
+              //weight
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (_isEditMode) {
+                      _weightController.text = widget.patient.weights!.isEmpty
+                          ? ''
+                          : widget.patient.weights!.last.weight!.toString();
+                      showSmallEditPopup(
+                        MyTextForm(
+                          hintText: 'Poids (kg)',
+                          controller: _weightController,
+                          keyboardType: TextInputType.number,
+                        ),
+                        // TextField(
+                        //   controller: _weightController,
+                        //   decoration: InputDecoration(
+                        //       labelText: 'Poids (kg)'),
+                        //   keyboardType: TextInputType.number,
+                        // ),
+                        (selectedData) => onSave2(selectedData, 'weights'),
+                      );
+                    }
+                  },
+                  child: MyDetailCard(
+                    title: 'Poids',
+                    leadingIcon: LineAwesomeIcons.hanging_weight,
+                    lastUpdated: widget.patient.weights!.isEmpty ||
+                            widget.patient.weights != null
+                        ? ''
+                        : formatDate(
+                            widget.patient.weights!.last.date!.toDate().day,
+                            widget.patient.weights!.last.date!.toDate().month,
+                            widget.patient.weights!.last.date!.toDate().year),
+                    data: widget.patient.weights!.isEmpty
+                        ? ''
+                        : widget.patient.weights!.last.weight!
+                            .round()
+                            .toString(),
+                    unity: 'kg',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 10),
+        SizedBox(
+          // height: 100,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'Les maladies',
+                  style: SihhaFont.copyWith(
+                    fontSize: 28,
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black.withOpacity(0.7),
+                  ),
+                ),
+                Spacer(),
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      print('user tapped Voir tout on Les Maladies');
+                    },
+                    child: Text(
+                      'Voir tout',
+                      style: SihhaFont.copyWith(
+                        fontSize: 15,
+                        color: SihhaGreen2,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        decorationThickness: 0.2,
+                        decorationColor: SihhaGreen2,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        //Les maladies precedent et chronic
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 250),
+          child: IntrinsicHeight(
+            // height: 300,
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _isEditMode
+                        ? () {
+                            // Clear any previous text in the controllers
+
+                            _nameController.clear();
+                            _dateController.clear();
+                            showEditPopup(
+                              StatefulBuilder(
+                                builder: (BuildContext context,
+                                    StateSetter setState) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      MySearchTextField(
+                                        hintText: 'Nom de maladie',
+                                        controller: _nameController,
+                                        suggestions: exemplesMaladiesGenerales,
+                                        onSuggestionSelected: (sug) {
+                                          if (sug is Map<String, dynamic>) {
+                                            _selectedSuggestion = sug;
+                                            _nameController.text = sug['name']!;
+                                          }
+                                        },
+                                      ),
+                                      MyTextForm(
+                                        hintText: "Date",
+                                        obscureText: false,
+                                        keyboardType: TextInputType.datetime,
+                                        readOnly: true,
+                                        controller: _dateController,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please select a date';
+                                          }
+                                          return null;
+                                        },
+                                        onTapFunction: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return SimpleDialog(
+                                                title: Text(
+                                                    'Sélectionner la date'),
+                                                titleTextStyle: SihhaPoppins3,
+                                                contentPadding:
+                                                    EdgeInsets.all(16),
+                                                children: [
+                                                  SizedBox(
+                                                    height:
+                                                        400, // Set a fixed height
+                                                    width:
+                                                        400, // Set a fixed width
+                                                    child: SfDateRangePicker(
+                                                      selectionMode:
+                                                          DateRangePickerSelectionMode
+                                                              .single,
+                                                      maxDate: DateTime.now(),
+                                                      showActionButtons: true,
+                                                      cancelText: 'Annuler',
+                                                      confirmText: 'Confirmer',
+                                                      onCancel: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      onSubmit: (p0) {
+                                                        setState(() {
+                                                          _dateOfStart =
+                                                              _dateRangePickerController
+                                                                  .selectedDate;
+                                                          if (_dateOfStart !=
+                                                              null) {
+                                                            _dateController
+                                                                    .text =
+                                                                _dateOfStart!
+                                                                    .toString()
+                                                                    .split(
+                                                                        ' ')[0];
+                                                          }
+                                                        });
+                                                        Navigator.pop(context);
+                                                      },
+                                                      controller:
+                                                          _dateRangePickerController,
+                                                      selectionColor:
+                                                          SihhaGreen2,
+                                                      selectionTextStyle:
+                                                          SihhaFont.copyWith(
+                                                              color: SihhaWhite,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontSize: 22),
+                                                      selectionShape:
+                                                          DateRangePickerSelectionShape
+                                                              .rectangle,
+                                                      todayHighlightColor:
+                                                          Color(0xFF2C3E50),
+                                                      showNavigationArrow: true,
+                                                      allowViewNavigation: true,
+                                                      monthCellStyle:
+                                                          DateRangePickerMonthCellStyle(
+                                                        disabledDatesTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFFCCCCCC),
+                                                                fontSize: 18),
+                                                        todayTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF2C3E50),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 22),
+                                                        todayCellDecoration:
+                                                            BoxDecoration(
+                                                                border:
+                                                                    Border.all(
+                                                                  width: 2,
+                                                                  color:
+                                                                      SihhaGreen2,
+                                                                ),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                shape: BoxShape
+                                                                    .rectangle),
+                                                        textStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF6C7A89),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize: 18),
+                                                      ),
+                                                      headerStyle:
+                                                          DateRangePickerHeaderStyle(
+                                                        textStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF2C3E50),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize: 18),
+                                                      ),
+                                                      yearCellStyle:
+                                                          DateRangePickerYearCellStyle(
+                                                        textStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF2C3E50),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize: 18),
+                                                        disabledDatesTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFFCCCCCC),
+                                                                fontSize: 18),
+                                                        todayTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF2C3E50),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 22),
+                                                        todayCellDecoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                            width: 2,
+                                                            color: SihhaGreen2,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          shape: BoxShape
+                                                              .rectangle,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                              onSave: onSave, // Pass the callback function
+                            );
+                          }
+                        : null,
+                    child: MyDetailListView(
+                      title: 'Précédente',
+                      lastUpdated: widget.patient.diseases!.isEmpty ||
+                              widget.patient.diseases != null
+                          ? ''
+                          : formatDate(
+                              widget.patient.diseases!.last.dateOfStart!
+                                  .toDate()
+                                  .day,
+                              widget.patient.diseases!.last.dateOfStart!
+                                  .toDate()
+                                  .month,
+                              widget.patient.diseases!.last.dateOfStart!
+                                  .toDate()
+                                  .year,
+                            ),
+                      leadingIcon: LineAwesomeIcons.history,
+                      child: MaladiesListView(''),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _isEditMode
+                        ? () {
+                            // Clear any previous text in the controllers
+
+                            _nameController.clear();
+                            _dateController.clear();
+                            showEditPopup(
+                              StatefulBuilder(
+                                builder: (BuildContext context,
+                                    StateSetter setState) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      MySearchTextField(
+                                        hintText: 'Nom de maladie',
+                                        controller: _nameController,
+                                        suggestions: exemplesMaladiesChroniques,
+                                        onSuggestionSelected: (sug) {
+                                          if (sug is Map<String, dynamic>) {
+                                            _selectedSuggestion = sug;
+                                            _nameController.text = sug['name']!;
+                                          }
+                                        },
+                                      ),
+                                      MyTextForm(
+                                        hintText: "Date",
+                                        obscureText: false,
+                                        keyboardType: TextInputType.datetime,
+                                        readOnly: true,
+                                        controller: _dateController,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please select a date';
+                                          }
+                                          return null;
+                                        },
+                                        onTapFunction: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return SimpleDialog(
+                                                title: Text(
+                                                    'Sélectionner la date'),
+                                                titleTextStyle: SihhaPoppins3,
+                                                contentPadding:
+                                                    EdgeInsets.all(16),
+                                                children: [
+                                                  SizedBox(
+                                                    height:
+                                                        400, // Set a fixed height
+                                                    width:
+                                                        400, // Set a fixed width
+                                                    child: SfDateRangePicker(
+                                                      selectionMode:
+                                                          DateRangePickerSelectionMode
+                                                              .single,
+                                                      maxDate: DateTime.now(),
+                                                      showActionButtons: true,
+                                                      cancelText: 'Annuler',
+                                                      confirmText: 'Confirmer',
+                                                      onCancel: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      onSubmit: (p0) {
+                                                        setState(() {
+                                                          _dateOfStart =
+                                                              _dateRangePickerController
+                                                                  .selectedDate;
+                                                          if (_dateOfStart !=
+                                                              null) {
+                                                            _dateController
+                                                                    .text =
+                                                                _dateOfStart!
+                                                                    .toString()
+                                                                    .split(
+                                                                        ' ')[0];
+                                                          }
+                                                        });
+                                                        Navigator.pop(context);
+                                                      },
+                                                      controller:
+                                                          _dateRangePickerController,
+                                                      selectionColor:
+                                                          SihhaGreen2,
+                                                      selectionTextStyle:
+                                                          SihhaFont.copyWith(
+                                                              color: SihhaWhite,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontSize: 22),
+                                                      selectionShape:
+                                                          DateRangePickerSelectionShape
+                                                              .rectangle,
+                                                      todayHighlightColor:
+                                                          Color(0xFF2C3E50),
+                                                      showNavigationArrow: true,
+                                                      allowViewNavigation: true,
+                                                      monthCellStyle:
+                                                          DateRangePickerMonthCellStyle(
+                                                        disabledDatesTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFFCCCCCC),
+                                                                fontSize: 18),
+                                                        todayTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF2C3E50),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 22),
+                                                        todayCellDecoration:
+                                                            BoxDecoration(
+                                                                border:
+                                                                    Border.all(
+                                                                  width: 2,
+                                                                  color:
+                                                                      SihhaGreen2,
+                                                                ),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                shape: BoxShape
+                                                                    .rectangle),
+                                                        textStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF6C7A89),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize: 18),
+                                                      ),
+                                                      headerStyle:
+                                                          DateRangePickerHeaderStyle(
+                                                        textStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF2C3E50),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize: 18),
+                                                      ),
+                                                      yearCellStyle:
+                                                          DateRangePickerYearCellStyle(
+                                                        textStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF2C3E50),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize: 18),
+                                                        disabledDatesTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFFCCCCCC),
+                                                                fontSize: 18),
+                                                        todayTextStyle:
+                                                            SihhaFont.copyWith(
+                                                                color: Color(
+                                                                    0xFF2C3E50),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 22),
+                                                        todayCellDecoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                            width: 2,
+                                                            color: SihhaGreen2,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          shape: BoxShape
+                                                              .rectangle,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                              onSave: onSave, // Pass the callback function
+                            );
+                          }
+                        : null,
+                    child: MyDetailListView(
+                      title: 'Chroniques',
+                      lastUpdated: widget.patient.diseases!.isEmpty ||
+                              widget.patient.diseases != null
+                          ? ''
+                          : formatDate(
+                              widget.patient.diseases!.last.dateOfStart!
+                                  .toDate()
+                                  .day,
+                              widget.patient.diseases!.last.dateOfStart!
+                                  .toDate()
+                                  .month,
+                              widget.patient.diseases!.last.dateOfStart!
+                                  .toDate()
+                                  .year,
+                            ),
+                      leadingIcon: LineAwesomeIcons.hourglass,
+                      child: MaladiesListView('Chronique'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        SizedBox(height: 10),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: IntrinsicHeight(
+                // height: 500,
+                child: LeftCol(),
+              ),
+            ),
+            Expanded(
+              child: IntrinsicHeight(
+                // height: 500,
+                child: RightCol(),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1175,7 +2720,7 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
                 // Disease selectedDisease = Disease(
                 //   name: _nameController.text,
                 //   dateOfStart: Timestamp.fromDate(_dateOfStart!),
-                //   patientId: globalUser!.documentId,
+                //   patientId: widget.patient.documentId,
                 // );
                 Disease selectedDisease = Disease.fromMap(_selectedSuggestion);
                 onSave(selectedDisease); // Callback to handle selected disease
@@ -1267,7 +2812,7 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
                 // Disease selectedDisease = Disease(
                 //   name: _nameController.text,
                 //   dateOfStart: Timestamp.fromDate(_dateOfStart!),
-                //   patientId: globalUser!.documentId,
+                //   patientId: widget.patient.documentId,
                 // );
                 Allergie selectedAllegrie =
                     Allergie.fromMap(_selectedSuggestion);
@@ -1361,7 +2906,7 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
                 // Disease selectedDisease = Disease(
                 //   name: _nameController.text,
                 //   dateOfStart: Timestamp.fromDate(_dateOfStart!),
-                //   patientId: globalUser!.documentId,
+                //   patientId: widget.patient.documentId,
                 // );
                 Disability selectedDisability =
                     Disability.fromMap(_selectedSuggestion);
@@ -1455,7 +3000,7 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
                 // Disease selectedDisease = Disease(
                 //   name: _nameController.text,
                 //   dateOfStart: Timestamp.fromDate(_dateOfStart!),
-                //   patientId: globalUser!.documentId,
+                //   patientId: widget.patient.documentId,
                 // );
                 Habit selectedHabit = Habit.fromMap(_selectedSuggestion);
                 onSaveHabit(
@@ -1709,15 +3254,19 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
                 : null,
             child: MyDetailListView(
               title: 'Générales',
-              lastUpdated: globalUser!.disabilities!.isEmpty ||
-                      globalUser!.disabilities != null
+              lastUpdated: widget.patient.disabilities!.isEmpty ||
+                      widget.patient.disabilities != null
                   ? ''
                   : formatDate(
-                      globalUser!.disabilities!.last.dateOfStart!.toDate().day,
-                      globalUser!.disabilities!.last.dateOfStart!
+                      widget.patient.disabilities!.last.dateOfStart!
+                          .toDate()
+                          .day,
+                      widget.patient.disabilities!.last.dateOfStart!
                           .toDate()
                           .month,
-                      globalUser!.disabilities!.last.dateOfStart!.toDate().year,
+                      widget.patient.disabilities!.last.dateOfStart!
+                          .toDate()
+                          .year,
                     ),
               leadingIcon: LineAwesomeIcons.wheelchair,
               child: DisabilitiesListView(),
@@ -1949,13 +3498,15 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
                 : null,
             child: MyDetailListView(
               title: 'Générales',
-              lastUpdated: globalUser!.allergies!.isEmpty ||
-                      globalUser!.allergies != null
+              lastUpdated: widget.patient.allergies!.isEmpty ||
+                      widget.patient.allergies != null
                   ? ''
                   : formatDate(
-                      globalUser!.allergies!.last.dateOfStart!.toDate().day,
-                      globalUser!.allergies!.last.dateOfStart!.toDate().month,
-                      globalUser!.allergies!.last.dateOfStart!.toDate().year,
+                      widget.patient.allergies!.last.dateOfStart!.toDate().day,
+                      widget.patient.allergies!.last.dateOfStart!
+                          .toDate()
+                          .month,
+                      widget.patient.allergies!.last.dateOfStart!.toDate().year,
                     ),
               leadingIcon: LineAwesomeIcons.allergies,
               child: AllergiesListView(),
@@ -2178,17 +3729,17 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
 
   Widget DisabilitiesListView() {
     if (globalUser == null ||
-        globalUser!.disabilities == null ||
-        globalUser!.disabilities!.isEmpty) {
+        widget.patient.disabilities == null ||
+        widget.patient.disabilities!.isEmpty) {
       return NoDataContainer();
     }
 
-    globalUser!.disabilities!
+    widget.patient.disabilities!
         .sort((a, b) => b.dateOfStart!.compareTo(a.dateOfStart!));
 
     // Take the last 5 diseases
     List<Disability?> displayedDisabilities =
-        globalUser!.disabilities!.take(20).toList();
+        widget.patient.disabilities!.take(20).toList();
 
     int totalDisabilities = displayedDisabilities.length;
     return Container(
@@ -2289,17 +3840,17 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
 
   Widget AllergiesListView() {
     if (globalUser == null ||
-        globalUser!.allergies == null ||
-        globalUser!.allergies!.isEmpty) {
+        widget.patient.allergies == null ||
+        widget.patient.allergies!.isEmpty) {
       return NoDataContainer();
     }
 
-    globalUser!.allergies!
+    widget.patient.allergies!
         .sort((a, b) => b.dateOfStart!.compareTo(a.dateOfStart!));
 
     // Take the last 5 diseases
     List<Allergie?> displayedAllergies =
-        globalUser!.allergies!.take(20).toList();
+        widget.patient.allergies!.take(20).toList();
 
     int totalAllergies = displayedAllergies.length;
     return Container(
@@ -2400,15 +3951,15 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
 
   Widget MaladiesListView(String? type) {
     if (globalUser == null ||
-        globalUser!.diseases == null ||
-        globalUser!.diseases!.isEmpty) {
+        widget.patient.diseases == null ||
+        widget.patient.diseases!.isEmpty) {
       return NoDataContainer();
     }
 
     // Filter diseases based on the type if the type is provided, otherwise take all diseases
     List<Disease?> filteredDiseases = type != null && type.isNotEmpty
-        ? globalUser!.diseases!.where((e) => e.type == type).toList()
-        : globalUser!.diseases!.toList();
+        ? widget.patient.diseases!.where((e) => e.type == type).toList()
+        : widget.patient.diseases!.toList();
     if (filteredDiseases.isEmpty) return NoDataContainer();
     // Sort diseases by date of creation in descending order
     filteredDiseases.sort((a, b) => b!.dateOfStart!.compareTo(a!.dateOfStart!));
@@ -2515,13 +4066,13 @@ class _DossierMedicalPageState extends State<DossierMedicalPage> {
 
   Widget HabitsListView() {
     if (globalUser == null ||
-        globalUser!.habits == null ||
-        globalUser!.habits!.isEmpty) {
+        widget.patient.habits == null ||
+        widget.patient.habits!.isEmpty) {
       return NoDataContainer();
     }
 
     // Take the last 5 diseases
-    List<Habit?> displayedHabits = globalUser!.habits!.take(5).toList();
+    List<Habit?> displayedHabits = widget.patient.habits!.take(5).toList();
 
     int totalHabits = displayedHabits.length;
     return Container(

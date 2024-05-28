@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
+import 'package:sahha_app/Models/Objects/Ordonnance.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/Qr/OverlayQR.dart';
 import 'package:sahha_app/Pages/services/Qr/USBScannerPage.dart';
@@ -233,7 +234,7 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
                                 // Patient.fetchPatientData(scannedCode).then(
                                 UserService _userService = UserService();
                                 _userService.getUserData(scannedCode).then(
-                                  (patient) {
+                                  (patient) async {
                                     //and that nigga's code is valid
                                     if (patient != null) {
                                       // Check if patients list is not null before adding the patient
@@ -258,6 +259,34 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
                                         print(
                                             'Current number of patients : ${patients!.length}');
                                       }
+                                      //Fetch data
+                                      await patient.fetchOrdonnances();
+                                      // Extract doctorProfilePicUrls
+                                      List<String> doctorIDNS = [];
+
+                                      if (patient.ordonnances != null) {
+                                        for (Ordonnance ordonnance
+                                            in patient.ordonnances!) {
+                                          if (ordonnance.medcin![0].IDN !=
+                                              null) {
+                                            doctorIDNS.add(
+                                                ordonnance.medcin![0].IDN!);
+                                          }
+                                        }
+                                      }
+                                      Ordonnance ord = Ordonnance();
+                                      doctorProfilePicUrls =
+                                          await ord.fetchDoctorProfilePicUrls(
+                                              doctorIDNS);
+                                      // doctorProfilePicUrls
+                                      await patient.fetchDiseases();
+                                      await patient.fetchAllergies();
+                                      await patient.fetchDisabilities();
+                                      await patient.fetchHeights();
+                                      await patient.fetchWeights();
+                                      await patient.fetchBloodTypes();
+                                      await patient.fetchHabits();
+                                      await patient.fetchFamilyMembers();
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(

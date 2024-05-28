@@ -79,6 +79,8 @@ class LoginControllerProvider extends ChangeNotifier {
       await globalUser!.fetchHeights();
       await globalUser!.fetchWeights();
       await globalUser!.fetchBloodTypes();
+      await globalUser!.fetchHabits();
+      await globalUser!.fetchFamilyMembers();
 
       // Notify listeners of the change in login status
       loginStreamController.add(true);

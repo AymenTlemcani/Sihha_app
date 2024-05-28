@@ -366,14 +366,15 @@ class _HomeBodyState extends State<HomeBody> {
         globalUser!.ordonnances!.isEmpty) {
       return NoDataContainer();
     }
+    List<Ordonnance> activeOrds = globalUser!.ordonnances!
+        .where((ordonnance) => ordonnance.status == 'active')
+        .toList();
 
     // Sort ordonnances by date of creation in descending order
-    globalUser!.ordonnances!
-        .sort((a, b) => b.dateOfFilling!.compareTo(a.dateOfFilling!));
+    activeOrds.sort((a, b) => b.dateOfFilling!.compareTo(a.dateOfFilling!));
 
     // Take the last 5 ordonnances
-    List<Ordonnance?> displayedOrdonnances =
-        globalUser!.ordonnances!.take(5).toList();
+    List<Ordonnance?> displayedOrdonnances = activeOrds.take(5).toList();
 
     int totalOrdonnaces = displayedOrdonnances.length;
     return Padding(
@@ -832,14 +833,14 @@ class _HomeBodyState extends State<HomeBody> {
             //********************************************************************************* */
           },
         ),
-        MyTile(
-          icon: LineAwesomeIcons.pills,
-          title: 'Ajouter Medicament',
-          iconColor: SihhaGreen2,
-          itemColor1: SihhaGreen1.withOpacity(0.18),
-          smallCircleColor1: Colors.white,
-          onTapFunction: (BuildContext context) {},
-        ),
+        // MyTile(
+        //   icon: LineAwesomeIcons.pills,
+        //   title: 'Ajouter Medicament',
+        //   iconColor: SihhaGreen2,
+        //   itemColor1: SihhaGreen1.withOpacity(0.18),
+        //   smallCircleColor1: Colors.white,
+        //   onTapFunction: (BuildContext context) {},
+        // ),
       ]);
     }
     // NORMAL
@@ -858,7 +859,9 @@ class _HomeBodyState extends State<HomeBody> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DossierMedicalPage(),
+                builder: (context) => DossierMedicalPage(
+                  patient: globalUser!,
+                ),
               ),
             );
           },
@@ -878,14 +881,14 @@ class _HomeBodyState extends State<HomeBody> {
             );
           },
         ),
-        MyTile(
-          icon: LineAwesomeIcons.syringe,
-          title: 'Vaccines',
-          iconColor: SihhaGreen2,
-          itemColor1: SihhaGreen1.withOpacity(0.18),
-          smallCircleColor1: Colors.white,
-          onTapFunction: (BuildContext context) {},
-        ),
+        // MyTile(
+        //   icon: LineAwesomeIcons.syringe,
+        //   title: 'Vaccines',
+        //   iconColor: SihhaGreen2,
+        //   itemColor1: SihhaGreen1.withOpacity(0.18),
+        //   smallCircleColor1: Colors.white,
+        //   onTapFunction: (BuildContext context) {},
+        // ),
       ]);
     }
 

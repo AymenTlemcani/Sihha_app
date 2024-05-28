@@ -413,7 +413,7 @@ class _AddOrdonnancePageState extends State<AddOrdonnancePage> {
                               medcin: [widget.medcin],
                               medcinId: widget.medcin.documentId,
                               patientId: widget.patient.documentId,
-                              patient: widget.patient,
+                              // patient: widget.patient,
 
                               dateOfFilling:
                                   Timestamp.fromDate(_dateOfFilling!),

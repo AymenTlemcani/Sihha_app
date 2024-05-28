@@ -1,17 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
 import 'package:sahha_app/CommonWidgets/MyProfilePicture.dart';
+import 'package:sahha_app/CommonWidgets/MyProfilePicture2.dart';
 import 'package:sahha_app/CommonWidgets/MyTile.dart';
+import 'package:sahha_app/Models/Actors/Child.dart';
 import 'package:sahha_app/Models/Actors/Patient.dart';
+import 'package:sahha_app/Models/Objects/Ordonnance.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedicalPage.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/operations_page.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnacesPage.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/vaccins_page.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/visites_medicales_page.dart';
 import 'package:sahha_app/Pages/services/Qr/ScanQR.dart';
+import 'package:sahha_app/Pages/user/ChildPage.dart';
 
 class PatientPage extends StatefulWidget {
   final Patient? patient;
@@ -61,7 +63,10 @@ class _PatientPageState extends State<PatientPage>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DossierMedicalPage(),
+              builder: (context) => DossierMedicalPage(
+                medcin: globalMedcin,
+                patient: widget.patient!,
+              ),
             ),
           );
         },
@@ -86,63 +91,63 @@ class _PatientPageState extends State<PatientPage>
         //   // _showBottomSheet(context);
         // },
       ),
-      MyTile(
-        icon: LineAwesomeIcons.stethoscope,
-        title: 'Visites medicales',
-        iconColor: SihhaGreen2,
-        itemColor1: SihhaGreen1.withOpacity(0.18),
-        smallCircleColor1: Colors.white,
-        onTapFunction: (BuildContext context) {
-          print('user tapped Visites medicales');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VisitesMedicalesPage(),
-            ),
-          );
-        },
-      ),
+      // MyTile(
+      //   icon: LineAwesomeIcons.stethoscope,
+      //   title: 'Visites medicales',
+      //   iconColor: SihhaGreen2,
+      //   itemColor1: SihhaGreen1.withOpacity(0.18),
+      //   smallCircleColor1: Colors.white,
+      //   onTapFunction: (BuildContext context) {
+      //     print('user tapped Visites medicales');
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => VisitesMedicalesPage(),
+      //       ),
+      //     );
+      //   },
+      // ),
 
-      MyTile(
-        icon: LineAwesomeIcons.syringe,
-        title: 'Vaccins',
-        iconColor: SihhaGreen2,
-        itemColor1: SihhaGreen1.withOpacity(0.18),
-        smallCircleColor1: Colors.white,
-        onTapFunction: (BuildContext context) {
-          print('user tapped Vaccins');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VaccinsPage(),
-            ),
-          );
-        },
-      ),
-      MyTile(
-        icon: LineAwesomeIcons.microscope,
-        title: 'Laboratoire',
-        iconColor: SihhaGreen2,
-        itemColor1: SihhaGreen1.withOpacity(0.18),
-        smallCircleColor1: Colors.white,
-        onTapFunction: (BuildContext context) {},
-      ),
-      MyTile(
-        icon: LineAwesomeIcons.hospital,
-        title: 'Operations',
-        iconColor: SihhaGreen2,
-        itemColor1: SihhaGreen1.withOpacity(0.18),
-        smallCircleColor1: Colors.white,
-        onTapFunction: (BuildContext context) {
-          print('user tapped Operations');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OperationsPage(),
-            ),
-          );
-        },
-      ),
+      // MyTile(
+      //   icon: LineAwesomeIcons.syringe,
+      //   title: 'Vaccins',
+      //   iconColor: SihhaGreen2,
+      //   itemColor1: SihhaGreen1.withOpacity(0.18),
+      //   smallCircleColor1: Colors.white,
+      //   onTapFunction: (BuildContext context) {
+      //     print('user tapped Vaccins');
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => VaccinsPage(),
+      //       ),
+      //     );
+      //   },
+      // ),
+      // MyTile(
+      //   icon: LineAwesomeIcons.microscope,
+      //   title: 'Laboratoire',
+      //   iconColor: SihhaGreen2,
+      //   itemColor1: SihhaGreen1.withOpacity(0.18),
+      //   smallCircleColor1: Colors.white,
+      //   onTapFunction: (BuildContext context) {},
+      // ),
+      // MyTile(
+      //   icon: LineAwesomeIcons.hospital,
+      //   title: 'Operations',
+      //   iconColor: SihhaGreen2,
+      //   itemColor1: SihhaGreen1.withOpacity(0.18),
+      //   smallCircleColor1: Colors.white,
+      //   onTapFunction: (BuildContext context) {
+      //     print('user tapped Operations');
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => OperationsPage(),
+      //       ),
+      //     );
+      //   },
+      // ),
 
       // Add other MyTile widgets as needed
     ];
@@ -165,14 +170,17 @@ class _PatientPageState extends State<PatientPage>
         });
       },
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // print(patients?.length);
-            // print(patients?[0].familyName);
-            print(globalMedcin);
-            print(widget.patient!.ordonnances);
-            // print(widget.patient!.);
-          },
+        floatingActionButton: Visibility(
+          visible: false,
+          child: FloatingActionButton(
+            onPressed: () {
+              // print(patients?.length);
+              // print(patients?[0].familyName);
+              print(globalMedcin);
+              print(widget.patient!.ordonnances);
+              // print(widget.patient!.);
+            },
+          ),
         ),
         backgroundColor: Colors.white,
         body: widget.patient == null
@@ -424,30 +432,31 @@ number of operations
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                // color: Colors.amber,
                 width: 120,
                 child: DetailsLine(
-                  '${widget.patient!.weights?.last ?? 'null' + '  Kg'}',
+                  widget.patient!.weights != null &&
+                          widget.patient!.weights!.isNotEmpty
+                      ? '${widget.patient!.weights!.last.weight!.round()} Kg'
+                      : 'null Kg',
                   Colors.black,
                   LineAwesomeIcons.hanging_weight,
                 ),
               ),
               Container(
-                // color: Colors.amber,
                 width: 120,
                 child: DetailsLine(
-                  '${widget.patient!.heights?.last ?? 'null' + '  cm'}',
+                  widget.patient!.heights != null &&
+                          widget.patient!.heights!.isNotEmpty
+                      ? '${widget.patient!.heights!.last.height!.round()} cm'
+                      : 'null cm',
                   Colors.black,
                   LineAwesomeIcons.ruler,
                 ),
               ),
               Container(
-                // color: Colors.amber,
                 width: 84,
                 child: DetailsLine(
-                  // '${widget.patient!.bloodType ?? 'O+'}',
-
-                  '${widget.patient!.bloodGroup}',
+                  widget.patient!.bloodGroup ?? 'null',
                   Colors.black,
                   LineAwesomeIcons.tint,
                 ),
@@ -500,12 +509,138 @@ number of operations
 
   Widget _buildFamilleTab() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Place your famille content here
-        // You can customize this according to your requirement
-        Text('Famille Information'),
+        if (widget.patient!.familyMembers == null ||
+            widget.patient!.familyMembers!.isEmpty)
+          NoDataContainer()
+        else
+          Column(
+            children: [
+              SizedBox(height: 10),
+              ...widget.patient!.familyMembers!
+                  .map((membre) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 5.0),
+                        child: MembreTile(
+                          patient: widget.patient!,
+                          membre: membre,
+                        ),
+                      ))
+                  .toList(),
+              SizedBox(height: 10),
+            ],
+          ),
       ],
+    );
+  }
+
+  Widget MembreTile({required Child membre, required Patient patient}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(30),
+      splashColor: Colors.transparent,
+      onTap: () async {
+        //Fetch data
+        await membre.fetchOrdonnances();
+        // Extract doctorProfilePicUrls
+        List<String> doctorIDNS = [];
+
+        if (membre.ordonnances != null) {
+          for (Ordonnance ordonnance in membre.ordonnances!) {
+            if (ordonnance.medcin![0].IDN != null) {
+              doctorIDNS.add(ordonnance.medcin![0].IDN!);
+            }
+          }
+        }
+        Ordonnance ord = Ordonnance();
+        doctorProfilePicUrls = await ord.fetchDoctorProfilePicUrls(doctorIDNS);
+        // doctorProfilePicUrls
+        await membre.fetchDiseases();
+        await membre.fetchAllergies();
+        await membre.fetchDisabilities();
+        await membre.fetchHeights();
+        await membre.fetchWeights();
+        await membre.fetchBloodTypes();
+        await membre.fetchHabits();
+        await membre.fetchFamilyMembers();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChildPage(child: membre),
+          ),
+        );
+      },
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(width: 0.4, color: Colors.black12),
+          color: Colors.white,
+        ),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: MyProfilePicture2(
+                URL: membre.profilePicUrl,
+                frameRadius: 23,
+                pictureRadius: 21,
+                borderColor: SihhaGreen2,
+                grayscale: false,
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${membre.familyName} ${membre.name}',
+                  style:
+                      SihhaPoppins3.copyWith(fontSize: 18, letterSpacing: 1.2),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  'Date de naissance: ${membre.birthDate!.toDate().day}/${membre.birthDate!.toDate().month}/${membre.birthDate!.toDate().year}',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+              ],
+            ),
+            Spacer(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget NoDataContainer() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: SihhaGreen1.withOpacity(0.05),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+              child: Center(
+                child: Text(
+                  'Aucun membre de la famille trouvé.',
+                  style:
+                      SihhaPoppins3.copyWith(color: Colors.grey, fontSize: 14),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

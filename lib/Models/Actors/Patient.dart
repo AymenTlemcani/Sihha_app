@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sahha_app/Models/Actors/Child.dart';
 import 'package:sahha_app/Models/Objects/Analyse.dart';
 import 'package:sahha_app/Models/Objects/DossierMedicalModels/Allergie.dart';
 import 'package:sahha_app/Models/Objects/DossierMedicalModels/BloodPressure.dart';
@@ -281,6 +282,40 @@ class Patient {
       this.ordonnances = fetchedOrdonnances;
     } catch (e) {
       print('Error fetching ordonnances: $e');
+    }
+  }
+
+  Future<void> fetchFamilyMembers() async {
+    try {
+      final familyMembersRef = FirebaseFirestore.instance.collection('mineurs');
+      QuerySnapshot querySnapshot = await familyMembersRef
+          .where('responsableId', isEqualTo: documentId)
+          .get();
+
+      // List to store fetched family members
+      List<Child> fetchedFamilyMembers = [];
+
+      querySnapshot.docs.forEach((doc) {
+        try {
+          // Access the actual data using data()
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Child child = Child.fromMap(data);
+
+          // Add the child to the list
+          fetchedFamilyMembers.add(child);
+        } catch (e) {
+          print('Error processing family member: $e');
+        }
+      });
+
+      // Sort family members by birth date in ascending order (oldest to youngest)
+      fetchedFamilyMembers.sort((a, b) => a.birthDate!.compareTo(b.birthDate!));
+
+      print('done fetching family members');
+      this.familyMembers = fetchedFamilyMembers;
+    } catch (e) {
+      print('Error fetching family members: $e');
     }
   }
 

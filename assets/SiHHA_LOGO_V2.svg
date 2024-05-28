@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="172 155 655.5 690.1">
+	<title>SiHHA Logo V2-svg</title>
+	<style>
+		.s0 { fill: #5abb8e } 
+		.s1 { fill: #6dcea1 } 
+	</style>
+	<g id="Layer 1">
+		<path id="Layer" fill-rule="evenodd" class="s0" d="m172 598.8l0.4-0.2c-0.3 0-0.4 0.2-0.4 0.2z"/>
+		<path id="Layer" fill-rule="evenodd" class="s0" d="m172 598.6v-196.4h184.9c-74.1 118.4-184.9 196.4-184.9 196.4z"/>
+		<path id="Layer" fill-rule="evenodd" class="s1" d="m421.7 401.5v-1.7q-0.4 0.8-0.8 1.7z"/>
+		<path id="Layer" fill-rule="evenodd" class="s1" d="m418.9 155c13.4 91.4-17.9 176.5-62 247.2-74.1 118.4-184.9 196.4-184.9 196.4h0.4c91.3-0.1 176.1-27.7 246.6-75 24-16.1 46.4-34.5 66.8-54.9 13.9-14 26.9-28.9 38.9-44.7l15.9-22.1c47.3-70.6 75-155.5 75-246.9 0 0-146.8 0-196.7 0z"/>
+		<path id="Layer" fill-rule="evenodd" class="s0" d="m826.9 402.2v196.6h-184.8c69.9-112.3 173.1-188.5 184.4-196.6q0.4 0 0.4 0z"/>
+		<path id="Layer" fill-rule="evenodd" class="s1" d="m568.5 597.8v1.7q0.4-0.9 0.8-1.7z"/>
+		<path id="Layer" fill-rule="evenodd" class="s1" d="m580.6 476.5c-24 16.1-46.4 34.5-66.8 55-13.9 13.9-26.9 28.8-38.9 44.6l-16 22c-47.5 70.5-75.1 155.6-75.1 247 0 0 146.9 0 196.6 0-13.2-91.1 17.6-175.9 61.6-246.3 70-112.3 173.2-188.5 184.5-196.6 0.7-0.6 1-0.7 1-0.7-91.4 0-176.4 27.6-246.9 75z"/>
+	</g>
+</svg>

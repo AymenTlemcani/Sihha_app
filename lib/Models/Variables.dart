@@ -41,10 +41,12 @@ String? documentId;
 HexColor SihhaGreen1 = HexColor("6dcea1");
 HexColor SihhaGreen2 = HexColor("509776");
 HexColor SihhaGreen3 = HexColor("318f63");
+HexColor SihhaGreen4 = HexColor("5ABB8E"); //lighter green that SihhaGreen1
 HexColor SihhaWhite = HexColor('#FFFFFF');
 // HexColor SihhaGreyBackgroundColor = HexColor("f2f2f2");
 HexColor SihhaGreyBackgroundColor1 = HexColor("f2f2f6");
 HexColor SihhaGreyBackgroundColor2 = HexColor("f8f8f8");
+HexColor SihhaDarkBackgroundColorConcept1 = HexColor("0F504C");
 
 TextStyle SihhaTextStyleH1 = GoogleFonts.sarabun(
     color: const Color.fromARGB(255, 12, 12, 12),
@@ -214,6 +216,8 @@ List<String> medicalSpecialties = [
 ];
 List<Map<String, String>> medicaments = [
   {'name': 'Paracétamol', 'type': 'Analgésique', 'dosage': '500 mg'},
+  {'name': 'Doliprane', 'type': 'Anti-inflammatoire', 'dosage': '500 mg'},
+  {'name': 'Clamoxile', 'type': 'Sirop', 'dosage': '300 mg'},
   {'name': 'Ibuprofène', 'type': 'Anti-inflammatoire', 'dosage': '400 mg'},
   {'name': 'Amoxicilline', 'type': 'Antibiotique', 'dosage': '500 mg'},
   {

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sahha_app/CommonWidgets/MyBackButton.dart';
+import 'package:sahha_app/Models/Objects/Ordonnance.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/user/PatientPage.dart';
 import 'package:sahha_app/Services/UserService.dart';
@@ -112,7 +113,7 @@ class _UsbScannerPageState extends State<UsbScannerPage> {
     print('fetching user data for code: $scannedCode');
     UserService _userService = UserService();
     _userService.getUserData(scannedCode).then(
-      (patient) {
+      (patient) async {
         //and that nigga's code is valid
         if (patient != null) {
           // Check if patients list is not null before adding the patient
@@ -132,6 +133,30 @@ class _UsbScannerPageState extends State<UsbScannerPage> {
             patients = [patient];
             print('Current number of patients : ${patients!.length}');
           }
+          //Fetch data
+          await patient.fetchOrdonnances();
+          // Extract doctorProfilePicUrls
+          List<String> doctorIDNS = [];
+
+          if (patient.ordonnances != null) {
+            for (Ordonnance ordonnance in patient.ordonnances!) {
+              if (ordonnance.medcin![0].IDN != null) {
+                doctorIDNS.add(ordonnance.medcin![0].IDN!);
+              }
+            }
+          }
+          Ordonnance ord = Ordonnance();
+          doctorProfilePicUrls =
+              await ord.fetchDoctorProfilePicUrls(doctorIDNS);
+          // doctorProfilePicUrls
+          await patient.fetchDiseases();
+          await patient.fetchAllergies();
+          await patient.fetchDisabilities();
+          await patient.fetchHeights();
+          await patient.fetchWeights();
+          await patient.fetchBloodTypes();
+          await patient.fetchHabits();
+          await patient.fetchFamilyMembers();
           Navigator.push(
             context,
             MaterialPageRoute(

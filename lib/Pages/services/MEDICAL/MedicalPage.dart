@@ -6,9 +6,6 @@ import 'package:sahha_app/CommonWidgets/MyTile.dart';
 import 'package:sahha_app/Models/Variables.dart';
 import 'package:sahha_app/Pages/services/DossierMedicalPage.dart';
 import 'package:sahha_app/Pages/services/MEDICAL/Ordonnaces/ordonnacesPage.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/operations_page.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/vaccins_page.dart';
-import 'package:sahha_app/Pages/services/MEDICAL/visites_medicales_page.dart';
 
 class MedicalPage extends StatefulWidget {
   const MedicalPage({Key? key}) : super(key: key);
@@ -44,7 +41,7 @@ class _MedicalPageState extends State<MedicalPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DossierMedicalPage(),
+              builder: (context) => DossierMedicalPage(patient: globalUser!),
             ),
           );
         },
@@ -65,62 +62,62 @@ class _MedicalPageState extends State<MedicalPage> {
           );
         },
       ),
-      MyTile(
-        icon: LineAwesomeIcons.stethoscope,
-        title: 'Visites',
-        iconColor: SihhaGreen2,
-        itemColor1: SihhaGreen1.withOpacity(0.18),
-        smallCircleColor1: Colors.white,
-        onTapFunction: (BuildContext context) {
-          print('user tapped Dossier Medical');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VisitesMedicalesPage(),
-            ),
-          );
-        },
-      ),
-      MyTile(
-        icon: LineAwesomeIcons.syringe,
-        title: 'Vaccins',
-        iconColor: SihhaGreen2,
-        itemColor1: SihhaGreen1.withOpacity(0.18),
-        smallCircleColor1: Colors.white,
-        onTapFunction: (BuildContext context) {
-          print('user tapped Dossier Medical');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VaccinsPage(),
-            ),
-          );
-        },
-      ),
-      MyTile(
-        icon: LineAwesomeIcons.microscope,
-        title: 'Laboratoire',
-        iconColor: SihhaGreen2,
-        itemColor1: SihhaGreen1.withOpacity(0.18),
-        smallCircleColor1: Colors.white,
-        onTapFunction: (BuildContext context) {},
-      ),
-      MyTile(
-        icon: LineAwesomeIcons.hospital,
-        title: 'Operations',
-        iconColor: SihhaGreen2,
-        itemColor1: SihhaGreen1.withOpacity(0.18),
-        smallCircleColor1: Colors.white,
-        onTapFunction: (BuildContext context) {
-          print('user tapped Dossier Medical');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OperationsPage(),
-            ),
-          );
-        },
-      ),
+      // MyTile(
+      //   icon: LineAwesomeIcons.stethoscope,
+      //   title: 'Visites',
+      //   iconColor: SihhaGreen2,
+      //   itemColor1: SihhaGreen1.withOpacity(0.18),
+      //   smallCircleColor1: Colors.white,
+      //   onTapFunction: (BuildContext context) {
+      //     print('user tapped Dossier Medical');
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => VisitesMedicalesPage(),
+      //       ),
+      //     );
+      //   },
+      // ),
+      // MyTile(
+      //   icon: LineAwesomeIcons.syringe,
+      //   title: 'Vaccins',
+      //   iconColor: SihhaGreen2,
+      //   itemColor1: SihhaGreen1.withOpacity(0.18),
+      //   smallCircleColor1: Colors.white,
+      //   onTapFunction: (BuildContext context) {
+      //     print('user tapped Dossier Medical');
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => VaccinsPage(),
+      //       ),
+      //     );
+      //   },
+      // ),
+      // MyTile(
+      //   icon: LineAwesomeIcons.microscope,
+      //   title: 'Laboratoire',
+      //   iconColor: SihhaGreen2,
+      //   itemColor1: SihhaGreen1.withOpacity(0.18),
+      //   smallCircleColor1: Colors.white,
+      //   onTapFunction: (BuildContext context) {},
+      // ),
+      // MyTile(
+      //   icon: LineAwesomeIcons.hospital,
+      //   title: 'Operations',
+      //   iconColor: SihhaGreen2,
+      //   itemColor1: SihhaGreen1.withOpacity(0.18),
+      //   smallCircleColor1: Colors.white,
+      //   onTapFunction: (BuildContext context) {
+      //     print('user tapped Dossier Medical');
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => OperationsPage(),
+      //       ),
+      //     );
+      //   },
+      // ),
     ];
   }
 
